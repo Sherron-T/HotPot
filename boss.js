@@ -15,12 +15,16 @@
 // 6. use 
 
 var player;
+var hp = 3;
+var cursors;
+var keyZ;
 
 function takeDmg(player){
-    
-}
+    hp -= 1;
+    console.log("ouch");
+};
 
-var bossSpeed = 100;
+var bossSpeed = 50;
 
 class Leek extends Phaser.Scene {
     preload(){
@@ -36,12 +40,13 @@ class Leek extends Phaser.Scene {
 
         // variable for all platforms 100x1000
         var platforms = this.physics.add.staticGroup();
-        platforms.create(0, 800, "platform").setOrigin(0, 0);
+        platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(500, 800, "platform").setOrigin(0, 0).refreshBody();
 
         // create the boss object 
-        var boss = this.physics.add.group();
-        boss.create(Phaser.Math.Between(500, 1000), 0, 'boss');
-        // boss.setCollideWorldBounds(true);  
+        var boss = this.physics.add.sprite(Phaser.Math.Between(500, 800), 0, 'boss');
+        boss.setBounce(0.4);
+        boss.setCollideWorldBounds(true);  
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'warrior');
@@ -55,17 +60,44 @@ class Leek extends Phaser.Scene {
         this.physics.add.overlap(player, boss, takeDmg, null, this);
     }
     update(){
-        
-        // setInterval(bossMovement, 500); 
+        cursors = this.input.keyboard.createCursorKeys();
+        keyZ = this.input.keyboard.addKey("z");
+        if (cursors.left.isDown){
+            player.setVelocityX(-160);
+
+        }else if (cursors.right.isDown){
+            player.setVelocityX(160);
+
+        }else{
+            player.setVelocityX(0);
+        }
+        if (cursors.up.isDown && player.body.onFloor()){
+            player.setVelocityY(-300);
+        }
+        if (keyZ.isDown){
+            console.log("z");
+        }
+        setInterval(this.bossMovement.bind(null, this.boss), 1000);
     }
-    bossMovement(){
-        
+    bossMovement(boss){
+        // move in range (500, 800)
+        if(boss.x > 650){
+            while(boss.x > 500){
+                boss.setVelocityX(-50); 
+            }
+            boss.setVelocityX(0);
+        }else{
+            while(boss.x < 800){
+                boss.setVelocityX(50);
+            }
+            boss.setVelocityX(0);
+        }
     }
 }
 
 var config = {
     type: Phaser.AUTO,
-    width: 2000,
+    width: 1500,
     height: 1000,
     backgroundColor: "#5D0505",
     physics: {
