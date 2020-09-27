@@ -12,22 +12,23 @@
 // 3. ingredients move in a small range (x=10 - x=50)
 // 4. increasing the scores
 // 5. collide with boss/ingredients -> lose 1 heart
-// 6. use weapon to attack the boss 
+// 6. use weapon to attack the boss
 
 var player;
 var hp = 3;
 var cursors;
 var keyZ;
 var boss;
-var hearts; 
+var hearts;
 var endText;
-var playerCollider 
+var playerCollider;
+var facing_left = false; //True if Left
 
 function takeDmg(player){
     hp = hp == 0 ? 0 : hp - 1;
     console.log("ouch");
-    var heart = hearts.getChildren(); 
-    hearts.killAndHide(heart[hp]); 
+    var heart = hearts.getChildren();
+    hearts.killAndHide(heart[hp]);
     heart[hp].body.enable = false;
 }
 
@@ -62,14 +63,14 @@ class Leek extends Phaser.Scene {
         // boss.setBounce(0.4);
         // boss.setCollideWorldBounds(true);
         boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
-        bossSpeed = Phaser.Math.GetSpeed(600, 6); 
+        bossSpeed = Phaser.Math.GetSpeed(600, 6);
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'pork');
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
 
-        // lives for player 
+        // lives for player
         hearts = this.physics.add.staticGroup({
             key: 'heart',
             frameQuantity: 3,
@@ -83,13 +84,11 @@ class Leek extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
-
         this.anims.create({
             key: 'turn',
             frames: [ { key: 'pork', frame: 6 } ],
             frameRate: 20
         });
-
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('pork', { start: 7, end: 12 }),
@@ -99,11 +98,21 @@ class Leek extends Phaser.Scene {
         this.anims.create({
             key: 'gun_right',
             frames: this.anims.generateFrameNumbers('pork', { start: 13, end: 14 }),
-            frameRate: 10
+            frameRate: 7
         });
         this.anims.create({
             key: 'gun_left',
             frames: this.anims.generateFrameNumbers('pork', { start: 15, end: 16 }),
+            frameRate: 7
+        });
+        this.anims.create({
+            key: 'idle_left',
+            frames: [ { key: 'pork', frame: 15 } ],
+            frameRate: 10
+        });
+        this.anims.create({
+            key: 'idle_right',
+            frames: [ { key: 'pork', frame: 13 } ],
             frameRate: 10
         });
 
@@ -114,16 +123,18 @@ class Leek extends Phaser.Scene {
         this.physics.add.overlap(player, boss, takeDmg, null, this);
 
         // clearInterval(timeInter) when the boss dies <---- !!!
-        
+
         // this.physics.moveTo(boss, 500, 0, 150);
         // boss.setVelocityX(10);
         // var timeInter = setInterval(this.bossMovement.bind(null, boss, bossSpeed), 5000);
 
     }
     update(time, delta){
+        player.body.width = 60;
+        player.body.offset.x = 20;
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
-        if (cursors.space.isDown && cursors.left.isDown){
+        if (cursors.space.isDown && facing_left == true){
             player.anims.play('gun_left', true);
             if(player.body.onFloor()){
               player.setVelocityX(0);
@@ -136,19 +147,24 @@ class Leek extends Phaser.Scene {
         }else if (cursors.left.isDown){
             player.setVelocityX(-160);
             player.anims.play('left', true);
-
-        }
-        else if (cursors.left.isDown){
-            player.setVelocityX(-160);
-            player.anims.play('left', true);
+            facing_left = true;
 
         }else if (cursors.right.isDown){
             player.setVelocityX(160);
             player.anims.play('right', true);
+            facing_left = false;
 
         }else{
             player.setVelocityX(0);
-            player.anims.play('turn');
+            //player.anims.play('turn');
+            if(facing_left == true)
+            {
+              player.anims.play('idle_left', true);
+            }
+            else
+            {
+              player.anims.play('idle_right', true);
+            }
         }
         if (cursors.up.isDown && player.body.onFloor()){
             player.setVelocityY(-300);
@@ -157,14 +173,14 @@ class Leek extends Phaser.Scene {
             console.log("z");
         }
 
-        boss.x += bossSpeed * delta; 
+        boss.x += bossSpeed * delta;
         if(boss.x >= 800){
-            // setInterval(this.dummy, 5000); 
-            bossSpeed = -bossSpeed; 
+            // setInterval(this.dummy, 5000);
+            bossSpeed = -bossSpeed;
         }
         if(boss.x <= 500){
-            // setInterval(this.dummy, 5000); 
-            bossSpeed = -bossSpeed; 
+            // setInterval(this.dummy, 5000);
+            bossSpeed = -bossSpeed;
         }
         if(hp == 0){
             player.anims.play('turn');
@@ -192,7 +208,7 @@ class Leek extends Phaser.Scene {
     //     }
     // }
     dummy(){
-        console.log("Waiting"); 
+        console.log("Waiting");
     }
 }
 
@@ -205,7 +221,7 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: { y: 500 },
-              debug: false
+              debug: true
           }
       },
     scene: [Leek]
