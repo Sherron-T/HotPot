@@ -12,29 +12,34 @@
 // 3. ingredients move in a small range (x=10 - x=50)
 // 4. increasing the scores
 // 5. collide with boss/ingredients -> lose 1 heart
-// 6. use
+// 6. use weapon to attack the boss 
 
 var player;
 var hp = 3;
 var cursors;
 var keyZ;
-var boss; 
+var boss;
+var hearts;  
 
 function takeDmg(player){
-    hp -= 1;
+    hp = hp == 0 ? 0 : hp - 1;
     console.log("ouch");
-};
+    var heart = hearts.getChildren(); 
+    hearts.killAndHide(heart[hp]); 
+    heart[hp].body.enable = false;
+}
 
 var bossSpeed = 50;
 
 class Leek extends Phaser.Scene {
     preload(){
-        this.load.image('platform', 'img/ground.png');
-        this.load.image('background', 'img/bg.png');
-        this.load.image('boss', 'img/leek.png');
-        this.load.spritesheet('pork', 'img/pork.png', {frameWidth : 100, frameHeight : 78});
-        this.load.image('weapon', 'img/weapon.png');
-        this.load.audio('boss_music', 'img/boss.wav')
+        this.load.image('platform', 'assets/ground.png');
+        this.load.image('background', 'assets/bg.png');
+        this.load.image('boss', 'assets/leek.png');
+        this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
+        this.load.image('weapon', 'assets/weapon.png');
+        this.load.audio('boss_music', 'assets/boss.wav')
+        this.load.image('heart', 'assets/heart.png')
     }
     create(){
         // add background image 1000x5000
@@ -54,13 +59,21 @@ class Leek extends Phaser.Scene {
         // var boss = this.physics.add.sprite(Phaser.Math.Between(500, 800), 0, 'boss');
         // boss.setBounce(0.4);
         // boss.setCollideWorldBounds(true);
-        boss = this.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
+        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
         bossSpeed = Phaser.Math.GetSpeed(600, 6); 
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'pork');
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
+
+        // lives for player 
+        hearts = this.physics.add.staticGroup({
+            key: 'heart',
+            frameQuantity: 3,
+            immovable: true,
+            setXY: {x: 50, y: 50, stepX: 50}
+        });
 
         this.anims.create({
             key: 'left',
@@ -151,6 +164,7 @@ class Leek extends Phaser.Scene {
             // setInterval(this.dummy, 5000); 
             bossSpeed = -bossSpeed; 
         }
+
     }
     // bossMovement(boss, bossSpeed){
     //     // move in range (500, 800)
