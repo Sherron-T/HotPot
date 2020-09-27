@@ -44,14 +44,14 @@ var verticalJump = 300;
 
 class Leek extends Phaser.Scene {
     preload(){
-        this.load.image('platform', 'assets/ground.png');
+        this.load.image('platform', 'assets/ground2.png');
         this.load.image('background', 'assets/bg.png');
         this.load.image('boss', 'assets/leek.png');
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.image('heart', 'assets/heart.png')
-        this.load.image('rice', 'assets/rice.png')
+        this.load.image('rice', 'assets/rice2.png')
         // this.load.script('WeaponPlugin', 'node_modules/phaser3-weapon-plugin/out/WeaponPlugin.js', 'weaponPlugin', 'weapons');
     }
     create(){
@@ -66,8 +66,9 @@ class Leek extends Phaser.Scene {
         music.play();
         // variable for all platforms 100x1000
         var platforms = this.physics.add.staticGroup();
+
+        platforms.create(997, 800, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(500, 800, "platform").setOrigin(0, 0).refreshBody();
 
         // create the boss object
         // var boss = this.physics.add.sprite(Phaser.Math.Between(500, 800), 0, 'boss');
@@ -118,12 +119,12 @@ class Leek extends Phaser.Scene {
         this.anims.create({
             key: 'gun_right',
             frames: this.anims.generateFrameNumbers('pork', { start: 13, end: 14 }),
-            frameRate: 10
+            frameRate: 20
         });
         this.anims.create({
             key: 'gun_left',
             frames: this.anims.generateFrameNumbers('pork', { start: 15, end: 16 }),
-            frameRate: 10
+            frameRate: 20
         });
         this.anims.create({
             key: 'idle_left',
@@ -169,12 +170,12 @@ class Leek extends Phaser.Scene {
             can_shoot = false;
             if(facing_left == true){
               var b = bullets.create(player.x-20, player.y+5, 'rice');
-              player.anims.play('gun_left', true);
+              player.anims.play('gun_left');
               b.setVelocityX(-1*gunVelocity);
             }
             else{
               var b = bullets.create(player.x+20, player.y+5, 'rice');
-              player.anims.play('gun_right', true);
+              player.anims.play('gun_right');
               b.setVelocityX(gunVelocity);
             }
             if(player.body.onFloor()){
