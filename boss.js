@@ -21,7 +21,11 @@ var keyZ;
 var boss;
 var hearts; 
 var endText;
-var playerCollider 
+var bossText;
+var playerCollider;
+var bossCollider;
+var bullets; 
+var bossHP = 50;
 
 function takeDmg(player){
     hp = hp == 0 ? 0 : hp - 1;
@@ -42,8 +46,11 @@ class Leek extends Phaser.Scene {
         this.load.image('weapon', 'assets/weapon.png');
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.image('heart', 'assets/heart.png')
+        this.load.image('rice', 'assets/rice.png')
+        // this.load.script('WeaponPlugin', 'node_modules/phaser3-weapon-plugin/out/WeaponPlugin.js', 'weaponPlugin', 'weapons');
     }
     create(){
+        // this.plugins.install('WeaponPlugin', WeaponPlugin.WeaponPlugin, 'weapons', this);
         // add background image 1000x5000
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         var music = this.sound.add('boss_music',{
@@ -69,6 +76,12 @@ class Leek extends Phaser.Scene {
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
 
+        // weapons
+        // this.add.weapon(10, 'rice');
+        bullets = this.physics.add.group({
+            allowGravity: false
+        }); 
+
         // lives for player 
         hearts = this.physics.add.staticGroup({
             key: 'heart',
@@ -77,19 +90,18 @@ class Leek extends Phaser.Scene {
             setXY: {x: 50, y: 50, stepX: 50}
         });
 
+        // animations 
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('pork', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });
-
         this.anims.create({
             key: 'turn',
             frames: [ { key: 'pork', frame: 6 } ],
             frameRate: 20
         });
-
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('pork', { start: 7, end: 12 }),
@@ -109,9 +121,12 @@ class Leek extends Phaser.Scene {
 
         // make player collide with platforms
         playerCollider = this.physics.add.collider(player, platforms);
-        this.physics.add.collider(boss, platforms);
+        bossCollider = this.physics.add.collider(boss, platforms);
+        this.physics.add.collider(boss, bullets, this.bossHurt, null, this);
 
         this.physics.add.overlap(player, boss, takeDmg, null, this);
+
+        bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
 
         // clearInterval(timeInter) when the boss dies <---- !!!
         
@@ -128,11 +143,15 @@ class Leek extends Phaser.Scene {
             if(player.body.onFloor()){
               player.setVelocityX(0);
             }
+            var b = bullets.create(player.x, player.y, 'rice');
+            b.setVelocityX(-150);
         }else if (cursors.space.isDown){
             player.anims.play('gun_right', true);
             if(player.body.onFloor()){
               player.setVelocityX(0);
             }
+            var b = bullets.create(player.x, player.y, 'rice');
+            b.setVelocityX(150);
         }else if (cursors.left.isDown){
             player.setVelocityX(-160);
             player.anims.play('left', true);
@@ -170,7 +189,13 @@ class Leek extends Phaser.Scene {
             player.anims.play('turn');
             this.physics.world.removeCollider(playerCollider);
             player.setCollideWorldBounds(false);
-            endText = this.add.text(600, 500, "YOU LOST", { fontSize: '60px', fill: '#000' });
+            endText = this.add.text(600, 500, "YOU LOST", { fontSize: '60px', fill: '#E00404' });
+            return;
+        }
+        if(bossHP == 0){
+            this.physics.world.removeCollider(bossCollider);
+            boss.setCollideWorldBounds(false);
+            endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
             return;
         }
     }
@@ -193,6 +218,11 @@ class Leek extends Phaser.Scene {
     // }
     dummy(){
         console.log("Waiting"); 
+    }
+    bossHurt(boss, bullet){
+        bullet.disableBody(true, true);
+        bossHP = bossHP == 0 ? 0 : bossHP - 1; 
+        bossText.setText('Boss HP: ' + bossHP);
     }
 }
 
