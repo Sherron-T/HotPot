@@ -112,7 +112,7 @@ class Leek extends Phaser.Scene {
         this.anims.create({
             key: 'gun_right',
             frames: this.anims.generateFrameNumbers('pork', { start: 13, end: 14 }),
-            frameRate: frameRate: 7
+            frameRate: 7
         });
         this.anims.create({
             key: 'gun_left',
@@ -133,7 +133,7 @@ class Leek extends Phaser.Scene {
         // make player collide with platforms
         playerCollider = this.physics.add.collider(player, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
-        this.physics.add.collider(boss, bullets, this.bossHurt, null, this);
+        this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
 
         this.physics.add.overlap(player, boss, takeDmg, null, this);
 
@@ -151,6 +151,15 @@ class Leek extends Phaser.Scene {
         player.body.offset.x = 20;
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
+        boss.x += bossSpeed * delta; 
+        if(boss.x >= 800){
+            // setInterval(this.dummy, 5000); 
+            bossSpeed = bossSpeed < 0 ? bossSpeed : -bossSpeed; 
+        }
+        if(boss.x <= 500){
+            // setInterval(this.dummy, 5000); 
+            bossSpeed = bossSpeed > 0 ? bossSpeed : -bossSpeed; 
+        }
         if (cursors.space.isDown && facing_left == true){
             player.anims.play('gun_left', true);
             if(player.body.onFloor()){
@@ -177,7 +186,7 @@ class Leek extends Phaser.Scene {
         }else if (cursors.right.isDown){
             player.setVelocityX(160);
             player.anims.play('right', true);
-            facing_left = true;
+            facing_left = false;
         }else{
             player.setVelocityX(0);
             //player.anims.play('turn');
@@ -193,16 +202,6 @@ class Leek extends Phaser.Scene {
         }
         if (keyZ.isDown){
             console.log("z");
-        }
-
-        boss.x += bossSpeed * delta; 
-        if(boss.x >= 800){
-            // setInterval(this.dummy, 5000); 
-            bossSpeed = -bossSpeed; 
-        }
-        if(boss.x <= 500){
-            // setInterval(this.dummy, 5000); 
-            bossSpeed = -bossSpeed; 
         }
         if(hp == 0){
             player.anims.play('turn');
