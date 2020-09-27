@@ -36,13 +36,14 @@ var speed;
 var bossSpeed;
 var bossSpecial = true;
 var nukes;
+var gun_sound;
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
 var hp = 3;
 var bossHP = 50;
 var invulDuration = 3000;
-var gunSpeed = 100;
+var gunSpeed = 300;
 var gunVelocity = 400;
 var horizontalSpeed = 160;
 var verticalJump = 300;
@@ -57,6 +58,7 @@ class Leek extends Phaser.Scene {
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
         this.load.audio('boss_music', 'assets/boss.wav')
+        this.load.audio('gun_sound', 'assets/gun_sound.wav')
         this.load.image('heart', 'assets/heart.png')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('rice2', 'assets/rice2.png')
@@ -73,6 +75,7 @@ class Leek extends Phaser.Scene {
             volume: 0.2
           });
         music.play();
+        gun_sound = this.sound.add('gun_sound');
         // variable for all platforms 100x1000
         var platforms = this.physics.add.staticGroup();
 
@@ -186,7 +189,7 @@ class Leek extends Phaser.Scene {
         boss.x += speed * delta;
         if(boss.x >= 1000 && !bossStop){
             // setInterval(this.dummy, 5000);
-            console.log("large")
+            //console.log("large")
             speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
@@ -197,11 +200,10 @@ class Leek extends Phaser.Scene {
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
-        console.log(bossSpecial);
         if(bossHP > 0 && bossHP < 30 && bossSpecial == true){
-          console.log("sda");
           bossSpecial = false;
           var i;
+          var leek_nuke = nukes.create(player.x, Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
           for (i = 0; i < 3; i++) {
             var leek_nuke = nukes.create(player.x + Math.floor(Math.random() * (300 - -300) + -300), Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
           }
@@ -209,6 +211,7 @@ class Leek extends Phaser.Scene {
         }
         if (cursors.space.isDown && can_shoot == true){
             can_shoot = false;
+            gun_sound.play();
             if(facing_left == true){
               var b = bullets.create(player.x-20, player.y+5, 'rice2');
               if(cursors.left.isDown){
@@ -272,13 +275,14 @@ class Leek extends Phaser.Scene {
         if(bossHP == 0){
             this.physics.world.removeCollider(bossCollider);
             this.physics.world.removeCollider(playerBoosOverlap);
+            this.physics.world.removeCollider(playerNukesOverlap);
             boss.setCollideWorldBounds(false);
             endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
             return;
         }
     }
     dummy(){
-        console.log("Waiting");
+        //console.log("Waiting");
     }
     bossHurt(boss, bullet){
         bullet.disableBody(true, true);
@@ -308,7 +312,7 @@ class Leek extends Phaser.Scene {
         bossSpecial = true;
     }
     moveStop(){
-        console.log("here")
+        //console.log("here")
         bossSpeed = -bossSpeed;
         speed = bossSpeed;
         bossStop = false;
