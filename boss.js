@@ -29,17 +29,21 @@ var vulTimer;
 var invul = false;
 var facing_left = false;
 var can_shoot = true;
-
+var playerBoosOverlap; 
+var bossStop = false; 
+var speed;
+var bossSpeed; 
+// Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
 var hp = 3;
-var bossSpeed = 50;
 var bossHP = 50;
 var invulDuration = 3000;
-var gunSpeed = 1000;
+var gunSpeed = 100;
 var gunVelocity = 400;
 var horizontalSpeed = 160;
 var verticalJump = 300;
+var bossStopDuration = 800; 
 
 
 class Leek extends Phaser.Scene {
@@ -74,7 +78,8 @@ class Leek extends Phaser.Scene {
         // boss.setBounce(0.4);
         // boss.setCollideWorldBounds(true);
         boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
-        bossSpeed = Phaser.Math.GetSpeed(600, 6);
+        bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        speed = bossSpeed;
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'pork');
@@ -142,7 +147,7 @@ class Leek extends Phaser.Scene {
         bossCollider = this.physics.add.collider(boss, platforms);
         this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
 
-        this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        playerBoosOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
 
         bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
 
@@ -156,14 +161,19 @@ class Leek extends Phaser.Scene {
     update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
-        boss.x += bossSpeed * delta;
-        if(boss.x >= 800){
+        boss.x += speed * delta;
+        if(boss.x >= 1000 && !bossStop){
             // setInterval(this.dummy, 5000);
-            bossSpeed = bossSpeed < 0 ? bossSpeed : -bossSpeed;
+            console.log("large")
+            speed = 0;
+            bossStop = true; 
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
-        if(boss.x <= 500){
+        if(boss.x <= 100 && !bossStop){
             // setInterval(this.dummy, 5000);
-            bossSpeed = bossSpeed > 0 ? bossSpeed : -bossSpeed;
+            speed = 0; 
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
         if (cursors.space.isDown && can_shoot == true){
             can_shoot = false;
@@ -215,28 +225,12 @@ class Leek extends Phaser.Scene {
         }
         if(bossHP == 0){
             this.physics.world.removeCollider(bossCollider);
+            this.physics.world.removeCollider(playerBoosOverlap);
             boss.setCollideWorldBounds(false);
             endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
             return;
         }
     }
-    // bossMovement(boss, bossSpeed){
-    //     // move in range (500, 800)
-    //     console.log("here")
-    //     let x = boss.x;
-    //     if(x > 650){
-    //         console.log("1")
-    //         while(boss.x < 800){
-    //             console.log("2")
-    //             boss.x += bossSpeed;
-    //         }
-    //     }else{
-    //         console.log("3")
-    //         while(boss.x > 500){
-    //             boss.x -= bossSpeed;
-    //         }
-    //     }
-    // }
     dummy(){
         console.log("Waiting");
     }
@@ -246,7 +240,7 @@ class Leek extends Phaser.Scene {
         bossText.setText('Boss HP: ' + bossHP);
     }
     set_shoot(){
-      can_shoot = true;
+        can_shoot = true;
     }
     takeDmg(player){
         if(invul == false)
@@ -260,10 +254,15 @@ class Leek extends Phaser.Scene {
           heart[hp].body.enable = false;
         }
     }
-
     blinking(){
-      player.clearTint();
-      invul = false;
+        player.clearTint();
+        invul = false;
+    }
+    moveStop(){
+        console.log("here")
+        bossSpeed = -bossSpeed;
+        speed = bossSpeed; 
+        bossStop = false;
     }
 }
 
