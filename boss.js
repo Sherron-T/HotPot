@@ -19,7 +19,9 @@ var hp = 3;
 var cursors;
 var keyZ;
 var boss;
-var hearts;  
+var hearts; 
+var endText;
+var playerCollider 
 
 function takeDmg(player){
     hp = hp == 0 ? 0 : hp - 1;
@@ -106,7 +108,7 @@ class Leek extends Phaser.Scene {
         });
 
         // make player collide with platforms
-        this.physics.add.collider(player, platforms);
+        playerCollider = this.physics.add.collider(player, platforms);
         this.physics.add.collider(boss, platforms);
 
         this.physics.add.overlap(player, boss, takeDmg, null, this);
@@ -164,7 +166,13 @@ class Leek extends Phaser.Scene {
             // setInterval(this.dummy, 5000); 
             bossSpeed = -bossSpeed; 
         }
-
+        if(hp == 0){
+            player.anims.play('turn');
+            this.physics.world.removeCollider(playerCollider);
+            player.setCollideWorldBounds(false);
+            endText = this.add.text(600, 500, "YOU LOST", { fontSize: '60px', fill: '#000' });
+            return;
+        }
     }
     // bossMovement(boss, bossSpeed){
     //     // move in range (500, 800)
