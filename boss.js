@@ -29,10 +29,10 @@ var vulTimer;
 var invul = false;
 var facing_left = false;
 var can_shoot = true;
-var playerBoosOverlap; 
-var bossStop = false; 
+var playerBoosOverlap;
+var bossStop = false;
 var speed;
-var bossSpeed; 
+var bossSpeed;
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
@@ -43,7 +43,7 @@ var gunSpeed = 100;
 var gunVelocity = 400;
 var horizontalSpeed = 160;
 var verticalJump = 300;
-var bossStopDuration = 800; 
+var bossStopDuration = 800;
 
 
 class Leek extends Phaser.Scene {
@@ -141,6 +141,19 @@ class Leek extends Phaser.Scene {
             frames: [ { key: 'pork', frame: 13 } ],
             frameRate: 10
         });
+        this.anims.create({
+            key: 'gun_move_right',
+            frames: this.anims.generateFrameNumbers('pork', { start: 17, end: 22 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'gun_move_left',
+            frames: this.anims.generateFrameNumbers('pork', { start: 23, end: 28 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
 
         // make player collide with platforms
         player.anims.play('idle_right');
@@ -167,12 +180,12 @@ class Leek extends Phaser.Scene {
             // setInterval(this.dummy, 5000);
             console.log("large")
             speed = 0;
-            bossStop = true; 
+            bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
         if(boss.x <= 100 && !bossStop){
             // setInterval(this.dummy, 5000);
-            speed = 0; 
+            speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
@@ -180,12 +193,22 @@ class Leek extends Phaser.Scene {
             can_shoot = false;
             if(facing_left == true){
               var b = bullets.create(player.x-20, player.y+5, 'rice');
-              player.anims.play('gun_left');
+              if(cursors.left.isDown){
+                player.anims.play('gun_move_left', true);
+              }
+              else{
+                player.anims.play('gun_left');
+              }
               b.setVelocityX(-1*gunVelocity);
             }
             else{
               var b = bullets.create(player.x+20, player.y+5, 'rice');
-              player.anims.play('gun_right');
+              if(cursors.right.isDown){
+                player.anims.play('gun_move_right', true);
+              }
+              else{
+                player.anims.play('gun_right');
+              }
               b.setVelocityX(gunVelocity);
             }
             if(player.body.onFloor()){
@@ -194,11 +217,15 @@ class Leek extends Phaser.Scene {
             timedEvent = this.time.delayedCall(gunSpeed, this.set_shoot, [], this);
         }else if (cursors.left.isDown){
             player.setVelocityX(-1*horizontalSpeed);
-            player.anims.play('left', true);
+            if(cursors.space.isDown == false){
+              player.anims.play('left', true);
+            }
             facing_left = true;
         }else if (cursors.right.isDown){
             player.setVelocityX(horizontalSpeed);
-            player.anims.play('right', true);
+            if(cursors.space.isDown == false){
+              player.anims.play('right', true);
+            }
             facing_left = false;
         }else{
             player.setVelocityX(0);
@@ -262,7 +289,7 @@ class Leek extends Phaser.Scene {
     moveStop(){
         console.log("here")
         bossSpeed = -bossSpeed;
-        speed = bossSpeed; 
+        speed = bossSpeed;
         bossStop = false;
     }
 }
