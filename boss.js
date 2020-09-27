@@ -18,6 +18,7 @@ var player;
 var hp = 3;
 var cursors;
 var keyZ;
+var boss; 
 
 function takeDmg(player){
     hp -= 1;
@@ -44,9 +45,11 @@ class Leek extends Phaser.Scene {
         platforms.create(500, 800, "platform").setOrigin(0, 0).refreshBody();
 
         // create the boss object
-        var boss = this.physics.add.sprite(Phaser.Math.Between(500, 800), 0, 'boss');
-        boss.setBounce(0.4);
-        boss.setCollideWorldBounds(true);
+        // var boss = this.physics.add.sprite(Phaser.Math.Between(500, 800), 0, 'boss');
+        // boss.setBounce(0.4);
+        // boss.setCollideWorldBounds(true);
+        boss = this.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
+        bossSpeed = Phaser.Math.GetSpeed(600, 6); 
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'pork');
@@ -88,8 +91,15 @@ class Leek extends Phaser.Scene {
         this.physics.add.collider(boss, platforms);
 
         this.physics.add.overlap(player, boss, takeDmg, null, this);
+
+        // clearInterval(timeInter) when the boss dies <---- !!!
+        
+        // this.physics.moveTo(boss, 500, 0, 150);
+        // boss.setVelocityX(10);
+        // var timeInter = setInterval(this.bossMovement.bind(null, boss, bossSpeed), 5000);
+
     }
-    update(){
+    update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
         if (cursors.space.isDown && cursors.left.isDown){
@@ -125,21 +135,36 @@ class Leek extends Phaser.Scene {
         if (keyZ.isDown){
             console.log("z");
         }
-        setInterval(this.bossMovement.bind(null, this.boss), 1000);
-    }
-    bossMovement(boss){
-        // move in range (500, 800)
-        if(boss.x > 650){
-            while(boss.x > 500){
-                boss.setVelocityX(-50);
-            }
-            boss.setVelocityX(0);
-        }else{
-            while(boss.x < 800){
-                boss.setVelocityX(50);
-            }
-            boss.setVelocityX(0);
+
+        boss.x += bossSpeed * delta; 
+        if(boss.x >= 800){
+            // setInterval(this.dummy, 5000); 
+            bossSpeed = -bossSpeed; 
         }
+        if(boss.x <= 500){
+            // setInterval(this.dummy, 5000); 
+            bossSpeed = -bossSpeed; 
+        }
+    }
+    // bossMovement(boss, bossSpeed){
+    //     // move in range (500, 800)
+    //     console.log("here")
+    //     let x = boss.x;
+    //     if(x > 650){
+    //         console.log("1")
+    //         while(boss.x < 800){
+    //             console.log("2")
+    //             boss.x += bossSpeed;
+    //         }
+    //     }else{
+    //         console.log("3")
+    //         while(boss.x > 500){
+    //             boss.x -= bossSpeed;
+    //         }
+    //     }
+    // }
+    dummy(){
+        console.log("Waiting"); 
     }
 }
 
