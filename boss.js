@@ -12,31 +12,35 @@
 // 3. ingredients move in a small range (x=10 - x=50)
 // 4. increasing the scores
 // 5. collide with boss/ingredients -> lose 1 heart
-// 6. use weapon to attack the boss 
+// 6. use weapon to attack the boss
 
 var player;
-var hp = 3;
 var cursors;
 var keyZ;
 var boss;
-var hearts; 
+var hearts;
 var endText;
 var bossText;
 var playerCollider;
 var bossCollider;
-var bullets; 
-var bossHP = 50;
-var facing_left = false; //True if Left
+var bullets;
+var timedEvent;
+var vulTimer;
+var invul = false;
+var facing_left = false;
+var can_shoot = true;
 
-function takeDmg(player){
-    hp = hp == 0 ? 0 : hp - 1;
-    console.log("ouch");
-    var heart = hearts.getChildren(); 
-    hearts.killAndHide(heart[hp]); 
-    heart[hp].body.enable = false;
-}
 
+//MODIFIABLE VARIABLES
+var hp = 3;
 var bossSpeed = 50;
+var bossHP = 50;
+var invulDuration = 3000;
+var gunSpeed = 1000;
+var gunVelocity = 400;
+var horizontalSpeed = 160;
+var verticalJump = 300;
+
 
 class Leek extends Phaser.Scene {
     preload(){
@@ -70,28 +74,30 @@ class Leek extends Phaser.Scene {
         // boss.setBounce(0.4);
         // boss.setCollideWorldBounds(true);
         boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
-        bossSpeed = Phaser.Math.GetSpeed(600, 6); 
+        bossSpeed = Phaser.Math.GetSpeed(600, 6);
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'pork');
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
+        player.body.width = 60;
+        player.body.offset.x = 20;
 
         // weapons
         // this.add.weapon(10, 'rice');
         bullets = this.physics.add.group({
             allowGravity: false
-        }); 
+        });
 
-        // lives for player 
+        // lives for player
         hearts = this.physics.add.staticGroup({
             key: 'heart',
-            frameQuantity: 3,
+            frameQuantity: hp,
             immovable: true,
             setXY: {x: 50, y: 50, stepX: 50}
         });
 
-        // animations 
+        // animations
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('pork', { start: 0, end: 5 }),
@@ -112,12 +118,12 @@ class Leek extends Phaser.Scene {
         this.anims.create({
             key: 'gun_right',
             frames: this.anims.generateFrameNumbers('pork', { start: 13, end: 14 }),
-            frameRate: 7
+            frameRate: 10
         });
         this.anims.create({
             key: 'gun_left',
             frames: this.anims.generateFrameNumbers('pork', { start: 15, end: 16 }),
-            frameRate: 7
+            frameRate: 10
         });
         this.anims.create({
             key: 'idle_left',
@@ -127,82 +133,79 @@ class Leek extends Phaser.Scene {
         this.anims.create({
             key: 'idle_right',
             frames: [ { key: 'pork', frame: 13 } ],
-            frameRate: 10               
+            frameRate: 10
         });
 
         // make player collide with platforms
+        player.anims.play('idle_right');
         playerCollider = this.physics.add.collider(player, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
         this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
 
-        this.physics.add.overlap(player, boss, takeDmg, null, this);
+        this.physics.add.overlap(player, boss, this.takeDmg, null, this);
 
         bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
 
         // clearInterval(timeInter) when the boss dies <---- !!!
-        
+
         // this.physics.moveTo(boss, 500, 0, 150);
         // boss.setVelocityX(10);
         // var timeInter = setInterval(this.bossMovement.bind(null, boss, bossSpeed), 5000);
 
     }
     update(time, delta){
-        player.body.width = 60;
-        player.body.offset.x = 20;
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
-        boss.x += bossSpeed * delta; 
+        boss.x += bossSpeed * delta;
         if(boss.x >= 800){
-            // setInterval(this.dummy, 5000); 
-            bossSpeed = bossSpeed < 0 ? bossSpeed : -bossSpeed; 
+            // setInterval(this.dummy, 5000);
+            bossSpeed = bossSpeed < 0 ? bossSpeed : -bossSpeed;
         }
         if(boss.x <= 500){
-            // setInterval(this.dummy, 5000); 
-            bossSpeed = bossSpeed > 0 ? bossSpeed : -bossSpeed; 
+            // setInterval(this.dummy, 5000);
+            bossSpeed = bossSpeed > 0 ? bossSpeed : -bossSpeed;
         }
-        if (cursors.space.isDown && facing_left == true){
-            player.anims.play('gun_left', true);
+        if (cursors.space.isDown && can_shoot == true){
+            can_shoot = false;
+            if(facing_left == true){
+              var b = bullets.create(player.x-20, player.y+5, 'rice');
+              player.anims.play('gun_left', true);
+              b.setVelocityX(-1*gunVelocity);
+            }
+            else{
+              var b = bullets.create(player.x+20, player.y+5, 'rice');
+              player.anims.play('gun_right', true);
+              b.setVelocityX(gunVelocity);
+            }
             if(player.body.onFloor()){
               player.setVelocityX(0);
             }
-            var b = bullets.create(player.x, player.y, 'rice');
-            b.setVelocityX(-150);
-        }else if (cursors.space.isDown){
-            player.anims.play('gun_right', true);
-            if(player.body.onFloor()){
-              player.setVelocityX(0);
-            }
-            var b = bullets.create(player.x, player.y, 'rice');
-            b.setVelocityX(150);
+            timedEvent = this.time.delayedCall(gunSpeed, this.set_shoot, [], this);
         }else if (cursors.left.isDown){
-            player.setVelocityX(-160);
+            player.setVelocityX(-1*horizontalSpeed);
             player.anims.play('left', true);
             facing_left = true;
-        }
-        else if (cursors.left.isDown){
-            player.setVelocityX(-160);
-            player.anims.play('left', true);
-
         }else if (cursors.right.isDown){
-            player.setVelocityX(160);
+            player.setVelocityX(horizontalSpeed);
             player.anims.play('right', true);
             facing_left = false;
         }else{
             player.setVelocityX(0);
-            //player.anims.play('turn');
-            if(facing_left == true){
-              player.anims.play('idle_left', true);
-            }
-            else{
-              player.anims.play('idle_right', true);
+            if(player.anims.getCurrentKey() === 'left' || player.anims.getCurrentKey() === 'right'){
+              if(facing_left == true){
+                player.anims.play('idle_left');
+              }
+              else{
+                player.anims.play('idle_right');
+              }
             }
         }
         if (cursors.up.isDown && player.body.onFloor()){
-            player.setVelocityY(-300);
+            player.setVelocityY(-1*verticalJump);
         }
-        if (keyZ.isDown){
+        /*if (keyZ.isDown){
             console.log("z");
-        }
+        }*/
         if(hp == 0){
             player.anims.play('turn');
             this.physics.world.removeCollider(playerCollider);
@@ -235,12 +238,32 @@ class Leek extends Phaser.Scene {
     //     }
     // }
     dummy(){
-        console.log("Waiting"); 
+        console.log("Waiting");
     }
     bossHurt(boss, bullet){
         bullet.disableBody(true, true);
-        bossHP = bossHP == 0 ? 0 : bossHP - 1; 
+        bossHP = bossHP == 0 ? 0 : bossHP - 1;
         bossText.setText('Boss HP: ' + bossHP);
+    }
+    set_shoot(){
+      can_shoot = true;
+    }
+    takeDmg(player){
+        if(invul == false)
+        {
+          player.setTint(0xB5F2F2);
+          invul = true;
+          vulTimer = this.time.addEvent({ delay: invulDuration, callback: this.blinking, callbackScope: this});
+          hp = hp == 0 ? 0 : hp - 1;
+          var heart = hearts.getChildren();
+          hearts.killAndHide(heart[hp]);
+          heart[hp].body.enable = false;
+        }
+    }
+
+    blinking(){
+      player.clearTint();
+      invul = false;
     }
 }
 
@@ -253,7 +276,7 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: { y: 500 },
-              debug: true
+              debug: false
           }
       },
     scene: [Leek]
