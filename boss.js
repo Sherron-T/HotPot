@@ -26,6 +26,7 @@ var playerCollider;
 var bossCollider;
 var bullets; 
 var bossHP = 50;
+var facing_left = false; //True if Left
 
 function takeDmg(player){
     hp = hp == 0 ? 0 : hp - 1;
@@ -111,12 +112,22 @@ class Leek extends Phaser.Scene {
         this.anims.create({
             key: 'gun_right',
             frames: this.anims.generateFrameNumbers('pork', { start: 13, end: 14 }),
-            frameRate: 10
+            frameRate: frameRate: 7
         });
         this.anims.create({
             key: 'gun_left',
             frames: this.anims.generateFrameNumbers('pork', { start: 15, end: 16 }),
+            frameRate: 7
+        });
+        this.anims.create({
+            key: 'idle_left',
+            frames: [ { key: 'pork', frame: 15 } ],
             frameRate: 10
+        });
+        this.anims.create({
+            key: 'idle_right',
+            frames: [ { key: 'pork', frame: 13 } ],
+            frameRate: 10               
         });
 
         // make player collide with platforms
@@ -136,9 +147,11 @@ class Leek extends Phaser.Scene {
 
     }
     update(time, delta){
+        player.body.width = 60;
+        player.body.offset.x = 20;
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
-        if (cursors.space.isDown && cursors.left.isDown){
+        if (cursors.space.isDown && facing_left == true){
             player.anims.play('gun_left', true);
             if(player.body.onFloor()){
               player.setVelocityX(0);
@@ -155,7 +168,7 @@ class Leek extends Phaser.Scene {
         }else if (cursors.left.isDown){
             player.setVelocityX(-160);
             player.anims.play('left', true);
-
+            facing_left = true;
         }
         else if (cursors.left.isDown){
             player.setVelocityX(-160);
@@ -164,10 +177,16 @@ class Leek extends Phaser.Scene {
         }else if (cursors.right.isDown){
             player.setVelocityX(160);
             player.anims.play('right', true);
-
+            facing_left = true;
         }else{
             player.setVelocityX(0);
-            player.anims.play('turn');
+            //player.anims.play('turn');
+            if(facing_left == true){
+              player.anims.play('idle_left', true);
+            }
+            else{
+              player.anims.play('idle_right', true);
+            }
         }
         if (cursors.up.isDown && player.body.onFloor()){
             player.setVelocityY(-300);
@@ -235,7 +254,7 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: { y: 500 },
-              debug: false
+              debug: true
           }
       },
     scene: [Leek]
