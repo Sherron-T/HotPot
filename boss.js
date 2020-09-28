@@ -29,7 +29,7 @@ var vulTimer;
 var invul = false;
 var facing_left = false;
 var can_shoot = true;
-var playerBoosOverlap;
+var playerBossOverlap;
 var playerNukesOverlap;
 var bossStop = false;
 var speed;
@@ -57,8 +57,10 @@ class Leek extends Phaser.Scene {
         this.load.image('boss', 'assets/leek.png');
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
+        
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
+
         this.load.image('heart', 'assets/heart.png')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('rice2', 'assets/rice2.png')
@@ -171,7 +173,7 @@ class Leek extends Phaser.Scene {
         bossCollider = this.physics.add.collider(boss, platforms);
         this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
 
-        playerBoosOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
         bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
@@ -274,7 +276,7 @@ class Leek extends Phaser.Scene {
         }
         if(bossHP == 0){
             this.physics.world.removeCollider(bossCollider);
-            this.physics.world.removeCollider(playerBoosOverlap);
+            this.physics.world.removeCollider(playerBossOverlap);
             this.physics.world.removeCollider(playerNukesOverlap);
             boss.setCollideWorldBounds(false);
             endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
