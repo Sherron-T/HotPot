@@ -45,11 +45,13 @@ var gunVelocity = 400;
 // boss variables
 var bossHP = 50;
 var bossStopDuration = 800;
+var bossLeftBound = 100;
+var bossRightBound = 1000;
 
 
 class CommonScene extends Phaser.Scene{
     preload(){
-        // common for all levels 
+        // common for all levels
         this.load.image('platform', 'assets/ground2.png');
         this.load.image('background', 'assets/bg.png');
         this.load.image('heart', 'assets/heart.png')
@@ -61,10 +63,10 @@ class CommonScene extends Phaser.Scene{
         this.load.image('rice2', 'assets/rice2.png')
     }
     create(){
-        // common background 
+        // common background
         this.add.image(0, 0, 'background').setOrigin(0, 0);
 
-        // music settings 
+        // music settings
         var music = this.sound.add('boss_music',{
             loop: true,
             delay: 0,
@@ -72,7 +74,7 @@ class CommonScene extends Phaser.Scene{
           });
         music.play();
         gun_sound = this.sound.add('gun_sound');
-        
+
         // variable for all platforms 100x1000
         var platforms = this.physics.add.staticGroup();
 
@@ -151,7 +153,136 @@ class CommonScene extends Phaser.Scene{
             repeat: -1
         });
     }
-
+    update(time, delta){
+        cursors = this.input.keyboard.createCursorKeys();
+        keyZ = this.input.keyboard.addKey("z");
+        boss.x += speed * delta;
+        if(boss.x >= bossRightBound && !bossStop){
+            // setInterval(this.dummy, 5000);
+            //console.log("large")
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+        if(boss.x <= bossLeftBound && !bossStop){
+            // setInterval(this.dummy, 5000);
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+        if(bossHP > 0 && bossHP < 30 && bossSpecial == true){
+          bossSpecial = false;
+          var i;
+          var leek_nuke = nukes.create(player.x, Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
+          for (i = 0; i < 3; i++) {
+            var leek_nuke = nukes.create(player.x + Math.floor(Math.random() * (300 - -300) + -300), Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
+          }
+          this.time.addEvent({ delay: 2000, callback: this.enableSpecial, callbackScope: this});
+        }
+        if (cursors.space.isDown && can_shoot == true){
+            can_shoot = false;
+            gun_sound.play();
+            if(facing_left == true){
+              var b = bullets.create(player.x-20, player.y+5, 'rice2');
+              if(cursors.left.isDown){
+                player.anims.play('gun_move_left', true);
+              }
+              else{
+                player.anims.play('gun_left');
+              }
+              b.setVelocityX(-1*gunVelocity);
+            }
+            else{
+              var b = bullets.create(player.x+20, player.y+5, 'rice2');
+              if(cursors.right.isDown){
+                player.anims.play('gun_move_right', true);
+              }
+              else{
+                player.anims.play('gun_right');
+              }
+              b.setVelocityX(gunVelocity);
+            }
+            if(player.body.onFloor()){
+              player.setVelocityX(0);
+            }
+            timedEvent = this.time.delayedCall(gunSpeed, this.set_shoot, [], this);
+        }else if (cursors.left.isDown){
+            player.setVelocityX(-1*horizontalSpeed);
+            if(cursors.space.isDown == false){
+              player.anims.play('left', true);
+            }
+            facing_left = true;
+        }else if (cursors.right.isDown){
+            player.setVelocityX(horizontalSpeed);
+            if(cursors.space.isDown == false){
+              player.anims.play('right', true);
+            }
+            facing_left = false;
+        }else{
+            player.setVelocityX(0);
+            if(player.anims.getCurrentKey() === 'left' || player.anims.getCurrentKey() === 'right'){
+              if(facing_left == true){
+                player.anims.play('idle_left');
+              }
+              else{
+                player.anims.play('idle_right');
+              }
+            }
+        }
+        if (cursors.up.isDown && player.body.onFloor()){
+            player.setVelocityY(-1*verticalJump);
+        }
+        /*if (keyZ.isDown){
+            console.log("z");
+        }*/
+        if(hp == 0){
+            player.anims.play('turn');
+            this.physics.world.removeCollider(playerCollider);
+            player.setCollideWorldBounds(false);
+            endText = this.add.text(600, 500, "YOU LOST", { fontSize: '60px', fill: '#E00404' });
+            return;
+        }
+        if(bossHP == 0){
+            this.physics.world.removeCollider(bossCollider);
+            this.physics.world.removeCollider(playerBossOverlap);
+            this.physics.world.removeCollider(playerNukesOverlap);
+            boss.setCollideWorldBounds(false);
+            endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
+            return;
+        }
+    }
+    bossHurt(boss, bullet){
+        bullet.disableBody(true, true);
+        bossHP = bossHP == 0 ? 0 : bossHP - 1;
+        bossText.setText('Boss HP: ' + bossHP);
+    }
+    set_shoot(){
+        can_shoot = true;
+    }
+    takeDmg(player){
+        if(invul == false)
+        {
+          player.setTint(0xB5F2F2);
+          invul = true;
+          vulTimer = this.time.addEvent({ delay: invulDuration, callback: this.blinking, callbackScope: this});
+          hp = hp == 0 ? 0 : hp - 1;
+          var heart = hearts.getChildren();
+          hearts.killAndHide(heart[hp]);
+          heart[hp].body.enable = false;
+        }
+    }
+    blinking(){
+        player.clearTint();
+        invul = false;
+    }
+    enableSpecial(){
+        bossSpecial = true;
+    }
+    moveStop(){
+        bossSpeed = -bossSpeed;
+        speed = bossSpeed;
+        bossStop = false;
+    }
 }
 
 class Level1 extends CommonScene{
@@ -159,17 +290,17 @@ class Level1 extends CommonScene{
         super.preload();
         this.load.image('boss', 'assets/leek.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
-        // we can initiate the variables for the specific boss info here 
-        // based on the level design 
-        hp = 3; 
+        // we can initiate the variables for the specific boss info here
+        // based on the level design
+        hp = 3;
     }
     create(){
         super.create();
-        // level specified platforms 
+        // level specified platforms
         platforms.create(997, 800, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
-        
-        // player - objects interaction logics 
+
+        // player - objects interaction logics
         player.anims.play('idle_right');
         playerCollider = this.physics.add.collider(player, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
