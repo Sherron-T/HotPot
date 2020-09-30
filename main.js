@@ -1,3 +1,5 @@
+//
+var platforms;
 
 // player variables
 var player;
@@ -52,8 +54,6 @@ var bossRightBound = 1000;
 class CommonScene extends Phaser.Scene{
     preload(){
         // common for all levels
-        this.load.image('platform', 'assets/ground2.png');
-        this.load.image('background', 'assets/bg.png');
         this.load.image('heart', 'assets/heart.png')
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
@@ -63,24 +63,11 @@ class CommonScene extends Phaser.Scene{
         this.load.image('rice2', 'assets/rice2.png')
     }
     create(){
-        // common background
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
-
         // music settings
-        var music = this.sound.add('boss_music',{
-            loop: true,
-            delay: 0,
-            volume: 0.2
-          });
-        music.play();
         gun_sound = this.sound.add('gun_sound');
 
-        // variable for all platforms 100x1000
-        var platforms = this.physics.add.staticGroup();
-
-        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
-        bossSpeed = Phaser.Math.GetSpeed(600, 3);
-        speed = bossSpeed;
+        // variable for all platforms
+        platforms = this.physics.add.staticGroup();
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'pork');
@@ -290,15 +277,41 @@ class Level1 extends CommonScene{
         super.preload();
         this.load.image('boss', 'assets/leek.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
+
+        // load bg and platform
+        this.load.image('background', 'assets/bg.png');
+        this.load.image('platform', 'assets/ground.png');
+        this.load.image('big_platform', 'assets/ground2.png');
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 3;
     }
     create(){
         super.create();
-        // level specified platforms
-        platforms.create(997, 800, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
+
+        // background
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+
+        // make platforms
+
+
+        // boss platform
+        platforms.create(997, 800, "big_platform").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 500, "big_platform").setOrigin(0, 0).refreshBody();
+
+        // make entities
+        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0, 1);
+        bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        speed = bossSpeed;
+
+        // music
+        var music = this.sound.add('boss_music',{
+            loop: true,
+            delay: 0,
+            volume: 0.2
+          });
+        music.play();
+
 
         // player - objects interaction logics
         player.anims.play('idle_right');
@@ -315,8 +328,104 @@ class Level1 extends CommonScene{
 
 class Level2 extends CommonScene{
     preload(){
-        super.preload();
-        this.load.image('boss', 'assets/tofu.png');
-        this.load.image('tofu_nuke', 'assets/tofu_bullet.png')
+        // super.preload();
+        
+        this.load.image('boss', 'assets/fork.png');
+        this.load.image('leek_nuke', 'assets/leek_bullet.png')
+
+        // load bg and platform
+        this.load.image('background', 'assets/bg.png');
+        this.load.image('platform', 'assets/ground.png');
+        this.load.image('big_platform', 'assets/ground2.png');
+
+        // we can initiate the variables for the specific boss info here
+        // based on the level design
+        hp = 3;
+    }
+    create(){
+        super.create();
+
+        // background
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+
+        // level specified platforms
+        platforms.create(0, 0, "platform").setOrigin(0, 0).refreshBody();
+
+        // boss fight
+        platforms.create(997, 450, "big_platform").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 450, "big_platform").setOrigin(0, 0).refreshBody();
+
+        // player - objects interaction logics
+        player.anims.play('idle_right');
+        playerCollider = this.physics.add.collider(player, platforms);
+        bossCollider = this.physics.add.collider(boss, platforms);
+        this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
+
+        playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
+
+        bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
     }
 }
+
+
+class MainMenu extends Phaser.Scene {
+    preload(){
+        this.load.image('background', 'assets/bg.png');
+    }
+    create(){
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        const clickButton1 = this.add.text(250, 100, 'Start the Level1!',
+            {fontSize: '50px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked1());
+        const clickButton2 = this.add.text(250, 300, 'Start the Level2!',
+            {fontSize: '50px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked2());
+    }
+    onClicked1(){
+        this.scene.add('Level1', Level1, true);
+        this.scene.start('Level1');
+    }
+    onClicked2(){
+        this.scene.add('Level2', Level2, true);
+        this.scene.start('Level2');
+    }
+}
+
+var config = {
+    type: Phaser.AUTO,
+    width: 900,
+    height: 600,
+    backgroundColor: "#5D0505",
+    physics: {
+          default: 'arcade',
+          arcade: {
+              gravity: { y: 500 },
+              debug: false
+          }
+      },
+    scene: [MainMenu]
+  };
+
+
+var game = new Phaser.Game(config);
+
+// var config = {
+//     type: Phaser.AUTO,
+//     width: 900,
+//     height: 600,
+//     backgroundColor: "#5D0505",
+//     physics: {
+//           default: 'arcade',
+//           arcade: {
+//               gravity: { y: 500 },
+//               debug: false
+//           }
+//       },
+//     scene: [Level2]
+//   };
+
+
+// var game = new Phaser.Game(config);
