@@ -58,10 +58,15 @@ class Leek extends Phaser.Scene {
         this.load.image('boss', 'assets/leek.png');
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
-
+        
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
+<<<<<<< HEAD
         this.load.image('heart', 'assets/heart-fixed.png')
+=======
+
+        this.load.image('heart', 'assets/heart.png')
+>>>>>>> d51646c3d1148b905259e5c30712085e9f37f6b4
         this.load.image('rice', 'assets/rice.png')
         this.load.image('rice2', 'assets/rice2.png')
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
