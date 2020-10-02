@@ -70,11 +70,12 @@ class CommonScene extends Phaser.Scene{
         platforms = this.physics.add.staticGroup();
 
         // create main char
-        player = this.physics.add.sprite(0, 0, 'pork');
+        player = this.physics.add.sprite(50, 50, 'pork');
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
         player.body.width = 60;
         player.body.offset.x = 20;
+        console.log("player loaded")
 
         // weapons
         bullets = this.physics.add.group({
@@ -275,9 +276,9 @@ class CommonScene extends Phaser.Scene{
 class Level1 extends CommonScene{
     preload(){
         super.preload();
+
         this.load.image('boss', 'assets/leek.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
-
         // load bg and platform
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
@@ -287,17 +288,19 @@ class Level1 extends CommonScene{
         hp = 3;
     }
     create(){
-        super.create();
+        // super.create();
 
         // background
         this.add.image(0, 0, 'background').setOrigin(0, 0);
+
+        super.create();
 
         // make platforms
 
 
         // boss platform
-        platforms.create(997, 800, "big_platform").setOrigin(0, 0).refreshBody();
-        platforms.create(0, 500, "big_platform").setOrigin(0, 0).refreshBody();
+        platforms.create(997, 800, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
 
         // make entities
         boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0, 1);
@@ -323,16 +326,16 @@ class Level1 extends CommonScene{
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
         bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
+        console.log("everything is created")
     }
 }
 
 class Level2 extends CommonScene{
     preload(){
-        // super.preload();
+        super.preload();
         
         this.load.image('boss', 'assets/fork.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
-
         // load bg and platform
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
@@ -343,17 +346,30 @@ class Level2 extends CommonScene{
         hp = 3;
     }
     create(){
-        super.create();
-
         // background
         this.add.image(0, 0, 'background').setOrigin(0, 0);
+        
+        super.create();
 
         // level specified platforms
-        platforms.create(0, 0, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 100, "platform").setOrigin(0, 0).refreshBody();
 
-        // boss fight
+        // boss platform
         platforms.create(997, 450, "big_platform").setOrigin(0, 0).refreshBody();
         platforms.create(0, 450, "big_platform").setOrigin(0, 0).refreshBody();
+
+        // make entities
+        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0, 1);
+        bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        speed = bossSpeed;
+
+        // music
+        var music = this.sound.add('boss_music',{
+            loop: true,
+            delay: 0,
+            volume: 0.2
+          });
+        music.play();
 
         // player - objects interaction logics
         player.anims.play('idle_right');
@@ -386,24 +402,24 @@ class MainMenu extends Phaser.Scene {
     }
     onClicked1(){
         this.scene.add('Level1', Level1, true);
-        this.scene.start('Level1');
+        //this.scene.start('Level1');
     }
     onClicked2(){
         this.scene.add('Level2', Level2, true);
-        this.scene.start('Level2');
+        //this.scene.start('Level2');
     }
 }
 
 var config = {
     type: Phaser.AUTO,
-    width: 900,
-    height: 600,
+    width: 1500,
+    height: 1000,
     backgroundColor: "#5D0505",
     physics: {
           default: 'arcade',
           arcade: {
               gravity: { y: 500 },
-              debug: false
+              debug: true
           }
       },
     scene: [MainMenu]
