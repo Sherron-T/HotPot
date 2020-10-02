@@ -1,98 +1,73 @@
-// Boss combat
-// boss: leek
-// player: warrior
-// ingredients: meatball, meatball2, ....
-// monsters: fork, fork2, ...
-// lives: heart
-// weapon: pork chop
+//
+var platforms;
 
-// 1. player l r u , space -> attack (phaser tutorial)
-// 2. boss randomly generated at the right part of the scene (phaser tutorial)
-//  2.1 move randomly left right left
-// 3. ingredients move in a small range (x=10 - x=50)
-// 4. increasing the scores
-// 5. collide with boss/ingredients -> lose 1 heart
-// 6. use weapon to attack the boss
-
+// player variables
 var player;
 var cursors;
 var keyZ;
-var boss;
 var hearts;
-var endText;
-var bossText;
-var playerCollider;
-var bossCollider;
-var bullets;
-var timedEvent;
-var vulTimer;
-var invul = false;
 var facing_left = false;
 var can_shoot = true;
-var playerBossOverlap;
-var playerNukesOverlap;
-var bossStop = false;
 var speed;
+var vulTimer;
+var invul = false;
+
+// gun variables
+var bullets;
+var gun_sound;
+
+// boss variables
+var boss;
+var endText;
+var bossText;
+var bossStop = false;
 var bossSpeed;
 var bossSpecial = true;
 var nukes;
-var gun_sound;
-var bg;
+
+// condition variables
+var playerCollider;
+var bossCollider;
+var timedEvent;
+var playerBossOverlap;
+var playerNukesOverlap;
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
+// player variables
 var hp = 3;
-var bossHP = 50;
 var invulDuration = 3000;
-var gunSpeed = 300;
-var gunVelocity = 400;
 var horizontalSpeed = 160;
 var verticalJump = 300;
+
+// gun variables
+var gunSpeed = 300;
+var gunVelocity = 400;
+
+// boss variables
+var bossHP = 50;
 var bossStopDuration = 800;
+var bossLeftBound = 100;
+var bossRightBound = 1000;
 
 
-class Leek extends Phaser.Scene {
+class CommonScene extends Phaser.Scene{
     preload(){
-        this.load.image('platform', 'assets/ground2.png');
-        this.load.image('background', 'assets/bg-fixed.png');
-        this.load.image('boss', 'assets/leek.png');
+        // common for all levels
+        this.load.image('heart', 'assets/heart.png')
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
-
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
-        this.load.image('heart', 'assets/heart-fixed.png')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('rice2', 'assets/rice2.png')
-        this.load.image('leek_nuke', 'assets/leek_bullet.png')
-        // this.load.script('WeaponPlugin', 'node_modules/phaser3-weapon-plugin/out/WeaponPlugin.js', 'weaponPlugin', 'weapons');
     }
     create(){
-        // this.plugins.install('WeaponPlugin', WeaponPlugin.WeaponPlugin, 'weapons', this);
-        // add background image 1000x5000
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
-        //bg.setScale(4);
-        var music = this.sound.add('boss_music',{
-            loop: true,
-            delay: 0,
-            volume: 0.2
-          });
-        music.play();
+        // music settings
         gun_sound = this.sound.add('gun_sound');
-        // variable for all platforms 100x1000
-        var platforms = this.physics.add.staticGroup();
 
-        platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
-
-        // create the boss object
-        // var boss = this.physics.add.sprite(Phaser.Math.Between(500, 800), 0, 'boss');
-        // boss.setBounce(0.4);
-        // boss.setCollideWorldBounds(true);
-        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
-        boss.body.width = 115;
-        boss.body.offset.x = 30;
-        bossSpeed = Phaser.Math.GetSpeed(600, 3);
-        speed = bossSpeed;
+        // variable for all platforms
+        platforms = this.physics.add.staticGroup();
 
         // create main char
         player = this.physics.add.sprite(0, 0, 'pork');
@@ -102,7 +77,6 @@ class Leek extends Phaser.Scene {
         player.body.offset.x = 20;
 
         // weapons
-        // this.add.weapon(10, 'rice');
         bullets = this.physics.add.group({
             allowGravity: false
         });
@@ -113,8 +87,6 @@ class Leek extends Phaser.Scene {
             frameQuantity: hp,
             immovable: true,
             setXY: {x: 50, y: 50, stepX: 50}
-        });
-        nukes = this.physics.add.group({
         });
 
         // animations
@@ -167,38 +139,19 @@ class Leek extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
-
-
-        // make player collide with platforms
-        player.anims.play('idle_right');
-        playerCollider = this.physics.add.collider(player, platforms);
-        bossCollider = this.physics.add.collider(boss, platforms);
-        this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
-
-        playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
-        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
-
-        bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
-
-        // clearInterval(timeInter) when the boss dies <---- !!!
-
-        // this.physics.moveTo(boss, 500, 0, 150);
-        // boss.setVelocityX(10);
-        // var timeInter = setInterval(this.bossMovement.bind(null, boss, bossSpeed), 5000);
-
     }
     update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
         boss.x += speed * delta;
-        if(boss.x >= 1000 && !bossStop){
+        if(boss.x >= bossRightBound && !bossStop){
             // setInterval(this.dummy, 5000);
             //console.log("large")
             speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
-        if(boss.x <= 100 && !bossStop){
+        if(boss.x <= bossLeftBound && !bossStop){
             // setInterval(this.dummy, 5000);
             speed = 0;
             bossStop = true;
@@ -285,9 +238,6 @@ class Leek extends Phaser.Scene {
             return;
         }
     }
-    dummy(){
-        //console.log("Waiting");
-    }
     bossHurt(boss, bullet){
         bullet.disableBody(true, true);
         bossHP = bossHP == 0 ? 0 : bossHP - 1;
@@ -316,27 +266,166 @@ class Leek extends Phaser.Scene {
         bossSpecial = true;
     }
     moveStop(){
-        //console.log("here")
         bossSpeed = -bossSpeed;
         speed = bossSpeed;
         bossStop = false;
     }
 }
 
+class Level1 extends CommonScene{
+    preload(){
+        super.preload();
+        this.load.image('boss', 'assets/leek.png');
+        this.load.image('leek_nuke', 'assets/leek_bullet.png')
+
+        // load bg and platform
+        this.load.image('background', 'assets/bg.png');
+        this.load.image('platform', 'assets/ground.png');
+        this.load.image('big_platform', 'assets/ground2.png');
+        // we can initiate the variables for the specific boss info here
+        // based on the level design
+        hp = 3;
+    }
+    create(){
+        super.create();
+
+        // background
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+
+        // make platforms
+
+
+        // boss platform
+        platforms.create(997, 800, "big_platform").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 500, "big_platform").setOrigin(0, 0).refreshBody();
+
+        // make entities
+        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0, 1);
+        bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        speed = bossSpeed;
+
+        // music
+        var music = this.sound.add('boss_music',{
+            loop: true,
+            delay: 0,
+            volume: 0.2
+          });
+        music.play();
+
+
+        // player - objects interaction logics
+        player.anims.play('idle_right');
+        playerCollider = this.physics.add.collider(player, platforms);
+        bossCollider = this.physics.add.collider(boss, platforms);
+        this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
+
+        playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
+
+        bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
+    }
+}
+
+class Level2 extends CommonScene{
+    preload(){
+        // super.preload();
+        
+        this.load.image('boss', 'assets/fork.png');
+        this.load.image('leek_nuke', 'assets/leek_bullet.png')
+
+        // load bg and platform
+        this.load.image('background', 'assets/bg.png');
+        this.load.image('platform', 'assets/ground.png');
+        this.load.image('big_platform', 'assets/ground2.png');
+
+        // we can initiate the variables for the specific boss info here
+        // based on the level design
+        hp = 3;
+    }
+    create(){
+        super.create();
+
+        // background
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+
+        // level specified platforms
+        platforms.create(0, 0, "platform").setOrigin(0, 0).refreshBody();
+
+        // boss fight
+        platforms.create(997, 450, "big_platform").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 450, "big_platform").setOrigin(0, 0).refreshBody();
+
+        // player - objects interaction logics
+        player.anims.play('idle_right');
+        playerCollider = this.physics.add.collider(player, platforms);
+        bossCollider = this.physics.add.collider(boss, platforms);
+        this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
+
+        playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
+
+        bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
+    }
+}
+
+
+class MainMenu extends Phaser.Scene {
+    preload(){
+        this.load.image('background', 'assets/bg.png');
+    }
+    create(){
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        const clickButton1 = this.add.text(250, 100, 'Start the Level1!',
+            {fontSize: '50px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked1());
+        const clickButton2 = this.add.text(250, 300, 'Start the Level2!',
+            {fontSize: '50px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked2());
+    }
+    onClicked1(){
+        this.scene.add('Level1', Level1, true);
+        this.scene.start('Level1');
+    }
+    onClicked2(){
+        this.scene.add('Level2', Level2, true);
+        this.scene.start('Level2');
+    }
+}
+
 var config = {
     type: Phaser.AUTO,
-    width: 1500,
-    height: 1000,
+    width: 900,
+    height: 600,
     backgroundColor: "#5D0505",
     physics: {
           default: 'arcade',
           arcade: {
               gravity: { y: 500 },
-              debug: true
+              debug: false
           }
       },
-    scene: [Leek]
+    scene: [MainMenu]
   };
 
 
 var game = new Phaser.Game(config);
+
+// var config = {
+//     type: Phaser.AUTO,
+//     width: 900,
+//     height: 600,
+//     backgroundColor: "#5D0505",
+//     physics: {
+//           default: 'arcade',
+//           arcade: {
+//               gravity: { y: 500 },
+//               debug: false
+//           }
+//       },
+//     scene: [Level2]
+//   };
+
+
+// var game = new Phaser.Game(config);
