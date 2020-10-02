@@ -37,6 +37,7 @@ var bossSpeed;
 var bossSpecial = true;
 var nukes;
 var gun_sound;
+var bg;
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
@@ -53,13 +54,13 @@ var bossStopDuration = 800;
 class Leek extends Phaser.Scene {
     preload(){
         this.load.image('platform', 'assets/ground2.png');
-        this.load.image('background', 'assets/bg.png');
+        this.load.image('background', 'assets/bg-fixed.png');
         this.load.image('boss', 'assets/leek.png');
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
-        this.load.image('heart', 'assets/heart.png')
+        this.load.image('heart', 'assets/heart-fixed.png')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('rice2', 'assets/rice2.png')
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
@@ -69,6 +70,7 @@ class Leek extends Phaser.Scene {
         // this.plugins.install('WeaponPlugin', WeaponPlugin.WeaponPlugin, 'weapons', this);
         // add background image 1000x5000
         this.add.image(0, 0, 'background').setOrigin(0, 0);
+        //bg.setScale(4);
         var music = this.sound.add('boss_music',{
             loop: true,
             delay: 0,
@@ -79,7 +81,6 @@ class Leek extends Phaser.Scene {
         // variable for all platforms 100x1000
         var platforms = this.physics.add.staticGroup();
 
-        platforms.create(997, 800, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
 
         // create the boss object
@@ -87,6 +88,8 @@ class Leek extends Phaser.Scene {
         // boss.setBounce(0.4);
         // boss.setCollideWorldBounds(true);
         boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0);
+        boss.body.width = 115;
+        boss.body.offset.x = 30;
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
 
@@ -328,7 +331,7 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: { y: 500 },
-              debug: false
+              debug: true
           }
       },
     scene: [Leek]
