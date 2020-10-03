@@ -52,6 +52,9 @@ var bossLow = 1;
 var bossStopDuration = 800;
 var bossLeftBound = 100;
 var bossRightBound = 1000;
+var bossScore = 233;
+var bornL = 9500;
+var bornR = 9800;
 
 // level varables 
 var winLevel1 = false;
@@ -247,7 +250,7 @@ class CommonScene extends Phaser.Scene{
             player.anims.play('turn');
             this.physics.world.removeCollider(playerCollider);
             player.setCollideWorldBounds(false);
-            endText = this.add.text(600, 500, "YOU LOST", { fontSize: '60px', fill: '#E00404' });
+            this.summary("LOST", 0);
             return;
         }
         if(bossHP == 0){
@@ -255,7 +258,7 @@ class CommonScene extends Phaser.Scene{
             this.physics.world.removeCollider(playerBossOverlap);
             this.physics.world.removeCollider(playerNukesOverlap);
             boss.setCollideWorldBounds(false);
-            this.winSummary();
+            this.summary("WON", bossScore);
             return;
         }
     }
@@ -291,11 +294,11 @@ class CommonScene extends Phaser.Scene{
         speed = bossSpeed;
         bossStop = false;
     }
-    winSummary(){
+    summary(text, add){
         // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
         this.add.image(500, 40, 'scoreBoard').setOrigin(0, 0);
-        endText = this.add.text(600, 80, "YOU WIN", { fontSize: '60px', fill: '#290048' });
-        summary = this.add.text(610, 400, "Score: "+(score+233), { fontSize: '30px', fill: '#F35D13' });
+        endText = this.add.text(600, 80, "YOU "+text, { fontSize: '60px', fill: '#290048' });
+        summary = this.add.text(610, 400, "Score: "+(score+add), { fontSize: '30px', fill: '#F35D13' });
         mainButton = this.add.text(610, 800, 'Back to Menu',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
@@ -333,10 +336,15 @@ class Level1 extends CommonScene{
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
+
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 3;
         bossHP = boss1HP;
+        bornL = 9500;
+        bornR = 9700;
+        bossLeftBound = bornL - 200;
+        bossRightBound = bornR + 200;
     }
     create(){
         // background
@@ -369,7 +377,7 @@ class Level1 extends CommonScene{
         platforms.create(9000, 900, "platform").setOrigin(0, 0).refreshBody();
 
         // make boss
-        boss = this.physics.add.image(Phaser.Math.Between(9500, 9800), 200, 'boss').setOrigin(0, 1);
+        boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
         // boss music
@@ -442,7 +450,7 @@ class Level2 extends CommonScene{
 
 
         // make entities
-        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0, 1);
+        boss = this.physics.add.image(Phaser.Math.Between(500, 600), 200, 'boss').setOrigin(0, 1);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
 
