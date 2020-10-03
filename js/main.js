@@ -72,7 +72,7 @@ class CommonScene extends Phaser.Scene{
         // create main char
         player = this.physics.add.sprite(50, 50, 'pork');
         player.setBounce(0.2);
-        player.setCollideWorldBounds(true);
+        player.setCollideWorldBounds(false);
         player.body.width = 60;
         player.body.offset.x = 20;
         console.log("player loaded")
@@ -140,6 +140,8 @@ class CommonScene extends Phaser.Scene{
             frameRate: 10,
             repeat: -1
         });
+
+
     }
     update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
@@ -280,6 +282,7 @@ class Level1 extends CommonScene{
         this.load.image('boss', 'assets/leek.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
         // load bg and platform
+        this.load.image('level1bg', 'assets/level1bg.png');
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
@@ -288,33 +291,45 @@ class Level1 extends CommonScene{
         hp = 3;
     }
     create(){
-        // super.create();
-
         // background
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        // need normal bg
+
+        // boss bg
+        this.add.image(0, 0, 'level1bg').setOrigin(0, 0);
+        this.add.image(9000, 0, 'background').setOrigin(0, 0);
 
         super.create();
 
         // make platforms
+        platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(1000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(5000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(6000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(7000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(8000, 900, "platform").setOrigin(0, 0).refreshBody();
 
+        // make small enemies
 
+        // play level music
+
+        // should be conditional for when player approaches boss room
         // boss platform
-        platforms.create(997, 800, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(0, 800, "platform").setOrigin(0, 0).refreshBody();
-
-        // make entities
-        boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0, 1);
+        platforms.create(9997, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(9000, 900, "platform").setOrigin(0, 0).refreshBody();
+        // make boss
+        boss = this.physics.add.image(Phaser.Math.Between(9500, 9800), 200, 'boss').setOrigin(0, 1);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
-
-        // music
+        // boss music
         var music = this.sound.add('boss_music',{
             loop: true,
             delay: 0,
             volume: 0.2
           });
         music.play();
-
 
         // player - objects interaction logics
         player.anims.play('idle_right');
@@ -327,6 +342,9 @@ class Level1 extends CommonScene{
 
         bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
         console.log("everything is created")
+
+        this.cameras.main.setBounds(0, 0, 90000, 1000);
+        this.cameras.main.startFollow(player);
     }
 }
 
