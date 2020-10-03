@@ -482,6 +482,8 @@ class MainMenu extends Phaser.Scene {
          lock2 = this.physics.add.staticImage(420, 425, 'lock');
     }
     update(){
+        // comment out this snippet if you want to visit level2
+        // without completing level1
         if(!winLevel1){
             clickButton2.disableInteractive();
         }else{
