@@ -351,7 +351,7 @@ class Level1 extends CommonScene{
 class Level2 extends CommonScene{
     preload(){
         super.preload();
-        
+
         this.load.image('boss', 'assets/fork.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
         // load bg and platform
@@ -366,7 +366,7 @@ class Level2 extends CommonScene{
     create(){
         // background
         this.add.image(0, 0, 'background').setOrigin(0, 0);
-        
+
         super.create();
 
         // level specified platforms
