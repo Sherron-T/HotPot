@@ -45,6 +45,8 @@ var gunSpeed = 300;
 var gunVelocity = 400;
 
 // boss variables
+const boss1HP = 3;
+const boss2HP = 3;
 var bossHP = 3;
 var bossLow = 1;
 var bossStopDuration = 800;
@@ -75,8 +77,6 @@ class CommonScene extends Phaser.Scene{
         this.load.image('rice', 'assets/rice.png')
         this.load.image('rice2', 'assets/rice2.png')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
-        score = 0;
-        hp = 3;
         this.restart();
     }
     create(){
@@ -306,8 +306,16 @@ class CommonScene extends Phaser.Scene{
         mainButton.disableInteractive();
         clickButton1.setInteractive();
         clickButton2.setInteractive();
+        this.registry.destroy();
+        this.events.off();
+        console.log("back")
     }
     restart(){
+        score = 0;
+        hp = 3;
+        if(boss) boss.destroy();
+        if(platforms) platforms.destroy();
+        if(player) player.destroy();
         if(endText) endText.setVisible(false);
         if(summary) summary.setVisible(false); 
         console.log("restart");
@@ -328,6 +336,7 @@ class Level1 extends CommonScene{
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 3;
+        bossHP = boss1HP;
     }
     create(){
         // background
@@ -408,6 +417,7 @@ class Level2 extends CommonScene{
         // we can initiate the variables for the specific boss info here
         // based on the level design
         // hp = 3;
+        bossHP = boss2HP;
     }
     create(){
         // background
@@ -484,6 +494,7 @@ class MainMenu extends Phaser.Scene {
     update(){
         // comment out this snippet if you want to visit level2
         // without completing level1
+
         if(!winLevel1){
             clickButton2.disableInteractive();
         }else{
@@ -492,7 +503,6 @@ class MainMenu extends Phaser.Scene {
         }
     }
     onClicked1(){
-        if(scene1) scene1.restart();
         scene1 = this.scene.add('Level1', Level1, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
@@ -500,12 +510,8 @@ class MainMenu extends Phaser.Scene {
         //this.scene.start('Level1');
     }
     onClicked2(){
-        if(scene2){
-            this.scene.stop("Level2");
-            scene2.restart();
-            console.log("hello");
-        }
-        else scene2 = this.scene.add('Level2', Level2, true);
+        this.scene.remove('Level2');
+        scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
         //this.scene.start('Level2');
