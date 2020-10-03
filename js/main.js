@@ -86,8 +86,9 @@ class CommonScene extends Phaser.Scene{
         hearts = this.physics.add.staticGroup({
             key: 'heart',
             frameQuantity: hp,
-            immovable: true,
-            setXY: {x: 50, y: 50, stepX: 50}
+            setXY: {x: 50, y: 50, stepX: 50},
+            scrollFactorX: 0,
+            scrollFactorY: 0
         });
 
         // animations
