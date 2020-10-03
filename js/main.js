@@ -1,4 +1,4 @@
-//
+// scene variables
 var platforms;
 
 // player variables
@@ -11,6 +11,7 @@ var can_shoot = true;
 var speed;
 var vulTimer;
 var invul = false;
+var score = 0; 
 
 // gun variables
 var bullets;
@@ -18,7 +19,6 @@ var gun_sound;
 
 // boss variables
 var boss;
-var endText;
 var bossText;
 var bossStop = false;
 var bossSpeed;
@@ -45,10 +45,23 @@ var gunSpeed = 300;
 var gunVelocity = 400;
 
 // boss variables
-var bossHP = 50;
+var bossHP = 3;
+var bossLow = 1;
 var bossStopDuration = 800;
 var bossLeftBound = 100;
 var bossRightBound = 1000;
+
+// level varables 
+var winLevel1 = false;
+var winLevel2 = false; 
+var scene1;
+var scene2;
+var clickButton1;
+var clickButton2;
+var mainButton;
+var lock2;
+var endText;
+var summary;
 
 
 class CommonScene extends Phaser.Scene{
@@ -61,6 +74,10 @@ class CommonScene extends Phaser.Scene{
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('rice2', 'assets/rice2.png')
+        this.load.image('scoreBoard', 'assets/scoreboard.png')
+        score = 0;
+        hp = 3;
+        this.restart();
     }
     create(){
         // music settings
@@ -161,7 +178,7 @@ class CommonScene extends Phaser.Scene{
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
-        if(bossHP > 0 && bossHP < 30 && bossSpecial == true){
+        if(bossHP > 0 && bossHP < bossLow && bossSpecial == true){
           bossSpecial = false;
           var i;
           var leek_nuke = nukes.create(player.x, Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
@@ -238,7 +255,7 @@ class CommonScene extends Phaser.Scene{
             this.physics.world.removeCollider(playerBossOverlap);
             this.physics.world.removeCollider(playerNukesOverlap);
             boss.setCollideWorldBounds(false);
-            endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
+            this.winSummary();
             return;
         }
     }
@@ -273,6 +290,27 @@ class CommonScene extends Phaser.Scene{
         bossSpeed = -bossSpeed;
         speed = bossSpeed;
         bossStop = false;
+    }
+    winSummary(){
+        // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
+        this.add.image(500, 40, 'scoreBoard').setOrigin(0, 0);
+        endText = this.add.text(600, 80, "YOU WIN", { fontSize: '60px', fill: '#290048' });
+        summary = this.add.text(610, 400, "Score: "+(score+233), { fontSize: '30px', fill: '#F35D13' });
+        mainButton = this.add.text(610, 800, 'Back to Menu',
+            {fontSize: '40px', fill: '#F5ED00'}).
+            setInteractive().on('pointerdown',
+            ()=>this.backToMenu());
+    }
+    backToMenu(){
+        this.scene.start('MainMenu');
+        mainButton.disableInteractive();
+        clickButton1.setInteractive();
+        clickButton2.setInteractive();
+    }
+    restart(){
+        if(endText) endText.setVisible(false);
+        if(summary) summary.setVisible(false); 
+        console.log("restart");
     }
 }
 
@@ -320,6 +358,7 @@ class Level1 extends CommonScene{
         // boss platform
         platforms.create(9997, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(9000, 900, "platform").setOrigin(0, 0).refreshBody();
+
         // make boss
         boss = this.physics.add.image(Phaser.Math.Between(9500, 9800), 200, 'boss').setOrigin(0, 1);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
@@ -331,6 +370,8 @@ class Level1 extends CommonScene{
             volume: 0.2
           });
         music.play();
+        // boss attacks
+        nukes = this.physics.add.group({});
 
         // player - objects interaction logics
         player.anims.play('idle_right');
@@ -347,6 +388,10 @@ class Level1 extends CommonScene{
         this.cameras.main.setBounds(0, 0, 90000, 1000);
         this.cameras.main.startFollow(player);
     }
+    update(time, delta){
+        if(bossHP == 0) winLevel1 = true;
+        super.update(time, delta);
+    }
 }
 
 class Level2 extends CommonScene{
@@ -362,7 +407,7 @@ class Level2 extends CommonScene{
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 3;
+        // hp = 3;
     }
     create(){
         // background
@@ -370,12 +415,21 @@ class Level2 extends CommonScene{
 
         super.create();
 
+        // temp ---> !!!! will be deleted 
+        player = this.physics.add.sprite(800, 50, 'pork');
+        player.setBounce(0.2);
+        player.setCollideWorldBounds(false);
+        player.body.width = 60;
+        player.body.offset.x = 20;
+        console.log("player loaded")
+
         // level specified platforms
         platforms.create(0, 100, "platform").setOrigin(0, 0).refreshBody();
 
         // boss platform
         platforms.create(997, 450, "big_platform").setOrigin(0, 0).refreshBody();
         platforms.create(0, 450, "big_platform").setOrigin(0, 0).refreshBody();
+
 
         // make entities
         boss = this.physics.add.image(Phaser.Math.Between(500, 800), 200, 'boss').setOrigin(0, 1);
@@ -390,6 +444,8 @@ class Level2 extends CommonScene{
           });
         music.play();
 
+        nukes = this.physics.add.group({});
+
         // player - objects interaction logics
         player.anims.play('idle_right');
         playerCollider = this.physics.add.collider(player, platforms);
@@ -401,30 +457,55 @@ class Level2 extends CommonScene{
 
         bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
     }
+    update(time, delta){
+        if(bossHP == 0) winLevel2 = true;
+        super.update(time, delta);
+    }
 }
 
 
 class MainMenu extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/bg.png');
+        this.load.image('lock', 'assets/lock.png');
     }
     create(){
         this.add.image(0, 0, 'background').setOrigin(0, 0);
-        const clickButton1 = this.add.text(250, 100, 'Start the Level1!',
+        clickButton1 = this.add.text(450, 200, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked1());
-        const clickButton2 = this.add.text(250, 300, 'Start the Level2!',
+        clickButton2 = this.add.text(450, 400, 'Start the Level2!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked2());
+         lock2 = this.physics.add.staticImage(420, 425, 'lock');
+    }
+    update(){
+        if(!winLevel1){
+            clickButton2.disableInteractive();
+        }else{
+            clickButton2.setInteractive();
+            lock2.destroy();
+        }
     }
     onClicked1(){
-        this.scene.add('Level1', Level1, true);
+        if(scene1) scene1.restart();
+        scene1 = this.scene.add('Level1', Level1, true);
+        clickButton1.disableInteractive();
+        clickButton2.disableInteractive();
+        // clickButton2.setInteractive();
         //this.scene.start('Level1');
     }
     onClicked2(){
-        this.scene.add('Level2', Level2, true);
+        if(scene2){
+            this.scene.stop("Level2");
+            scene2.restart();
+            console.log("hello");
+        }
+        else scene2 = this.scene.add('Level2', Level2, true);
+        clickButton1.disableInteractive();
+        clickButton2.disableInteractive();
         //this.scene.start('Level2');
     }
 }
@@ -447,20 +528,3 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-// var config = {
-//     type: Phaser.AUTO,
-//     width: 900,
-//     height: 600,
-//     backgroundColor: "#5D0505",
-//     physics: {
-//           default: 'arcade',
-//           arcade: {
-//               gravity: { y: 500 },
-//               debug: false
-//           }
-//       },
-//     scene: [Level2]
-//   };
-
-
-// var game = new Phaser.Game(config);
