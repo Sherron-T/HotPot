@@ -419,12 +419,12 @@ class Level1 extends CommonScene{
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
-        bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
+        bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
         console.log("everything is created")
 
         this.cameras.main.setBounds(0, 0, 90000, 1000);
         this.cameras.main.startFollow(player);
-        bossText.setScrollFactor(0, 0)
+        // bossText.setScrollFactor(0, 0)
     }
     update(time, delta){
         if(bossHP == 0) winLevel1 = true;
@@ -494,10 +494,10 @@ class Level2 extends CommonScene{
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
-        bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
+        bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
         this.cameras.main.setBounds(0, 0, 90000, 1000);
         this.cameras.main.startFollow(player);
-        bossText.setScrollFactor(0, 0);
+        // bossText.setScrollFactor(0, 0);
     }
     update(time, delta){
         if(bossHP == 0) winLevel2 = true;
