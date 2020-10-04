@@ -11,7 +11,7 @@ var can_shoot = true;
 var speed;
 var vulTimer;
 var invul = false;
-var score = 0; 
+var score = 0;
 
 // gun variables
 var bullets;
@@ -41,7 +41,8 @@ var playerNukesOverlap;
 // player variables
 var hp = 3;
 var invulDuration = 3000;
-var horizontalSpeed = 160;
+//var horizontalSpeed = 160; // Real speed
+var horizontalSpeed = 2000; // Test speed
 var verticalJump = 300;
 
 // gun variables
@@ -60,9 +61,9 @@ var bossScore = 233;
 var bornL = 9500;
 var bornR = 9800;
 
-// level varables 
+// level varables
 var winLevel1 = false;
-var winLevel2 = false; 
+var winLevel2 = false;
 var scene1;
 var scene2;
 var clickButton1;
@@ -71,7 +72,7 @@ var mainButton;
 var lock2;
 var endText;
 var summary;
-var lastIndex; 
+var lastIndex;
 
 
 class CommonScene extends Phaser.Scene{
@@ -83,7 +84,6 @@ class CommonScene extends Phaser.Scene{
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
         this.load.image('rice', 'assets/rice.png')
-        this.load.image('rice2', 'assets/rice2.png')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
         this.restart();
     }
@@ -206,7 +206,7 @@ class CommonScene extends Phaser.Scene{
             can_shoot = false;
             gun_sound.play();
             if(facing_left == true){
-              var b = bullets.create(player.x-20, player.y+5, 'rice2');
+              var b = bullets.create(player.x-20, player.y+5, 'rice');
               if(cursors.left.isDown){
                 player.anims.play('gun_move_left', true);
               }
@@ -216,7 +216,7 @@ class CommonScene extends Phaser.Scene{
               b.setVelocityX(-1*gunVelocity);
             }
             else{
-              var b = bullets.create(player.x+20, player.y+5, 'rice2');
+              var b = bullets.create(player.x+20, player.y+5, 'rice');
               if(cursors.right.isDown){
                 player.anims.play('gun_move_right', true);
               }
@@ -332,7 +332,7 @@ class CommonScene extends Phaser.Scene{
         if(platforms) platforms.destroy();
         if(player) player.destroy();
         if(endText) endText.setVisible(false);
-        if(summary) summary.setVisible(false); 
+        if(summary) summary.setVisible(false);
         console.log("restart");
     }
 }
@@ -348,6 +348,7 @@ class Level1 extends CommonScene{
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
+        this.load.image('back', 'assets/back.png');
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -369,7 +370,11 @@ class Level1 extends CommonScene{
 
         super.create();
 
+        //Block back exit
+        platforms.create(-100, 0, "back").setOrigin(0, 0).refreshBody();
+
         // make platforms
+
         platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(1000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -419,6 +424,7 @@ class Level1 extends CommonScene{
 
         this.cameras.main.setBounds(0, 0, 90000, 1000);
         this.cameras.main.startFollow(player);
+        bossText.setScrollFactor(0, 0)
     }
     update(time, delta){
         if(bossHP == 0) winLevel1 = true;
@@ -441,7 +447,7 @@ class Level2 extends CommonScene{
         // based on the level design
         // hp = 3;
         bossHP = boss2HP;
-        lastIndex = 0; // rectify index so it appears in the last scene  
+        lastIndex = 0; // rectify index so it appears in the last scene
         bornL = 500;
         bornR = 600;
         bossLeftBound = bornL - 300;
@@ -454,7 +460,7 @@ class Level2 extends CommonScene{
 
         super.create();
 
-        // temp ---> !!!! will be deleted 
+        // temp ---> !!!! will be deleted
         player = this.physics.add.sprite(800, 50, 'pork');
         player.setBounce(0.2);
         player.setCollideWorldBounds(false);
@@ -476,12 +482,6 @@ class Level2 extends CommonScene{
         speed = bossSpeed;
 
         // music
-        var music = this.sound.add('boss_music',{
-            loop: true,
-            delay: 0,
-            volume: 0.2
-          });
-        music.play();
 
         nukes = this.physics.add.group({});
 
@@ -495,6 +495,9 @@ class Level2 extends CommonScene{
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
         bossText = this.add.text(1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
+        this.cameras.main.setBounds(0, 0, 90000, 1000);
+        this.cameras.main.startFollow(player);
+        bossText.setScrollFactor(0, 0);
     }
     update(time, delta){
         if(bossHP == 0) winLevel2 = true;
@@ -507,18 +510,19 @@ class MainMenu extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/bg.png');
         this.load.image('lock', 'assets/lock.png');
+        this.load.image('title', 'assets/title.png');
     }
     create(){
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
-        clickButton1 = this.add.text(450, 200, 'Start the Level1!',
+        this.add.image(0, 0, 'title').setOrigin(0, 0);
+        clickButton1 = this.add.text(450, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked1());
-        clickButton2 = this.add.text(450, 400, 'Start the Level2!',
+        clickButton2 = this.add.text(450, 750, 'Start the Level2!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked2());
-         lock2 = this.physics.add.staticImage(420, 425, 'lock');
+         lock2 = this.physics.add.staticImage(420, 775, 'lock');
     }
     update(){
         // comment out this snippet if you want to visit level2
@@ -564,4 +568,3 @@ var config = {
 
 
 var game = new Phaser.Game(config);
-
