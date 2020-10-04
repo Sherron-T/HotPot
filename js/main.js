@@ -106,10 +106,14 @@ class CommonScene extends Phaser.Scene{
         hearts = this.physics.add.staticGroup({
             key: 'heart',
             frameQuantity: hp,
-            setXY: {x: 50, y: 50, stepX: 50},
-            scrollFactorX: 0,
-            scrollFactorY: 0
+            setXY: {x: 50, y: 50, stepX: 50}
         });
+        // make heart follow camera
+        var heart = hearts.getChildren();
+        var x;
+        for(x of heart){
+            x.setScrollFactor(0, 0)
+        };
 
         // animations
         this.anims.create({
