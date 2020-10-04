@@ -42,7 +42,7 @@ var playerNukesOverlap;
 var hp = 3;
 var invulDuration = 3000;
 //var horizontalSpeed = 160; // Real speed
-var horizontalSpeed = 2000; // Test speed
+var horizontalSpeed = 3000; // Test speed
 var verticalJump = 300;
 
 // gun variables
@@ -309,9 +309,9 @@ class CommonScene extends Phaser.Scene{
     summary(text, add){
         // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
         this.add.image(lastIndex+500, 40, 'scoreBoard').setOrigin(0, 0);
-        endText = this.add.text(lastIndex+600, 80, "YOU "+text, { fontSize: '60px', fill: '#290048' });
-        summary = this.add.text(lastIndex+610, 400, "Score: "+(score+add), { fontSize: '30px', fill: '#F35D13' });
-        mainButton = this.add.text(lastIndex+610, 800, 'Back to Menu',
+        endText = this.add.text(lastIndex+630, 80, "YOU "+text, { fontSize: '60px', fill: '#290048' });
+        summary = this.add.text(lastIndex+650, 425, "Score: "+(score+add), { fontSize: '50px', fill: '#290048' });
+        mainButton = this.add.text(lastIndex+620, 775, 'Back to Menu',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
             ()=>this.backToMenu());
