@@ -71,6 +71,7 @@ var mainButton;
 var lock2;
 var endText;
 var summary;
+var lastIndex; 
 
 
 class CommonScene extends Phaser.Scene{
@@ -307,10 +308,10 @@ class CommonScene extends Phaser.Scene{
     }
     summary(text, add){
         // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
-        this.add.image(500, 40, 'scoreBoard').setOrigin(0, 0);
-        endText = this.add.text(600, 80, "YOU "+text, { fontSize: '60px', fill: '#290048' });
-        summary = this.add.text(610, 400, "Score: "+(score+add), { fontSize: '30px', fill: '#F35D13' });
-        mainButton = this.add.text(610, 800, 'Back to Menu',
+        this.add.image(lastIndex+500, 40, 'scoreBoard').setOrigin(0, 0);
+        endText = this.add.text(lastIndex+600, 80, "YOU "+text, { fontSize: '60px', fill: '#290048' });
+        summary = this.add.text(lastIndex+610, 400, "Score: "+(score+add), { fontSize: '30px', fill: '#F35D13' });
+        mainButton = this.add.text(lastIndex+610, 800, 'Back to Menu',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
             ()=>this.backToMenu());
@@ -353,9 +354,10 @@ class Level1 extends CommonScene{
         hp = 3;
         bossHP = boss1HP;
         bornL = 9500;
-        bornR = 9700;
+        bornR = 9600;
         bossLeftBound = bornL - 200;
-        bossRightBound = bornR + 200;
+        bossRightBound = bornR + 300;
+        lastIndex = 9000;
     }
     create(){
         // background
@@ -439,6 +441,12 @@ class Level2 extends CommonScene{
         // based on the level design
         // hp = 3;
         bossHP = boss2HP;
+        lastIndex = 0; // rectify index so it appears in the last scene  
+        bornL = 500;
+        bornR = 600;
+        bossLeftBound = bornL - 300;
+        bossRightBound = bornR + 400;
+
     }
     create(){
         // background
@@ -463,7 +471,7 @@ class Level2 extends CommonScene{
 
 
         // make entities
-        boss = this.physics.add.image(Phaser.Math.Between(500, 600), 200, 'boss').setOrigin(0, 1);
+        boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
 
