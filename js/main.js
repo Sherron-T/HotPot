@@ -17,6 +17,9 @@ var score = 0;
 var bullets;
 var gun_sound;
 
+// small enemy variables
+var enemies;
+
 // boss variables
 var boss;
 var bossText;
@@ -27,6 +30,7 @@ var nukes;
 
 // condition variables
 var playerCollider;
+var enemyCollider;
 var bossCollider;
 var timedEvent;
 var playerBossOverlap;
@@ -50,8 +54,8 @@ const boss2HP = 3;
 var bossHP = 3;
 var bossLow = 1;
 var bossStopDuration = 800;
-var bossLeftBound = 100;
-var bossRightBound = 1000;
+var bossLeftBound = 9100;
+var bossRightBound = 10000;
 var bossScore = 233;
 var bornL = 9500;
 var bornR = 9800;
@@ -88,6 +92,9 @@ class CommonScene extends Phaser.Scene{
 
         // variable for all platforms
         platforms = this.physics.add.staticGroup();
+
+        // variable for small enemies
+        enemies = this.physics.add.group();
 
         // create main char
         player = this.physics.add.sprite(50, 50, 'pork');
@@ -333,7 +340,7 @@ class Level1 extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('boss', 'assets/leek.png');
+        this.load.image('leek', 'assets/leek.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
         // load bg and platform
         this.load.image('level1bg', 'assets/level1bg.png');
@@ -372,6 +379,7 @@ class Level1 extends CommonScene{
         platforms.create(8000, 900, "platform").setOrigin(0, 0).refreshBody();
 
         // make small enemies
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
         // play level music
 
@@ -381,7 +389,7 @@ class Level1 extends CommonScene{
         platforms.create(9000, 900, "platform").setOrigin(0, 0).refreshBody();
 
         // make boss
-        boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
+        boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'leek').setOrigin(0, 1);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
         // boss music
@@ -397,6 +405,7 @@ class Level1 extends CommonScene{
         // player - objects interaction logics
         player.anims.play('idle_right');
         playerCollider = this.physics.add.collider(player, platforms);
+        enemyCollider = this.physics.add.collider(enemies, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
         this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
 
