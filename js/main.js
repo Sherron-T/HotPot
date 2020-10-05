@@ -479,6 +479,7 @@ class Level2 extends CommonScene{
         // make entities
         boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        boss.setScale(2);
         speed = bossSpeed;
 
         // music
