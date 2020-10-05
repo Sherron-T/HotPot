@@ -2,6 +2,7 @@
 var platforms;
 
 // player variables
+var control;
 var player;
 var cursors;
 var keyZ;
@@ -44,7 +45,7 @@ var hp = 3;
 var invulDuration = 3000;
 //var horizontalSpeed = 160; // Real speed
 var horizontalSpeed = 3000; // Test speed
-var verticalJump = 300;
+var verticalJump = 400;
 
 // gun variables
 var gunSpeed = 300;
@@ -103,8 +104,9 @@ class CommonScene extends Phaser.Scene{
         enemies = this.physics.add.group();
 
         // create main char
+        control = true;
         player = this.physics.add.sprite(50, 50, 'pork');
-        player.setBounce(0.2);
+        player.setBounce(0);
         player.setCollideWorldBounds(false);
         player.body.width = 60;
         player.body.offset.x = 20;
@@ -185,68 +187,71 @@ class CommonScene extends Phaser.Scene{
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
 
-        if (cursors.space.isDown && can_shoot == true){
-            can_shoot = false;
-            gun_sound.play();
-            if(facing_left == true){
-              var b = bullets.create(player.x-20, player.y+5, 'rice');
-              if(cursors.left.isDown){
-                player.anims.play('gun_move_left', true);
-              }
-              else{
-                player.anims.play('gun_left');
-              }
-              b.setVelocityX(-1*gunVelocity);
+        if(control == true){
+            if (cursors.space.isDown && can_shoot == true){
+                can_shoot = false;
+                gun_sound.play();
+                if(facing_left == true){
+                var b = bullets.create(player.x-20, player.y+5, 'rice');
+                if(cursors.left.isDown){
+                    player.anims.play('gun_move_left', true);
+                }
+                else{
+                    player.anims.play('gun_left');
+                }
+                b.setVelocityX(-1*gunVelocity);
+                }
+                else{
+                var b = bullets.create(player.x+20, player.y+5, 'rice');
+                if(cursors.right.isDown){
+                    player.anims.play('gun_move_right', true);
+                }
+                else{
+                    player.anims.play('gun_right');
+                }
+                b.setVelocityX(gunVelocity);
+                }
+                if(player.body.onFloor()){
+                player.setVelocityX(0);
+                }
+                timedEvent = this.time.delayedCall(gunSpeed, this.set_shoot, [], this);
+                bullet_gone = this.time.delayedCall(bulletTime, this.bullet_dissapear, [b], this);
+            }else if (cursors.left.isDown){
+                player.setVelocityX(-1*horizontalSpeed);
+                if(cursors.space.isDown == false){
+                player.anims.play('left', true);
+                }
+                facing_left = true;
+            }else if (cursors.right.isDown){
+                player.setVelocityX(horizontalSpeed);
+                if(cursors.space.isDown == false){
+                player.anims.play('right', true);
+                }
+                facing_left = false;
+            }else{
+                player.setVelocityX(0);
+                if(player.anims.getCurrentKey() === 'left' || player.anims.getCurrentKey() === 'right'){
+                if(facing_left == true){
+                    player.anims.play('idle_left');
+                }
+                else{
+                    player.anims.play('idle_right');
+                }
+                }
             }
-            else{
-              var b = bullets.create(player.x+20, player.y+5, 'rice');
-              if(cursors.right.isDown){
-                player.anims.play('gun_move_right', true);
-              }
-              else{
-                player.anims.play('gun_right');
-              }
-              b.setVelocityX(gunVelocity);
+            if (cursors.up.isDown && player.body.onFloor()){
+                player.setVelocityY(-1*verticalJump);
             }
-            if(player.body.onFloor()){
-              player.setVelocityX(0);
-            }
-            timedEvent = this.time.delayedCall(gunSpeed, this.set_shoot, [], this);
-            bullet_gone = this.time.delayedCall(bulletTime, this.bullet_dissapear, [b], this);
-        }else if (cursors.left.isDown){
-            player.setVelocityX(-1*horizontalSpeed);
-            if(cursors.space.isDown == false){
-              player.anims.play('left', true);
-            }
-            facing_left = true;
-        }else if (cursors.right.isDown){
-            player.setVelocityX(horizontalSpeed);
-            if(cursors.space.isDown == false){
-              player.anims.play('right', true);
-            }
-            facing_left = false;
-        }else{
-            player.setVelocityX(0);
-            if(player.anims.getCurrentKey() === 'left' || player.anims.getCurrentKey() === 'right'){
-              if(facing_left == true){
-                player.anims.play('idle_left');
-              }
-              else{
-                player.anims.play('idle_right');
-              }
-            }
+            /*if (keyZ.isDown){
+                console.log("z");
+            }*/
         }
-        if (cursors.up.isDown && player.body.onFloor()){
-            player.setVelocityY(-1*verticalJump);
-        }
-        /*if (keyZ.isDown){
-            console.log("z");
-        }*/
         if(hp == 0){
             player.anims.play('turn');
             this.physics.world.removeCollider(playerCollider);
             player.setCollideWorldBounds(false);
             this.summary("LOST", 0);
+            control = false;
             return;
         }
         if(bossHP == 0){
@@ -255,6 +260,7 @@ class CommonScene extends Phaser.Scene{
             this.physics.world.removeCollider(playerNukesOverlap);
             boss.setCollideWorldBounds(false);
             this.summary("WON", bossScore);
+            control = false;
             return;
         }
     }
