@@ -12,6 +12,7 @@ var speed;
 var vulTimer;
 var invul = false;
 var score = 0;
+var bullet_gone;
 
 // gun variables
 var bullets;
@@ -47,7 +48,8 @@ var verticalJump = 300;
 
 // gun variables
 var gunSpeed = 300;
-var gunVelocity = 400;
+var gunVelocity = 1000;
+var bulletTime = 500; //Increase to adjust bullet distance
 
 // boss variables
 const boss1HP = 3;
@@ -80,7 +82,6 @@ class CommonScene extends Phaser.Scene{
         // common for all levels
         this.load.image('heart', 'assets/heart.png')
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
-        this.load.image('weapon', 'assets/weapon.png');
         this.load.audio('boss_music', 'assets/boss.wav')
         this.load.audio('main_music', 'assets/main_music.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
@@ -90,7 +91,9 @@ class CommonScene extends Phaser.Scene{
     }
     create(){
         // music settings
-        gun_sound = this.sound.add('gun_sound');
+        gun_sound = this.sound.add('gun_sound',{
+          volume: 0.2
+        });
 
         // variable for all platforms
         platforms = this.physics.add.staticGroup();
@@ -230,6 +233,7 @@ class CommonScene extends Phaser.Scene{
               player.setVelocityX(0);
             }
             timedEvent = this.time.delayedCall(gunSpeed, this.set_shoot, [], this);
+            bullet_gone = this.time.delayedCall(bulletTime, this.bullet_dissapear, [b], this);
         }else if (cursors.left.isDown){
             player.setVelocityX(-1*horizontalSpeed);
             if(cursors.space.isDown == false){
@@ -276,7 +280,8 @@ class CommonScene extends Phaser.Scene{
         }
     }
     bossHurt(boss, bullet){
-        bullet.disableBody(true, true);
+        //bullet.disableBody(true, true);
+        bullet.destroy();
         bossHP = bossHP == 0 ? 0 : bossHP - 1;
         bossText.setText('Boss HP: ' + bossHP);
     }
@@ -336,6 +341,9 @@ class CommonScene extends Phaser.Scene{
         if(summary) summary.setVisible(false);
         console.log("restart");
     }
+    bullet_dissapear(b){
+      b.destroy();
+    }
 }
 
 class Level1 extends CommonScene{
@@ -371,8 +379,16 @@ class Level1 extends CommonScene{
 
         super.create();
 
-        //Block back exit
+        //Block exits
         platforms.create(-100, 0, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(10500, 0, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(10600, 0, "back").setOrigin(0, 0);
+        platforms.create(10700, 0, "back").setOrigin(0, 0);
+        platforms.create(10800, 0, "back").setOrigin(0, 0);
+        platforms.create(10900, 0, "back").setOrigin(0, 0);
+        platforms.create(11000, 0, "back").setOrigin(0, 0);
+        platforms.create(11100, 0, "back").setOrigin(0, 0);
+        platforms.create(11200, 0, "back").setOrigin(0, 0);
 
         // make platforms
 
@@ -386,6 +402,7 @@ class Level1 extends CommonScene{
         platforms.create(7000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(8000, 900, "platform").setOrigin(0, 0).refreshBody();
 
+
         // make small enemies
         enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
@@ -398,6 +415,8 @@ class Level1 extends CommonScene{
 
         // make boss
         boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'leek').setOrigin(0, 1);
+        boss.body.width = 115;
+        boss.body.offset.x = 30;
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
         // boss music
