@@ -43,9 +43,10 @@ var playerNukesOverlap;
 // player variables
 var hp = 3;
 var invulDuration = 3000;
+// speed for player
 //var horizontalSpeed = 160; // Real speed
 var horizontalSpeed = 3000; // Test speed
-var verticalJump = 400;
+var verticalJump = 500;
 
 // gun variables
 var gunSpeed = 300;
@@ -100,6 +101,10 @@ class CommonScene extends Phaser.Scene{
         // variable for all platforms
         platforms = this.physics.add.staticGroup();
 
+        // block edges of the level
+        platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
+        platforms.create(10500, 0, "back").setOrigin(0, 0).refreshBody();
+
         // variable for small enemies
         enemies = this.physics.add.group();
 
@@ -111,6 +116,9 @@ class CommonScene extends Phaser.Scene{
         player.body.width = 60;
         player.body.offset.x = 20;
         console.log("player loaded")
+        
+        this.cameras.main.setBounds(0, 0, 10500, 1000);
+        this.cameras.main.startFollow(player);
 
         // weapons
         bullets = this.physics.add.group({
@@ -187,6 +195,7 @@ class CommonScene extends Phaser.Scene{
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
 
+        // controls for the player
         if(control == true){
             if (cursors.space.isDown && can_shoot == true){
                 can_shoot = false;
@@ -242,18 +251,24 @@ class CommonScene extends Phaser.Scene{
             if (cursors.up.isDown && player.body.onFloor()){
                 player.setVelocityY(-1*verticalJump);
             }
-            /*if (keyZ.isDown){
-                console.log("z");
-            }*/
         }
+        // when player fall out of world
+        if(player.y >= 1000){
+            hp = 0;
+        }
+        // when player dies
         if(hp == 0){
+            hearts.getChildren().map(child => child.destroy());
             player.anims.play('turn');
             this.physics.world.removeCollider(playerCollider);
             player.setCollideWorldBounds(false);
             this.summary("LOST", 0);
             control = false;
+            player.setVelocityX(0);
             return;
         }
+
+        // when boss dies
         if(bossHP == 0){
             this.physics.world.removeCollider(bossCollider);
             this.physics.world.removeCollider(playerBossOverlap);
@@ -261,6 +276,7 @@ class CommonScene extends Phaser.Scene{
             boss.setCollideWorldBounds(false);
             this.summary("WON", bossScore);
             control = false;
+            player.setVelocityX(0);
             return;
         }
     }
@@ -297,12 +313,13 @@ class CommonScene extends Phaser.Scene{
         speed = bossSpeed;
         bossStop = false;
     }
+    // shows player how they did after kill boss/ death
     summary(text, add){
         // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
-        this.add.image(lastIndex+500, 40, 'scoreBoard').setOrigin(0, 0);
-        endText = this.add.text(lastIndex+630, 80, "YOU "+text, { fontSize: '60px', fill: '#290048' });
-        summary = this.add.text(lastIndex+650, 425, "Score: "+(score+add), { fontSize: '50px', fill: '#290048' });
-        mainButton = this.add.text(lastIndex+620, 775, 'Back to Menu',
+        this.add.image(player.x-150, 40, 'scoreBoard').setOrigin(0, 0);
+        endText = this.add.text(player.x-20, 75, "YOU "+text, { fontSize: '60px', fill: '#290048' });
+        summary = this.add.text(player.x, 420, "Score: "+(score+add), { fontSize: '50px', fill: '#290048' });
+        mainButton = this.add.text(player.x-20, 770, 'Back to Menu',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
             ()=>this.backToMenu());
@@ -362,13 +379,12 @@ class Level1 extends CommonScene{
 
         super.create();
 
-        // block edges of the level
-        platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
-        platforms.create(10500, 0, "back").setOrigin(0, 0).refreshBody();
-
         // make platforms
-        platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(1000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+
+        platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+
         platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -379,6 +395,17 @@ class Level1 extends CommonScene{
 
 
         // make small enemies
+        enemies.create(250, 950, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+
+        enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
         // play level music
@@ -417,8 +444,7 @@ class Level1 extends CommonScene{
         bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
         console.log("everything is created")
 
-        this.cameras.main.setBounds(0, 0, 10500, 1000);
-        this.cameras.main.startFollow(player);
+
         // bossText.setScrollFactor(0, 0)
     }
     update(time, delta){
@@ -478,10 +504,6 @@ class Level2 extends CommonScene{
         this.add.image(0, 0, 'background').setOrigin(0, 0);
 
         super.create();
-
-        //Block exits
-        platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
-        platforms.create(1500, 0, "back").setOrigin(0, 0).refreshBody();
 
         // level specified platforms
         platforms.create(0, 100, "platform").setOrigin(0, 0).refreshBody();
@@ -544,12 +566,13 @@ class MainMenu extends Phaser.Scene {
         // comment out this snippet if you want to visit level2
         // without completing level1
 
-        if(!winLevel1){
-            clickButton2.disableInteractive();
-        }else{
-            clickButton2.setInteractive();
-            lock2.destroy();
-        }
+        // if(!winLevel1){
+        //     clickButton2.disableInteractive();
+        // }else{
+        //     clickButton2.setInteractive();
+        //     lock2.destroy();
+        // }
+
     }
     onClicked1(){
         this.scene.remove('Level1');
