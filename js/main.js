@@ -87,6 +87,7 @@ class CommonScene extends Phaser.Scene{
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
+        this.load.image('back', 'assets/back.png');
         this.restart();
     }
     create(){
@@ -357,7 +358,6 @@ class Level1 extends CommonScene{
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
-        this.load.image('back', 'assets/back.png');
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -480,13 +480,9 @@ class Level2 extends CommonScene{
 
         super.create();
 
-        // temp ---> !!!! will be deleted
-        player = this.physics.add.sprite(800, 50, 'pork');
-        player.setBounce(0.2);
-        player.setCollideWorldBounds(false);
-        player.body.width = 60;
-        player.body.offset.x = 20;
-        console.log("player loaded")
+        //Block exits
+        platforms.create(-100, 0, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(1500, 0, "back").setOrigin(0, 0).refreshBody();
 
         // level specified platforms
         platforms.create(0, 100, "platform").setOrigin(0, 0).refreshBody();
