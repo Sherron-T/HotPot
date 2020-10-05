@@ -546,6 +546,7 @@ class MainMenu extends Phaser.Scene {
         }
     }
     onClicked1(){
+        this.scene.remove('Level1');
         scene1 = this.scene.add('Level1', Level1, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
