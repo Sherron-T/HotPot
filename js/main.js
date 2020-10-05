@@ -183,29 +183,7 @@ class CommonScene extends Phaser.Scene{
     update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
-        boss.x += speed * delta;
-        if(boss.x >= bossRightBound && !bossStop){
-            // setInterval(this.dummy, 5000);
-            //console.log("large")
-            speed = 0;
-            bossStop = true;
-            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        }
-        if(boss.x <= bossLeftBound && !bossStop){
-            // setInterval(this.dummy, 5000);
-            speed = 0;
-            bossStop = true;
-            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        }
-        if(bossHP > 0 && bossHP < bossLow && bossSpecial == true){
-          bossSpecial = false;
-          var i;
-          var leek_nuke = nukes.create(player.x, Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
-          for (i = 0; i < 3; i++) {
-            var leek_nuke = nukes.create(player.x + Math.floor(Math.random() * (300 - -300) + -300), Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
-          }
-          this.time.addEvent({ delay: 2000, callback: this.enableSpecial, callbackScope: this});
-        }
+
         if (cursors.space.isDown && can_shoot == true){
             can_shoot = false;
             gun_sound.play();
@@ -371,27 +349,18 @@ class Level1 extends CommonScene{
     }
     create(){
         // background
-        // need normal bg
+        this.add.image(0, 0, 'level1bg').setOrigin(0, 0);
 
         // boss bg
-        this.add.image(0, 0, 'level1bg').setOrigin(0, 0);
         this.add.image(9000, 0, 'background').setOrigin(0, 0);
 
         super.create();
 
-        //Block exits
-        platforms.create(-100, 0, "back").setOrigin(0, 0).refreshBody();
+        // block edges of the level
+        platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
         platforms.create(10500, 0, "back").setOrigin(0, 0).refreshBody();
-        platforms.create(10600, 0, "back").setOrigin(0, 0);
-        platforms.create(10700, 0, "back").setOrigin(0, 0);
-        platforms.create(10800, 0, "back").setOrigin(0, 0);
-        platforms.create(10900, 0, "back").setOrigin(0, 0);
-        platforms.create(11000, 0, "back").setOrigin(0, 0);
-        platforms.create(11100, 0, "back").setOrigin(0, 0);
-        platforms.create(11200, 0, "back").setOrigin(0, 0);
 
         // make platforms
-
         platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(1000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -442,13 +411,37 @@ class Level1 extends CommonScene{
         bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
         console.log("everything is created")
 
-        this.cameras.main.setBounds(0, 0, 90000, 1000);
+        this.cameras.main.setBounds(0, 0, 10500, 1000);
         this.cameras.main.startFollow(player);
         // bossText.setScrollFactor(0, 0)
     }
     update(time, delta){
         if(bossHP == 0) winLevel1 = true;
         super.update(time, delta);
+
+        boss.x += speed * delta;
+        if(boss.x >= bossRightBound && !bossStop){
+            // setInterval(this.dummy, 5000);
+            //console.log("large")
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+        if(boss.x <= bossLeftBound && !bossStop){
+            // setInterval(this.dummy, 5000);
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+        if(bossHP > 0 && bossHP < bossLow && bossSpecial == true){
+          bossSpecial = false;
+          var i;
+          var leek_nuke = nukes.create(player.x, Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
+          for (i = 0; i < 3; i++) {
+            var leek_nuke = nukes.create(player.x + Math.floor(Math.random() * (300 - -300) + -300), Math.floor(Math.random() * (0 - -700) + -700), 'leek_nuke')
+          }
+          this.time.addEvent({ delay: 2000, callback: this.enableSpecial, callbackScope: this});
+        }
     }
 }
 
