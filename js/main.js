@@ -82,6 +82,7 @@ class CommonScene extends Phaser.Scene{
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('weapon', 'assets/weapon.png');
         this.load.audio('boss_music', 'assets/boss.wav')
+        this.load.audio('main_music', 'assets/main_music.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
@@ -400,10 +401,10 @@ class Level1 extends CommonScene{
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
         // boss music
-        var music = this.sound.add('boss_music',{
+        var music = this.sound.add('main_music',{
             loop: true,
             delay: 0,
-            volume: 0.2
+            volume: 1
           });
         music.play();
         // boss attacks
