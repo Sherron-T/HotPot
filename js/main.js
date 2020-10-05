@@ -474,7 +474,7 @@ class Level2 extends CommonScene{
         super.create();
 
         //Block exits
-        platforms.create(-100, 0, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
         platforms.create(1500, 0, "back").setOrigin(0, 0).refreshBody();
 
         // level specified platforms
