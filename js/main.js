@@ -106,7 +106,7 @@ class CommonScene extends Phaser.Scene{
         platforms = this.physics.add.staticGroup();
 
         // starting platform
-        platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
 
         // block edges of the level
         platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
@@ -401,9 +401,21 @@ class Level1 extends CommonScene{
 
         // make platforms
         platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
+
+        platforms.create(1100, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(1100, 750, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
+        platforms.create(900, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
+        platforms.create(900, 900, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
+        platforms.create(1700, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
+        platforms.create(900, 550, "platform").setOrigin(0, 0).refreshBody();
+
+        platforms.create(2100, 800, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(2200, 700, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(2300, 600, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(2400, 500, "back").setOrigin(0, 0).refreshBody();
+
         platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(5000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(6000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -512,7 +524,7 @@ class Level2 extends CommonScene{
         lastIndex = 9000;
 
         // for testing purposes
-        horizontalSpeed = testSpeed;
+        // horizontalSpeed = testSpeed;
     }
     create(){
         // background
@@ -524,8 +536,15 @@ class Level2 extends CommonScene{
         super.create();
 
         // level specified platforms
+        platforms.create(300, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(800, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(1400, 700, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        
+        platforms.create(1800, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(2000, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+
+
         platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(5000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -603,8 +622,8 @@ class MainMenu extends Phaser.Scene {
          lock2 = this.physics.add.staticImage(420, 775, 'lock');
     }
     update(){
-        // comment out this snippet if you want to visit level2
-        // without completing level1
+    // comment out this snippet if you want to visit level2
+    // without completing level1
 
         // if(!winLevel1){
         //     clickButton2.disableInteractive();
@@ -619,6 +638,7 @@ class MainMenu extends Phaser.Scene {
         scene1 = this.scene.add('Level1', Level1, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
+        console.log("clicked level1");
         // clickButton2.setInteractive();
         //this.scene.start('Level1');
     }
@@ -627,6 +647,7 @@ class MainMenu extends Phaser.Scene {
         scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
+        console.log("clicked level2");
         //this.scene.start('Level2');
     }
 }
