@@ -37,6 +37,9 @@ var bossCollider;
 var timedEvent;
 var playerBossOverlap;
 var playerNukesOverlap;
+var bulletBossOverlap;
+var bulletEnemOverlap;
+var playerEnemOverlap;
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
@@ -45,8 +48,9 @@ var hp = 3;
 var invulDuration = 3000;
 // speed for player
 //var horizontalSpeed = 160; // Real speed
-var horizontalSpeed = 300; // Test speed
-var verticalJump = 300;
+var horizontalSpeed = 300;
+var testSpeed = 1000;// Test speed
+var verticalJump = 600;
 
 // gun variables
 var gunSpeed = 300;
@@ -100,6 +104,9 @@ class CommonScene extends Phaser.Scene{
 
         // variable for all platforms
         platforms = this.physics.add.staticGroup();
+
+        // starting platform
+        platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
 
         // block edges of the level
         platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
@@ -293,6 +300,12 @@ class CommonScene extends Phaser.Scene{
         bossHP = bossHP == 0 ? 0 : bossHP - 1;
         bossText.setText('Boss HP: ' + bossHP);
     }
+    enemyHurt(enemy, bullet){
+        //bullet.disableBody(true, true);
+        bullet.destroy();
+        if(Math.round(Math.random()) == 0) enemy.disableBody(true, true);
+        score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+    }
     set_shoot(){
         can_shoot = true;
     }
@@ -387,11 +400,8 @@ class Level1 extends CommonScene{
         super.create();
 
         // make platforms
-        platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-
         platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -403,9 +413,7 @@ class Level1 extends CommonScene{
 
         // make small enemies
         enemies.create(250, 950, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-
         enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-
         enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
@@ -436,14 +444,18 @@ class Level1 extends CommonScene{
 
         // player - objects interaction logics
         player.anims.play('idle_right');
+
+        // colliders
         playerCollider = this.physics.add.collider(player, platforms);
         enemyCollider = this.physics.add.collider(enemies, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
-        this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
 
+        // overlaps
+        bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
+        playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
-
 
         // bossText.setScrollFactor(0, 0)
     }
@@ -485,6 +497,9 @@ class Level2 extends CommonScene{
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
+        // load ingredients
+        this.load.image('fish', 'assets/ingredients/fish.png');
+        this.load.image('octopus', 'assets/ingredients/octopus.png');
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -495,6 +510,9 @@ class Level2 extends CommonScene{
         bossLeftBound = bornL - 200;
         bossRightBound = bornR + 300;
         lastIndex = 9000;
+
+        // for testing purposes
+        horizontalSpeed = testSpeed;
     }
     create(){
         // background
@@ -506,11 +524,7 @@ class Level2 extends CommonScene{
         super.create();
 
         // level specified platforms
-        platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-
         platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -519,6 +533,11 @@ class Level2 extends CommonScene{
         platforms.create(7000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(8000, 900, "platform").setOrigin(0, 0).refreshBody();
 
+        // static ingredients
+        enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
+        enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
+
+        // moving ingredients --> !!!! need to add a moving ingredients function
 
 
         // make entities
@@ -533,11 +552,17 @@ class Level2 extends CommonScene{
 
         // player - objects interaction logics
         player.anims.play('idle_right');
+
+        // colliders
         playerCollider = this.physics.add.collider(player, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
-        this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
+        enemyCollider = this.physics.add.collider(enemies, platforms);
 
+        // overlaps
+        bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
+        playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
     }
     update(time, delta){
@@ -614,7 +639,7 @@ var config = {
     physics: {
           default: 'arcade',
           arcade: {
-              gravity: { y: 500 },
+              gravity: { y: 800 },
               debug: true
           }
       },
