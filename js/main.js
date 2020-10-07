@@ -303,7 +303,7 @@ class CommonScene extends Phaser.Scene{
     enemyHurt(enemy, bullet){
         //bullet.disableBody(true, true);
         bullet.destroy();
-        if(Math.round(Math.random()) == 0) enemy.disableBody(true, true);
+        if(Math.round(Math.random()) == 0) enemy.destroy();
         score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
     }
     set_shoot(){
