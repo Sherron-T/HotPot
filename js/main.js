@@ -539,7 +539,7 @@ class Level2 extends CommonScene{
         platforms.create(300, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(800, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
-        platforms.create(1400, 700, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        platforms.create(1400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         
         platforms.create(1800, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(2000, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
