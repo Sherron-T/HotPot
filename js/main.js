@@ -416,6 +416,7 @@ class Level1 extends CommonScene{
         platforms.create(2300, 600, "back").setOrigin(0, 0).refreshBody();
         platforms.create(2400, 500, "back").setOrigin(0, 0).refreshBody();
 
+        platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(5000, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(6000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -540,9 +541,10 @@ class Level2 extends CommonScene{
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(800, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(1400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        platforms.create(1500, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         
         platforms.create(1800, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(2000, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
 
         platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -555,6 +557,9 @@ class Level2 extends CommonScene{
         // static ingredients
         enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
         enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
+        enemies.create(2000, 900, "octopus").setOrigin(0, 1).refreshBody();
+        enemies.create(2100, 600, "fish").setOrigin(0, 1).refreshBody();
+        enemies.create(2400, 900, "fish").setOrigin(0, 1).refreshBody();
 
         // moving ingredients --> !!!! need to add a moving ingredients function
 
@@ -625,12 +630,12 @@ class MainMenu extends Phaser.Scene {
     // comment out this snippet if you want to visit level2
     // without completing level1
 
-        // if(!winLevel1){
-        //     clickButton2.disableInteractive();
-        // }else{
-        //     clickButton2.setInteractive();
-        //     lock2.destroy();
-        // }
+        if(!winLevel1){
+            clickButton2.disableInteractive();
+        }else{
+            clickButton2.setInteractive();
+            lock2.destroy();
+        }
 
     }
     onClicked1(){
