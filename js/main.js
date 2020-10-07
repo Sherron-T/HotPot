@@ -45,8 +45,8 @@ var hp = 3;
 var invulDuration = 3000;
 // speed for player
 //var horizontalSpeed = 160; // Real speed
-var horizontalSpeed = 3000; // Test speed
-var verticalJump = 500;
+var horizontalSpeed = 300; // Test speed
+var verticalJump = 300;
 
 // gun variables
 var gunSpeed = 300;
@@ -105,6 +105,10 @@ class CommonScene extends Phaser.Scene{
         platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
         platforms.create(10500, 0, "back").setOrigin(0, 0).refreshBody();
 
+        // boss platform
+        platforms.create(9997, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(9000, 900, "platform").setOrigin(0, 0).refreshBody();
+
         // variable for small enemies
         enemies = this.physics.add.group();
 
@@ -116,9 +120,12 @@ class CommonScene extends Phaser.Scene{
         player.body.width = 60;
         player.body.offset.x = 20;
         console.log("player loaded")
-        
+
         this.cameras.main.setBounds(0, 0, 10500, 1000);
         this.cameras.main.startFollow(player);
+
+        // boss HP text
+        bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
 
         // weapons
         bullets = this.physics.add.group({
@@ -409,11 +416,7 @@ class Level1 extends CommonScene{
         enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
         // play level music
-
         // should be conditional for when player approaches boss room
-        // boss platform
-        platforms.create(9997, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(9000, 900, "platform").setOrigin(0, 0).refreshBody();
 
         // make boss
         boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'leek').setOrigin(0, 1);
@@ -441,9 +444,6 @@ class Level1 extends CommonScene{
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
-        bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
-        console.log("everything is created")
-
 
         // bossText.setScrollFactor(0, 0)
     }
@@ -453,14 +453,11 @@ class Level1 extends CommonScene{
 
         boss.x += speed * delta;
         if(boss.x >= bossRightBound && !bossStop){
-            // setInterval(this.dummy, 5000);
-            //console.log("large")
             speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
         if(boss.x <= bossLeftBound && !bossStop){
-            // setInterval(this.dummy, 5000);
             speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
@@ -484,33 +481,44 @@ class Level2 extends CommonScene{
         this.load.image('boss', 'assets/fork.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
         // load bg and platform
+        this.load.image('level2bg', 'assets/level1bg.png');
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        // hp = 3;
+        hp = 3;
         bossHP = boss2HP;
-        lastIndex = 0; // rectify index so it appears in the last scene
-        bornL = 500;
-        bornR = 600;
-        bossLeftBound = bornL - 300;
-        bossRightBound = bornR + 400;
-
+        bornL = 9500;
+        bornR = 9600;
+        bossLeftBound = bornL - 200;
+        bossRightBound = bornR + 300;
+        lastIndex = 9000;
     }
     create(){
         // background
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        this.add.image(0, 0, 'level2bg').setOrigin(0, 0);
+
+        // boss bg
+        this.add.image(9000, 0, 'background').setOrigin(0, 0);
 
         super.create();
 
         // level specified platforms
-        platforms.create(0, 100, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
 
-        // boss platform
-        platforms.create(997, 450, "big_platform").setOrigin(0, 0).refreshBody();
-        platforms.create(0, 450, "big_platform").setOrigin(0, 0).refreshBody();
+        platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+
+        platforms.create(2000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(5000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(6000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(7000, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(8000, 900, "platform").setOrigin(0, 0).refreshBody();
+
 
 
         // make entities
@@ -531,15 +539,22 @@ class Level2 extends CommonScene{
 
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
-
-        bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
-        this.cameras.main.setBounds(0, 0, 90000, 1000);
-        this.cameras.main.startFollow(player);
-        // bossText.setScrollFactor(0, 0);
     }
     update(time, delta){
         if(bossHP == 0) winLevel2 = true;
         super.update(time, delta);
+
+        boss.x += speed * delta;
+        if(boss.x >= bossRightBound && !bossStop){
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+        if(boss.x <= bossLeftBound && !bossStop){
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
     }
 }
 
