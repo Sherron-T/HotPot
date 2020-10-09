@@ -767,8 +767,7 @@ class Tutorial extends CommonScene{
 
         // static ingredients
         enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
-
-        // moving ingredients --> !!!! need to add a moving ingredients function
+        this.add.text(600，700, 'This is a small ingredients enemy', { fontSize: '18px', fill: '#4314B0' });
 
 
         // make entities
@@ -802,6 +801,7 @@ class Tutorial extends CommonScene{
     }
     update(time, delta){
         super.update(time, delta);
+        this.add.text(boss.x, boss.y, 'This is a boss', { fontSize: '18px', fill: '#4314B0' });
 
         boss.x += speed * delta;
         if(boss.x >= bossRightBound && !bossStop){
