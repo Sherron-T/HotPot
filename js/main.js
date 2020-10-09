@@ -82,9 +82,19 @@ var endText;
 var summary;
 var lastIndex;
 
-// tutorial 
-var clickButtonBegin; 
-var hurtText; 
+// tutorial
+var tutorialTextColor = "#034680";
+var clickButtonBegin;
+var clickInstruction;
+var hurtText;
+var bossTutorialText;
+var enemyTutorialText;
+
+// instruction
+var clickStart;
+
+// temp
+
 
 
 class CommonScene extends Phaser.Scene{
@@ -349,7 +359,7 @@ class CommonScene extends Phaser.Scene{
             ()=>this.backToMenu());
     }
     backToMenu(){
-        this.scene.start('MainMenu');
+        this.scene.start('GameMenu');
         mainButton.disableInteractive();
         clickButton1.setInteractive();
         clickButton2.setInteractive();
@@ -361,6 +371,7 @@ class CommonScene extends Phaser.Scene{
         score = 0;
         hp = 3;
         if(boss) boss.destroy();
+        if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
         if(player) player.destroy();
         if(endText) endText.setVisible(false);
@@ -417,7 +428,7 @@ class Level1 extends CommonScene{
         platforms.create(900, 900, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
         platforms.create(1700, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
         platforms.create(900, 550, "platform").setOrigin(0, 0).refreshBody();
-        
+
         enemies.create(1500, 750, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(1600, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
@@ -562,7 +573,7 @@ class Level2 extends CommonScene{
         platforms.create(800, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(1400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(1500, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
-        
+
         platforms.create(1800, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
@@ -636,6 +647,7 @@ class GameMenu extends Phaser.Scene {
     }
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
+        this.scene.remove('Tutorial');
         clickButton1 = this.add.text(450, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
@@ -683,37 +695,33 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title', 'assets/title.png');
     }
     create(){
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(0, 0, 'title').setOrigin(0, 0);
-        clickButtonBegin = this.add.text(400, 700, 'Begin the Game with Tutorial',
+        clickButtonBegin = this.add.text(400, 750, 'Begin the Game with Tutorial',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked());
-
-        // will be deleted later: 
-        clickButton1 = this.add.text(450, 600, 'Start the Level1!',
+        clickInstruction = this.add.text(400, 600, 'Learn How to Play',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
-            ()=>this.onClicked1());
+            ()=>this.instruction());
     }
     update(){
 
     }
-    // deletable: 
-    onClicked1(){
-        this.scene.remove('Level1');
-        scene1 = this.scene.add('Level1', Level1, true);
-        clickButton1.disableInteractive();
-        console.log("clicked level1");
-        // clickButton2.setInteractive();
-        //this.scene.start('Level1');
-    }
-    // 
     onClicked(){
         this.scene.remove('Tutorial');
-        scene1 = this.scene.add('Tutorial', Tutorial, true);
+        this.scene.add('Tutorial', Tutorial, true);
+        clickInstruction.disableInteractive();
         clickButtonBegin.disableInteractive();
         console.log("clicked begin");
-
+    }
+    instruction(){
+        this.scene.remove('Instruction');
+        this.scene.add('Instruction', Instruction, true);
+        clickInstruction.disableInteractive();
+        clickButtonBegin.disableInteractive();
+        console.log("clicked instruction");
     }
 }
 
@@ -760,14 +768,13 @@ class Tutorial extends CommonScene{
         platforms.create(800, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(1400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(1500, 100, "back").setScale(2).setOrigin(0, 0).refreshBody();
-        
+
         platforms.create(1800, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
-
         // static ingredients
         enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
-        this.add.text(600，700, 'This is a small ingredients enemy', { fontSize: '18px', fill: '#4314B0' });
+        enemyTutorialText = this.add.text(500, 710, 'This is a small ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
 
 
         // make entities
@@ -776,6 +783,7 @@ class Tutorial extends CommonScene{
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         boss.setScale(0.3);
         speed = bossSpeed;
+        bossTutorialText = this.add.text(boss.x, boss.y, 'This is a boss', { fontSize: '18px', fill: tutorialTextColor });
 
         // music
 
@@ -801,7 +809,8 @@ class Tutorial extends CommonScene{
     }
     update(time, delta){
         super.update(time, delta);
-        this.add.text(boss.x, boss.y, 'This is a boss', { fontSize: '18px', fill: '#4314B0' });
+        bossTutorialText.x = boss.x;
+        bossTutorialText.y = boss.y-200;
 
         boss.x += speed * delta;
         if(boss.x >= bossRightBound && !bossStop){
@@ -815,13 +824,13 @@ class Tutorial extends CommonScene{
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
     }
-    // tutorial is always invulnerable 
+    // tutorial is always invulnerable
     takeDmg(player){
         if(invul == false)
         {
           player.setTint(0xB5F2F2);
           invul = true;
-          hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: '#4314B0' });
+          hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: tutorialTextColor });
           vulTimer = this.time.addEvent({ delay: invulDuration+2000, callback: this.blinking, callbackScope: this});
           hp = 4;
           var heart = hearts.getChildren();
@@ -835,7 +844,53 @@ class Tutorial extends CommonScene{
         invul = false;
         hp = 5;
     }
+    enemyHurt(enemy, bullet){
+        bullet.destroy();
+        if(Math.round(Math.random()) == 0){
+            enemy.destroy();
+            enemyTutorialText.setText("You defeated the small enemy!")
+        }
+        score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+    }
+    summary(text, add){
+        super.summary(text, add);
+        mainButton.setFont('21px');
+        mainButton.setText("Start the Real Adventure");
+    }
+    backToMenu(){
+        this.scene.add('GameMenu', GameMenu, true);
+        mainButton.disableInteractive();
+        this.scene.remove('MainMenu');
+        this.registry.destroy();
+        this.events.off();
+        console.log("back")
+    }
 }
+
+class Instruction extends Phaser.Scene {
+    preload(){
+        this.load.image('background', 'assets/bg.png');
+    }
+    create(){
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        clickStart = this.add.text(400, 800, 'Ready to Start Tutorial',
+            {fontSize: '50px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked());
+    }
+    update(){
+
+    }
+    onClicked(){
+        this.scene.setVisible('MainMenu', true);
+        clickInstruction.setInteractive();
+        clickButtonBegin.setInteractive();
+        clickStart.disableInteractive();
+        this.scene.setVisible(false);
+        console.log("back to MainMenu");
+    }
+}
+
 
 var config = {
     type: Phaser.AUTO,
@@ -846,7 +901,7 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: { y: 800 },
-              debug: true
+              debug: false
           }
       },
     scene: [MainMenu]
