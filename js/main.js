@@ -82,6 +82,10 @@ var endText;
 var summary;
 var lastIndex;
 
+// tutorial 
+var clickButtonBegin; 
+var hurtText; 
+
 
 class CommonScene extends Phaser.Scene{
     preload(){
@@ -399,42 +403,58 @@ class Level1 extends CommonScene{
 
         super.create();
 
-        // make platforms
+        // first 2 platforms
         platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
 
+        enemies.create(250, 950, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+
+        // little cave place
         platforms.create(1100, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(1100, 750, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(900, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
         platforms.create(900, 900, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
         platforms.create(1700, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
         platforms.create(900, 550, "platform").setOrigin(0, 0).refreshBody();
+        
+        enemies.create(1500, 750, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(1600, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
+        // stairs
         platforms.create(2100, 800, "back").setOrigin(0, 0).refreshBody();
         platforms.create(2200, 700, "back").setOrigin(0, 0).refreshBody();
         platforms.create(2300, 600, "back").setOrigin(0, 0).refreshBody();
         platforms.create(2400, 500, "back").setOrigin(0, 0).refreshBody();
 
-        platforms.create(3000, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(4000, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(5000, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(6000, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(7000, 900, "platform").setOrigin(0, 0).refreshBody();
-        platforms.create(8000, 900, "platform").setOrigin(0, 0).refreshBody();
+        enemies.create(2130, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(2330, 600, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+
+        // floating platforms
+        platforms.create(2900, 400, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
+        platforms.create(3500, 450, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
+        platforms.create(4200, 350, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
+
+        enemies.create(3000, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(3100, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(3250, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(3600, 450, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(3750, 450, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(3800, 450, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(4250, 350, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(4350, 350, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(4400, 350, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+
+        // thin pillars
+        platforms.create(5200, 600, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(5450, 500, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(5750, 400, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(6200, 300, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
 
 
         // make small enemies
-        enemies.create(250, 950, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(100, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+
+
 
         // play level music
         // should be conditional for when player approaches boss room
@@ -503,7 +523,7 @@ class Level2 extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('boss', 'assets/fork.png');
+        this.load.image('boss', 'assets/tofu.png');
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/level1bg.png');
@@ -608,7 +628,7 @@ class Level2 extends CommonScene{
 }
 
 
-class MainMenu extends Phaser.Scene {
+class GameMenu extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/bg.png');
         this.load.image('lock', 'assets/lock.png');
@@ -654,6 +674,166 @@ class MainMenu extends Phaser.Scene {
         clickButton2.disableInteractive();
         console.log("clicked level2");
         //this.scene.start('Level2');
+    }
+}
+
+class MainMenu extends Phaser.Scene {
+    preload(){
+        this.load.image('background', 'assets/bg.png');
+        this.load.image('title', 'assets/title.png');
+    }
+    create(){
+        this.add.image(0, 0, 'title').setOrigin(0, 0);
+        clickButtonBegin = this.add.text(400, 700, 'Begin the Game with Tutorial',
+            {fontSize: '50px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked());
+
+        // will be deleted later: 
+        clickButton1 = this.add.text(450, 600, 'Start the Level1!',
+            {fontSize: '50px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked1());
+    }
+    update(){
+
+    }
+    // deletable: 
+    onClicked1(){
+        this.scene.remove('Level1');
+        scene1 = this.scene.add('Level1', Level1, true);
+        clickButton1.disableInteractive();
+        console.log("clicked level1");
+        // clickButton2.setInteractive();
+        //this.scene.start('Level1');
+    }
+    // 
+    onClicked(){
+        this.scene.remove('Tutorial');
+        scene1 = this.scene.add('Tutorial', Tutorial, true);
+        clickButtonBegin.disableInteractive();
+        console.log("clicked begin");
+
+    }
+}
+
+class Tutorial extends CommonScene{
+    preload(){
+        super.preload();
+
+        this.load.image('boss', 'assets/leek.png');
+        this.load.image('leek_nuke', 'assets/leek_bullet.png')
+        // load bg and platform
+        this.load.image('level2bg', 'assets/level1bg.png');
+        this.load.image('background', 'assets/bg.png');
+        this.load.image('platform', 'assets/ground.png');
+        this.load.image('big_platform', 'assets/ground2.png');
+        // load ingredients
+        this.load.image('octopus', 'assets/ingredients/octopus.png');
+
+        // we can initiate the variables for the specific boss info here
+        // based on the level design
+        hp = 5;
+        bossHP = 3;
+        bornL = 400;
+        bornR = 800;
+        bossLeftBound = bornL - 200;
+        bossRightBound = bornR + 200;
+        lastIndex = 50;
+
+        // for testing purposes
+        // horizontalSpeed = testSpeed;
+    }
+    create(){
+        // background
+        this.add.image(0, 0, 'level2bg').setOrigin(0, 0);
+
+        // boss bg
+        this.add.image(9000, 0, 'background').setOrigin(0, 0);
+
+        super.create();
+
+        // level specified platforms
+        platforms.create(300, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(800, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        platforms.create(800, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(1400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        platforms.create(1500, 100, "back").setScale(2).setOrigin(0, 0).refreshBody();
+        
+        platforms.create(1800, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+
+
+        // static ingredients
+        enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
+
+        // moving ingredients --> !!!! need to add a moving ingredients function
+
+
+        // make entities
+        boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
+        boss.body.width = 115;
+        bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        boss.setScale(0.3);
+        speed = bossSpeed;
+
+        // music
+
+        nukes = this.physics.add.group({});
+
+        // player - objects interaction logics
+        player.anims.play('idle_right');
+
+        // colliders
+        playerCollider = this.physics.add.collider(player, platforms);
+        bossCollider = this.physics.add.collider(boss, platforms);
+        enemyCollider = this.physics.add.collider(enemies, platforms);
+
+        // overlaps
+        bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
+        playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
+        playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
+        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
+
+        this.cameras.main.setBounds(0, 0, 1500, 1000);
+        this.cameras.main.startFollow(player);
+    }
+    update(time, delta){
+        super.update(time, delta);
+
+        boss.x += speed * delta;
+        if(boss.x >= bossRightBound && !bossStop){
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+        if(boss.x <= bossLeftBound && !bossStop){
+            speed = 0;
+            bossStop = true;
+            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+    }
+    // tutorial is always invulnerable 
+    takeDmg(player){
+        if(invul == false)
+        {
+          player.setTint(0xB5F2F2);
+          invul = true;
+          hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: '#4314B0' });
+          vulTimer = this.time.addEvent({ delay: invulDuration+2000, callback: this.blinking, callbackScope: this});
+          hp = 4;
+          var heart = hearts.getChildren();
+          hearts.killAndHide(heart[hp]);
+          heart[hp].body.enable = false;
+        }
+    }
+    blinking(){
+        player.clearTint();
+        hurtText.destroy();
+        invul = false;
+        hp = 5;
     }
 }
 
