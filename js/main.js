@@ -711,6 +711,7 @@ class MainMenu extends Phaser.Scene {
     }
     onClicked(){
         this.scene.remove('Tutorial');
+        this.scene.remove('Instruction');
         this.scene.add('Tutorial', Tutorial, true);
         clickInstruction.disableInteractive();
         clickButtonBegin.disableInteractive();
@@ -718,6 +719,7 @@ class MainMenu extends Phaser.Scene {
     }
     instruction(){
         this.scene.remove('Instruction');
+        this.scene.remove('Tutorial');
         this.scene.add('Instruction', Instruction, true);
         clickInstruction.disableInteractive();
         clickButtonBegin.disableInteractive();
@@ -809,6 +811,7 @@ class Tutorial extends CommonScene{
     }
     update(time, delta){
         super.update(time, delta);
+
         bossTutorialText.x = boss.x;
         bossTutorialText.y = boss.y-200;
 
@@ -867,19 +870,180 @@ class Tutorial extends CommonScene{
     }
 }
 
+// add literal instructions in this section !!!!
+// add some text, pictures, and background stories
 class Instruction extends Phaser.Scene {
     preload(){
-        this.load.image('background', 'assets/bg.png');
+        this.load.image('InstructionBG', 'assets/level1bg.png');
+        this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
+        this.load.image('platform', 'assets/ground.png');
+        this.load.image('back', 'assets/back.png');
+        this.load.image('rice', 'assets/rice.png')
     }
     create(){
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
-        clickStart = this.add.text(400, 800, 'Ready to Start Tutorial',
-            {fontSize: '50px', fill: '#888'}).
+        this.add.image(0, 0, 'InstructionBG').setOrigin(0, 0);
+
+        platforms = this.physics.add.staticGroup();
+
+        //block
+        platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
+        platforms.create(3000, 0, "back").setOrigin(0, 0).refreshBody();
+
+        // stable platforms
+        platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
+        for(var i = 500; i <= 3000; i+=500){
+            platforms.create(i, 900, "platform").setOrigin(0, 0).refreshBody();
+        }
+
+        player = this.physics.add.sprite(500, 800, 'pork');
+        player.setBounce(0);
+        player.setCollideWorldBounds(false);
+        player.body.width = 60;
+        player.body.offset.x = 20;
+
+        // weapons
+        bullets = this.physics.add.group({
+            allowGravity: false
+        });
+
+        // INSTRUCTION TEXT
+        // better to design the text first as pictures,
+        // and then add to the scene
+        // Maybe we have aesthetic desigens of arrows
+        this.add.text(100, 200, 'You are Pork, \n \
+        a prestigious ingredient,\n \
+        who tries to save other \n \
+        food ingredients from \n \
+        the boiling world by \n \
+        kicking them out of the game board \n \
+        and defeats bosses who you think \n \
+        are the culprits, \n \
+        but are they really the bad guys? ',
+            {fontSize: '30px', fill: '#232'})
+
+        this.add.text(1000, 200, 'Use Arrow keys to move and space to shoot',
+            {fontSize: '30px', fill: '#232'})
+
+        clickStart = this.add.text(300, 850, 'Ready to Start Game Tutorial',
+            {fontSize: '30px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked());
-    }
-    update(){
 
+        this.cameras.main.setBounds(0, 0, 3000, 1000);
+        this.cameras.main.startFollow(player);
+
+        // animations
+         this.anims.create({
+             key: 'left',
+             frames: this.anims.generateFrameNumbers('pork', { start: 0, end: 5 }),
+             frameRate: 10,
+             repeat: -1
+         });
+         this.anims.create({
+             key: 'turn',
+             frames: [ { key: 'pork', frame: 6 } ],
+             frameRate: 20
+         });
+         this.anims.create({
+             key: 'right',
+             frames: this.anims.generateFrameNumbers('pork', { start: 7, end: 12 }),
+             frameRate: 10,
+             repeat: -1
+         });
+         this.anims.create({
+             key: 'gun_right',
+             frames: this.anims.generateFrameNumbers('pork', { start: 13, end: 14 }),
+             frameRate: 20
+         });
+         this.anims.create({
+             key: 'gun_left',
+             frames: this.anims.generateFrameNumbers('pork', { start: 15, end: 16 }),
+             frameRate: 20
+         });
+         this.anims.create({
+             key: 'idle_left',
+             frames: [ { key: 'pork', frame: 15 } ],
+             frameRate: 10
+         });
+         this.anims.create({
+             key: 'idle_right',
+             frames: [ { key: 'pork', frame: 13 } ],
+             frameRate: 10
+         });
+         this.anims.create({
+             key: 'gun_move_right',
+             frames: this.anims.generateFrameNumbers('pork', { start: 17, end: 22 }),
+             frameRate: 10,
+             repeat: -1
+         });
+         this.anims.create({
+             key: 'gun_move_left',
+             frames: this.anims.generateFrameNumbers('pork', { start: 23, end: 28 }),
+             frameRate: 10,
+             repeat: -1
+         });
+
+         playerCollider = this.physics.add.collider(player, platforms);
+    }
+    update(time, delta){
+        clickStart.x = player.x - 200;
+        clickStart.y = player.y + 50;
+        cursors = this.input.keyboard.createCursorKeys();
+        keyZ = this.input.keyboard.addKey("z");
+        if (cursors.space.isDown && can_shoot == true){
+            can_shoot = false;
+            if(facing_left == true){
+            var b = bullets.create(player.x-20, player.y+5, 'rice');
+            if(cursors.left.isDown){
+                player.anims.play('gun_move_left', true);
+            }
+            else{
+                player.anims.play('gun_left');
+            }
+            b.setVelocityX(-1*gunVelocity);
+            }
+            else{
+            var b = bullets.create(player.x+20, player.y+5, 'rice');
+            if(cursors.right.isDown){
+                player.anims.play('gun_move_right', true);
+            }
+            else{
+                player.anims.play('gun_right');
+            }
+            b.setVelocityX(gunVelocity);
+            }
+            if(player.body.onFloor()){
+            player.setVelocityX(0);
+            }
+            timedEvent = this.time.delayedCall(gunSpeed, this.set_shoot, [], this);
+            bullet_gone = this.time.delayedCall(bulletTime, this.bullet_dissapear, [b], this);
+        }else if (cursors.left.isDown){
+            player.setVelocityX(-1*horizontalSpeed);
+            if(cursors.space.isDown == false){
+            player.anims.play('left', true);
+            }
+            facing_left = true;
+        }else if (cursors.right.isDown){
+            player.setVelocityX(horizontalSpeed);
+            if(cursors.space.isDown == false){
+            player.anims.play('right', true);
+            }
+            facing_left = false;
+        }else{
+            player.setVelocityX(0);
+            if(player.anims.getCurrentKey() === 'left' || player.anims.getCurrentKey() === 'right'){
+            if(facing_left == true){
+                player.anims.play('idle_left');
+            }
+            else{
+                player.anims.play('idle_right');
+            }
+            }
+        }
+        if (cursors.up.isDown && player.body.onFloor()){
+            player.setVelocityY(-1*verticalJump);
+        }
     }
     onClicked(){
         this.scene.setVisible('MainMenu', true);
@@ -888,6 +1052,12 @@ class Instruction extends Phaser.Scene {
         clickStart.disableInteractive();
         this.scene.setVisible(false);
         console.log("back to MainMenu");
+    }
+    bullet_dissapear(b){
+      b.destroy();
+    }
+    set_shoot(){
+        can_shoot = true;
     }
 }
 
