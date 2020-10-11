@@ -879,6 +879,7 @@ class Instruction extends Phaser.Scene {
         this.load.image('platform', 'assets/ground.png');
         this.load.image('back', 'assets/back.png');
         this.load.image('rice', 'assets/rice.png')
+        this.load.image('controls', 'assets/controls.png')
     }
     create(){
         this.add.image(0, 0, 'InstructionBG').setOrigin(0, 0);
@@ -924,6 +925,7 @@ class Instruction extends Phaser.Scene {
 
         this.add.text(1000, 200, 'Use Arrow keys to move and space to shoot',
             {fontSize: '30px', fill: '#232'})
+        this.add.image(1000, 250, 'controls').setOrigin(0, 0).setScale(0.6);
 
         clickStart = this.add.text(300, 850, 'Ready to Start Game Tutorial',
             {fontSize: '30px', fill: '#888'}).
