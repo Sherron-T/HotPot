@@ -740,6 +740,8 @@ class Tutorial extends CommonScene{
         this.load.image('big_platform', 'assets/ground2.png');
         // load ingredients
         this.load.image('octopus', 'assets/ingredients/octopus.png');
+        this.load.image('directions', 'assets/directions.png')
+        this.load.image('hp_dir', 'assets/hp_dir.png')
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -763,6 +765,8 @@ class Tutorial extends CommonScene{
 
         super.create();
 
+        this.add.image(60, 150, 'directions').setOrigin(0, 0).setScale(0.80);
+        this.add.image(250, 0, 'hp_dir').setOrigin(0, 0).setScale(0.7);
         // level specified platforms
         platforms.create(300, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(800, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -777,7 +781,6 @@ class Tutorial extends CommonScene{
         // static ingredients
         enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
         enemyTutorialText = this.add.text(500, 710, 'This is a small ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
-
 
         // make entities
         boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
@@ -880,6 +883,7 @@ class Instruction extends Phaser.Scene {
         this.load.image('back', 'assets/back.png');
         this.load.image('rice', 'assets/rice.png')
         this.load.image('controls', 'assets/controls.png')
+        this.load.image('intro', 'assets/intro.png')
     }
     create(){
         this.add.image(0, 0, 'InstructionBG').setOrigin(0, 0);
@@ -912,7 +916,7 @@ class Instruction extends Phaser.Scene {
         // better to design the text first as pictures,
         // and then add to the scene
         // Maybe we have aesthetic desigens of arrows
-        this.add.text(100, 200, 'You are Pork, \n \
+        /*this.add.text(100, 200, 'You are Pork, \n \
         a prestigious ingredient,\n \
         who tries to save other \n \
         food ingredients from \n \
@@ -921,10 +925,10 @@ class Instruction extends Phaser.Scene {
         and defeats bosses who you think \n \
         are the culprits, \n \
         but are they really the bad guys? ',
-            {fontSize: '30px', fill: '#232'})
-
+            {fontSize: '30px', fill: '#232'})*/
+        this.add.image(90, 175, 'intro').setOrigin(0, 0).setScale(0.80);
         this.add.text(1000, 200, 'Use Arrow keys to move and space to shoot',
-            {fontSize: '30px', fill: '#232'})
+            {fontSize: '30px', fill: '#232',});
         this.add.image(1000, 250, 'controls').setOrigin(0, 0).setScale(0.6);
 
         clickStart = this.add.text(300, 850, 'Ready to Start Game Tutorial',
