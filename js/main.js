@@ -460,11 +460,12 @@ class Level1 extends CommonScene{
         platforms.create(5200, 600, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(5450, 500, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(5750, 400, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
-        platforms.create(6200, 300, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(6150, 300, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
 
-
-        // make small enemies
-
+        // platforms
+        platforms.create(6500, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(7500, 900, "platform").setOrigin(0, 0).refreshBody();
+        platforms.create(8500, 900, "platform").setOrigin(0, 0).refreshBody();
 
 
         // play level music
