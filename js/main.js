@@ -740,8 +740,8 @@ class Tutorial extends CommonScene{
         this.load.image('big_platform', 'assets/ground2.png');
         // load ingredients
         this.load.image('octopus', 'assets/ingredients/octopus.png');
-        this.load.image('directions', 'assets/directions.png')
-        this.load.image('hp_dir', 'assets/hp_dir.png')
+        this.load.image('directions', 'assets/intro/directions.png')
+        this.load.image('hp_dir', 'assets/intro/hp_dir.png')
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -882,8 +882,8 @@ class Instruction extends Phaser.Scene {
         this.load.image('platform', 'assets/ground.png');
         this.load.image('back', 'assets/back.png');
         this.load.image('rice', 'assets/rice.png')
-        this.load.image('controls', 'assets/controls.png')
-        this.load.image('intro', 'assets/intro.png')
+        this.load.image('controls', 'assets/intro/controls.png')
+        this.load.image('intro', 'assets/intro/intro.png')
     }
     create(){
         this.add.image(0, 0, 'InstructionBG').setOrigin(0, 0);
@@ -892,12 +892,12 @@ class Instruction extends Phaser.Scene {
 
         //block
         platforms.create(0, 0, "back").setOrigin(1, 0).refreshBody();
-        platforms.create(3000, 0, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(2000, 0, "back").setOrigin(0, 0).refreshBody();
 
         // stable platforms
         platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(0, 900, "platform").setOrigin(0, 0).refreshBody();
-        for(var i = 500; i <= 3000; i+=500){
+        for(var i = 500; i <= 2000; i+=500){
             platforms.create(i, 900, "platform").setOrigin(0, 0).refreshBody();
         }
 
@@ -912,20 +912,6 @@ class Instruction extends Phaser.Scene {
             allowGravity: false
         });
 
-        // INSTRUCTION TEXT
-        // better to design the text first as pictures,
-        // and then add to the scene
-        // Maybe we have aesthetic desigens of arrows
-        /*this.add.text(100, 200, 'You are Pork, \n \
-        a prestigious ingredient,\n \
-        who tries to save other \n \
-        food ingredients from \n \
-        the boiling world by \n \
-        kicking them out of the game board \n \
-        and defeats bosses who you think \n \
-        are the culprits, \n \
-        but are they really the bad guys? ',
-            {fontSize: '30px', fill: '#232'})*/
         this.add.image(90, 175, 'intro').setOrigin(0, 0).setScale(0.80);
         this.add.text(1000, 200, 'Use Arrow keys to move and space to shoot',
             {fontSize: '30px', fill: '#232',});
@@ -936,7 +922,7 @@ class Instruction extends Phaser.Scene {
             setInteractive().on('pointerdown',
             ()=>this.onClicked());
 
-        this.cameras.main.setBounds(0, 0, 3000, 1000);
+        this.cameras.main.setBounds(0, 0, 2000, 1000);
         this.cameras.main.startFollow(player);
 
         // animations
