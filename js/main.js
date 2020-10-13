@@ -41,6 +41,7 @@ var playerNukesOverlap;
 var bulletBossOverlap;
 var bulletEnemOverlap;
 var playerEnemOverlap;
+var platformSpeed = Phaser.Math.GetSpeed(400, 3);
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
@@ -479,7 +480,7 @@ class Level1 extends CommonScene{
         enemies.create(7100, 550, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(7500, 700, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(7500, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        
+
         enemies.create(6600, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(6700, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         enemies.create(6800, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
@@ -583,7 +584,6 @@ class Level2 extends CommonScene{
         bossLeftBound = bornL - 200;
         bossRightBound = bornR + 300;
         lastIndex = 9000;
-
         // for testing purposes
         // horizontalSpeed = testSpeed;
     }
@@ -597,7 +597,7 @@ class Level2 extends CommonScene{
         super.create();
 
         // level specified platforms
-        var basePlatform = [300, 1800, 3350, 8000];
+        var basePlatform = [300, 1800, 3800, 8000];
         basePlatform.map(xCord => platforms.create(xCord, 900, "platform").setOrigin(0, 0).refreshBody());
 
         // part1
@@ -609,10 +609,12 @@ class Level2 extends CommonScene{
         // part2
         platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         // moving platforms
-        movingPlatforms = this.physics.add.image(3100, 900, "platform").setScale(0.2).setOrigin(0, 0)
+        // movingPlatforms = this.physics.add.image(3300, 900, "platform").setScale(0.3).setOrigin(0, 0)
+        // movingPlatforms.body.setAllowGravity(false);
+        movingPlatforms = platforms.create(3300, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
         // part3
-        platforms.create(3300, 700, "platform").setScale(0.7).setOrigin(0, 0).refreshBody();
+        platforms.create(3800, 700, "platform").setScale(0.7).setOrigin(0, 0).refreshBody();
 
         // static ingredients
         enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
@@ -643,6 +645,7 @@ class Level2 extends CommonScene{
         playerCollider = this.physics.add.collider(player, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
         enemyCollider = this.physics.add.collider(enemies, platforms);
+        // this.physics.add.collider(player, movingPlatforms);
 
         // overlaps
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
@@ -665,6 +668,16 @@ class Level2 extends CommonScene{
             speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        }
+
+        movingPlatforms.x += platformSpeed * delta;
+        movingPlatforms.refreshBody();
+        // console.log(movingPlatforms.x);
+        if(movingPlatforms.x >= 3400){
+            platformSpeed = -platformSpeed;
+        }
+        if(movingPlatforms.x <= 2900){
+            platformSpeed = -platformSpeed;
         }
     }
 }
@@ -1097,8 +1110,8 @@ var config = {
               debug: true
           }
       },
-    //scene: [MainMenu] // starting with tutorial 
-    scene: [GameMenu] // starting with real game 
+    //scene: [MainMenu] // starting with tutorial
+    scene: [GameMenu] // starting with real game
   };
 
 
