@@ -42,6 +42,8 @@ var bulletBossOverlap;
 var bulletEnemOverlap;
 var playerEnemOverlap;
 var platformSpeed = Phaser.Math.GetSpeed(400, 3);
+var pSpeed;
+var movingPlatformDict = {};
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
@@ -375,6 +377,7 @@ class CommonScene extends Phaser.Scene{
     restart(){
         score = 0;
         hp = 3;
+        movingPlatformDict = {}; 
         if(boss) boss.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
@@ -584,6 +587,7 @@ class Level2 extends CommonScene{
         bossLeftBound = bornL - 200;
         bossRightBound = bornR + 300;
         lastIndex = 9000;
+        pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
     }
@@ -609,7 +613,8 @@ class Level2 extends CommonScene{
         // part2
         platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
-        movingPlatforms = platforms.create(3300, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        movingPlatforms = platforms.create(3200, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[3200] = movingPlatforms;
 
         // part3
         platforms.create(3800, 700, "platform").setScale(0.7).setOrigin(0, 0).refreshBody();
@@ -671,14 +676,16 @@ class Level2 extends CommonScene{
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
 
-        movingPlatforms.x += platformSpeed * delta;
-        movingPlatforms.refreshBody();
-        // console.log(movingPlatforms.x);
-        if(movingPlatforms.x >= 3400){
-            platformSpeed = -platformSpeed;
-        }
-        if(movingPlatforms.x <= 2900){
-            platformSpeed = -platformSpeed;
+        for(var center in movingPlatformDict){
+            var movingP = movingPlatformDict[center]; 
+            movingP.x += pSpeed * delta;
+            movingP.refreshBody();
+            if(movingP.x >= parseInt(center)+200){
+                pSpeed = -platformSpeed;
+            }
+            if(movingP.x <= parseInt(center)-200){
+                pSpeed = platformSpeed;
+            }
         }
     }
 }
