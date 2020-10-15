@@ -608,9 +608,7 @@ class Level2 extends CommonScene{
 
         // part2
         platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
-        // moving platforms
-        // movingPlatforms = this.physics.add.image(3300, 900, "platform").setScale(0.3).setOrigin(0, 0)
-        // movingPlatforms.body.setAllowGravity(false);
+
         movingPlatforms = platforms.create(3300, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
         // part3
@@ -624,6 +622,9 @@ class Level2 extends CommonScene{
         enemies.create(2000, 900, "octopus").setOrigin(0, 1).refreshBody();
         enemies.create(2100, 600, "beef").setOrigin(0, 1).refreshBody();
         enemies.create(2400, 900, "fish").setOrigin(0, 1).refreshBody();
+        enemies.create(4000, 700, "beef").setOrigin(0, 1).refreshBody();
+        enemies.create(4300, 700, "octupus").setOrigin(0, 1).refreshBody();
+        enemies.create(4400, 900, "beef").setOrigin(0, 1).refreshBody();
 
         // moving ingredients --> !!!! need to add a moving ingredients function
 
