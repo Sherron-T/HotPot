@@ -22,6 +22,7 @@ var gun_sound;
 
 // small enemy variables
 var enemies;
+var forks = [];
 
 // boss variables
 var boss;
@@ -414,6 +415,7 @@ class Level1 extends CommonScene{
         bossLeftBound = bornL - 200;
         bossRightBound = bornR + 300;
         lastIndex = 9000;
+        pSpeed = platformSpeed;
     }
     create(){
         // background
@@ -436,9 +438,11 @@ class Level1 extends CommonScene{
             frameRate: 10,
             repeat: -1
         });
+
         // first 2 platforms
-        platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        var mp1 = platforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[300] = mp1;
 
         enemies.create(250, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
         var fork1 = this.physics.add.sprite(500, 400, 'fork');
@@ -450,10 +454,10 @@ class Level1 extends CommonScene{
             targets: fork1.body.velocity,
             loop: -1,
             tweens: [
-      { x:    60, duration: 3000, ease: 'Stepped' },
-      //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
-      { x: -60, duration: 3000, ease: 'Stepped' },
-    ]});
+            { x:    60, duration: 3000, ease: 'Stepped' },
+            //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
+            { x: -60, duration: 3000, ease: 'Stepped' },
+        ]});
 
         //enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
@@ -587,6 +591,35 @@ class Level1 extends CommonScene{
           }
           this.time.addEvent({ delay: 2000, callback: this.enableSpecial, callbackScope: this});
         }
+
+        // moving platforms 
+        for(var center in movingPlatformDict){
+            var movingP = movingPlatformDict[center];
+            movingP.x += pSpeed * delta;
+            movingP.refreshBody();
+            if(movingP.x >= parseInt(center)+200){
+                pSpeed = -platformSpeed;
+            }
+            if(movingP.x <= parseInt(center)-200){
+                pSpeed = platformSpeed;
+            }
+        }
+    }
+    makeMovEnemy(i, xPos, yPos, duration){
+        forks[i] = this.physics.add.sprite(xPos, yPos, 'fork');
+        enemies.add(forks[i]);
+        //var fork1Collider = this.physics.add.collider(fork1, platforms);
+        //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
+        forks[i].anims.play('walk');
+        this.tweens.timeline({
+            targets: forks[i].body.velocity,
+            loop: -1,
+            tweens: [
+            { x:    60, duration: duration, ease: 'Stepped' },
+            //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
+            { x: -60, duration: duration, ease: 'Stepped' },
+        ]});
+        i += 1;
     }
 }
 
@@ -648,15 +681,15 @@ class Level2 extends CommonScene{
         platforms.create(3800, 700, "platform").setScale(0.7).setOrigin(0, 0).refreshBody();
 
         // static ingredients
-        enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
-        enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
+        enemies.create(250, 900, "fish").setScale(Math.random()+0.7).setOrigin(0, 1).refreshBody();
+        enemies.create(600, 800, "octopus").setScale(Math.random()+0.7).setOrigin(0, 1).refreshBody();
         enemies.create(1400, 500, "beef").setOrigin(0, 1).refreshBody();
         enemies.create(1490, 800, "octopus").setOrigin(0, 1).refreshBody();
         enemies.create(2000, 900, "octopus").setOrigin(0, 1).refreshBody();
         enemies.create(2100, 600, "beef").setOrigin(0, 1).refreshBody();
         enemies.create(2400, 900, "fish").setOrigin(0, 1).refreshBody();
         enemies.create(4000, 700, "beef").setOrigin(0, 1).refreshBody();
-        enemies.create(4300, 700, "octupus").setOrigin(0, 1).refreshBody();
+        enemies.create(4300, 700, "octopus").setOrigin(0, 1).refreshBody();
         enemies.create(4400, 900, "beef").setOrigin(0, 1).refreshBody();
 
         // moving ingredients --> !!!! need to add a moving ingredients function
