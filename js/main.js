@@ -71,7 +71,7 @@ var bossLeftBound = 9100;
 var bossRightBound = 10000;
 var bossScore = 233;
 var bornL = 9500;
-var bornR = 9800;
+var bornR = 9550;
 
 // level varables
 var winLevel1 = false;
