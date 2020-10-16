@@ -72,7 +72,7 @@ var bossLeftBound = 9100;
 var bossRightBound = 10000;
 var bossScore = 233;
 var bornL = 9500;
-var bornR = 9800;
+var bornR = 9550;
 
 // level varables
 var winLevel1 = false;
@@ -425,7 +425,7 @@ class Level1 extends CommonScene{
         this.anims.create({
             key: 'boil',
             frames: this.anims.generateFrameNumbers('introbg', { start: 0, end: 6 }),
-            frameRate: 5,
+            frameRate: 2,
             repeat: -1
         });
         this.add.sprite(0,0,'introbg').setOrigin(0, 0).anims.play('boil');
@@ -454,9 +454,8 @@ class Level1 extends CommonScene{
             targets: fork1.body.velocity,
             loop: -1,
             tweens: [
-            { x:    60, duration: 3000, ease: 'Stepped' },
-            //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
-            { x: -60, duration: 3000, ease: 'Stepped' },
+              { x:  60, duration: 3000, ease: 'Stepped' },
+              { x: -60, duration: 3000, ease: 'Stepped' },
         ]});
 
         //enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
@@ -592,7 +591,7 @@ class Level1 extends CommonScene{
           this.time.addEvent({ delay: 2000, callback: this.enableSpecial, callbackScope: this});
         }
 
-        // moving platforms 
+        // moving platforms
         for(var center in movingPlatformDict){
             var movingP = movingPlatformDict[center];
             movingP.x += pSpeed * delta;
