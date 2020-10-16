@@ -423,7 +423,7 @@ class Level1 extends CommonScene{
         this.anims.create({
             key: 'boil',
             frames: this.anims.generateFrameNumbers('introbg', { start: 0, end: 6 }),
-            frameRate: 5,
+            frameRate: 2,
             repeat: -1
         });
         this.add.sprite(0,0,'introbg').setOrigin(0, 0).anims.play('boil');
@@ -450,10 +450,9 @@ class Level1 extends CommonScene{
             targets: fork1.body.velocity,
             loop: -1,
             tweens: [
-      { x:    60, duration: 3000, ease: 'Stepped' },
-      //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
-      { x: -60, duration: 3000, ease: 'Stepped' },
-    ]});
+              { x:  60, duration: 3000, ease: 'Stepped' },
+              { x: -60, duration: 3000, ease: 'Stepped' },
+        ]});
 
         //enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
