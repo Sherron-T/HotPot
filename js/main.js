@@ -377,7 +377,7 @@ class CommonScene extends Phaser.Scene{
     restart(){
         score = 0;
         hp = 3;
-        movingPlatformDict = {}; 
+        movingPlatformDict = {};
         if(boss) boss.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
@@ -403,6 +403,7 @@ class Level1 extends CommonScene{
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
         this.load.spritesheet('introbg', 'assets/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
+        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 50, frameHeight : 80});
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -429,12 +430,32 @@ class Level1 extends CommonScene{
         this.add.sprite(1470,0,'introbg').setOrigin(0, 0).anims.play('boil');
         super.create();
 
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('fork', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
         // first 2 platforms
         platforms.create(100, 950, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
 
-        enemies.create(250, 950, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        enemies.create(250, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        var fork1 = this.physics.add.sprite(500, 400, 'fork');
+        enemies.add(fork1);
+        //var fork1Collider = this.physics.add.collider(fork1, platforms);
+        //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
+        fork1.anims.play('walk');
+        this.tweens.timeline({
+            targets: fork1.body.velocity,
+            loop: -1,
+            tweens: [
+      { x:    60, duration: 3000, ease: 'Stepped' },
+      //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
+      { x: -60, duration: 3000, ease: 'Stepped' },
+    ]});
+
+        //enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
 
         // little cave place
         platforms.create(1100, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -684,7 +705,7 @@ class Level2 extends CommonScene{
         }
 
         for(var center in movingPlatformDict){
-            var movingP = movingPlatformDict[center]; 
+            var movingP = movingPlatformDict[center];
             movingP.x += pSpeed * delta;
             movingP.refreshBody();
             if(movingP.x >= parseInt(center)+200){
