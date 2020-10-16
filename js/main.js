@@ -394,6 +394,7 @@ class Level1 extends CommonScene{
         this.load.image('background', 'assets/bg.png');
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
+        this.load.spritesheet('introbg', 'assets/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -408,10 +409,16 @@ class Level1 extends CommonScene{
     create(){
         // background
         this.add.image(0, 0, 'level1bg').setOrigin(0, 0);
-
         // boss bg
         this.add.image(9000, 0, 'background').setOrigin(0, 0);
-
+        this.anims.create({
+            key: 'boil',
+            frames: this.anims.generateFrameNumbers('introbg', { start: 0, end: 6 }),
+            frameRate: 5,
+            repeat: -1
+        });
+        this.add.sprite(0,0,'introbg').setOrigin(0, 0).anims.play('boil');
+        this.add.sprite(1470,0,'introbg').setOrigin(0, 0).anims.play('boil');
         super.create();
 
         // first 2 platforms
@@ -888,7 +895,6 @@ class Instruction extends Phaser.Scene {
     }
     create(){
         this.add.image(0, 0, 'InstructionBG').setOrigin(0, 0);
-
         platforms = this.physics.add.staticGroup();
 
         //block
