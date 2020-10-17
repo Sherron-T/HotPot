@@ -636,7 +636,7 @@ class Level2 extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('boss', 'assets/tofu.png');
+        this.load.spritesheet('boss', 'assets/tofu.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/level1bg.png');
@@ -660,7 +660,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 6000;
+        playBornX = 8000;
     }
     create(){
         // background
@@ -672,7 +672,7 @@ class Level2 extends CommonScene{
         super.create();
 
         // level specified platforms
-        var basePlatform = [300, 1800, 3800, 5150, 8000];
+        var basePlatform = [300, 1800, 3800, 5150, 7000, 8000];
         basePlatform.map(xCord => platforms.create(xCord, 900, "platform").setOrigin(0, 0).refreshBody());
 
         // part1
@@ -695,6 +695,11 @@ class Level2 extends CommonScene{
         movingPlatformDict[4900] = movingPlatforms;
         platforms.create(5200, 500, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(5800, 300, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(6300, 300, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+
+        // part5
+        movingPlatforms = platforms.create(6350, 800, "platform").setScale(0.4).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[6350] = movingPlatforms;
 
         // static ingredients
         enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
@@ -728,7 +733,14 @@ class Level2 extends CommonScene{
 
 
         // make entities
-        boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
+        this.anims.create({
+            key: 'bossMove',
+            frames: this.anims.generateFrameNumbers('boss', { start: 0, end: 12 }),
+            frameRate: 5,
+            repeat: -1
+        });
+        boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'boss');
+        boss.anims.play('bossMove');
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         boss.setScale(2);
         speed = bossSpeed;
