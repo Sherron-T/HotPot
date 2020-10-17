@@ -5,6 +5,8 @@ var movingPlatforms;
 // player variables
 var control;
 var player;
+var playBornX = 50;
+var playBornY = 50;
 var cursors;
 var keyZ;
 var hearts;
@@ -23,6 +25,7 @@ var gun_sound;
 // small enemy variables
 var enemies;
 var forks = [];
+var i = 0;
 
 // boss variables
 var boss;
@@ -143,7 +146,7 @@ class CommonScene extends Phaser.Scene{
 
         // create main char
         control = true;
-        player = this.physics.add.sprite(50, 50, 'pork');
+        player = this.physics.add.sprite(playBornX, playBornY, 'pork');
         player.setBounce(0);
         player.setCollideWorldBounds(false);
         player.body.width = 60;
@@ -375,10 +378,37 @@ class CommonScene extends Phaser.Scene{
         this.events.off();
         console.log("back")
     }
+    makeMoveEnemy(i, xPos, yPos, duration, enemyName){
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers(enemyName, { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        forks[i] = this.physics.add.sprite(xPos, yPos, enemyName);
+        enemies.add(forks[i]);
+        //var fork1Collider = this.physics.add.collider(fork1, platforms);
+        //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
+        forks[i].anims.play('walk');
+        this.tweens.timeline({
+            targets: forks[i].body.velocity,
+            loop: -1,
+            tweens: [
+            { x:60, duration: duration, ease: 'Stepped' },
+            //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
+            { x:-60, duration: duration, ease: 'Stepped' },
+        ]});
+        i += 1;
+    }
+    bullet_dissapear(b){
+      b.destroy();
+    }
     restart(){
         score = 0;
         hp = 3;
         movingPlatformDict = {};
+        forks = [];
+        i = 0;
         if(boss) boss.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
@@ -386,9 +416,6 @@ class CommonScene extends Phaser.Scene{
         if(endText) endText.setVisible(false);
         if(summary) summary.setVisible(false);
         console.log("restart");
-    }
-    bullet_dissapear(b){
-      b.destroy();
     }
 }
 
@@ -405,7 +432,6 @@ class Level1 extends CommonScene{
         this.load.image('big_platform', 'assets/ground2.png');
         this.load.spritesheet('introbg', 'assets/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
         this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 50, frameHeight : 80});
-
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 1000;
@@ -604,22 +630,6 @@ class Level1 extends CommonScene{
             }
         }
     }
-    makeMovEnemy(i, xPos, yPos, duration){
-        forks[i] = this.physics.add.sprite(xPos, yPos, 'fork');
-        enemies.add(forks[i]);
-        //var fork1Collider = this.physics.add.collider(fork1, platforms);
-        //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
-        forks[i].anims.play('walk');
-        this.tweens.timeline({
-            targets: forks[i].body.velocity,
-            loop: -1,
-            tweens: [
-            { x:    60, duration: duration, ease: 'Stepped' },
-            //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
-            { x: -60, duration: duration, ease: 'Stepped' },
-        ]});
-        i += 1;
-    }
 }
 
 class Level2 extends CommonScene{
@@ -637,10 +647,10 @@ class Level2 extends CommonScene{
         this.load.image('fish', 'assets/ingredients/fish.png');
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
-
+        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 50, frameHeight : 80});
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 3;
+        hp = 300;
         bossHP = boss2HP;
         bornL = 9500;
         bornR = 9600;
@@ -650,6 +660,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
+        playBornX = 6000;
     }
     create(){
         // background
@@ -661,7 +672,7 @@ class Level2 extends CommonScene{
         super.create();
 
         // level specified platforms
-        var basePlatform = [300, 1800, 3800, 8000];
+        var basePlatform = [300, 1800, 3800, 5150, 8000];
         basePlatform.map(xCord => platforms.create(xCord, 900, "platform").setOrigin(0, 0).refreshBody());
 
         // part1
@@ -679,17 +690,39 @@ class Level2 extends CommonScene{
         // part3
         platforms.create(3800, 700, "platform").setScale(0.7).setOrigin(0, 0).refreshBody();
 
+        // part4
+        movingPlatforms = platforms.create(4900, 700, "platform").setScale(0.1).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[4900] = movingPlatforms;
+        platforms.create(5200, 500, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
+        platforms.create(5800, 300, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+
         // static ingredients
-        enemies.create(250, 900, "fish").setScale(Math.random()+0.7).setOrigin(0, 1).refreshBody();
-        enemies.create(600, 800, "octopus").setScale(Math.random()+0.7).setOrigin(0, 1).refreshBody();
+        enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
+        enemies.create(900, 600, "octopus").setOrigin(0, 1).refreshBody();
+        this.makeMoveEnemy(i, 600, 700, 3000, 'fork');
+        this.makeMoveEnemy(i, 500, 700, 3000, 'fork');
+
         enemies.create(1400, 500, "beef").setOrigin(0, 1).refreshBody();
         enemies.create(1490, 800, "octopus").setOrigin(0, 1).refreshBody();
+
         enemies.create(2000, 900, "octopus").setOrigin(0, 1).refreshBody();
         enemies.create(2100, 600, "beef").setOrigin(0, 1).refreshBody();
         enemies.create(2400, 900, "fish").setOrigin(0, 1).refreshBody();
+        this.makeMoveEnemy(i, 2200, 800, 3000, 'fork'); // add more variety of moving enemies
+
         enemies.create(4000, 700, "beef").setOrigin(0, 1).refreshBody();
         enemies.create(4300, 700, "octopus").setOrigin(0, 1).refreshBody();
+        this.makeMoveEnemy(i, 4250, 600, 3000, 'fork');
         enemies.create(4400, 900, "beef").setOrigin(0, 1).refreshBody();
+
+        this.makeMoveEnemy(i, 5400, 450, 4000, 'fork');
+        var xCord = 5300;
+        while(xCord < 6000){
+            var randomE = ["octopus", "beef", "fish"];
+            enemies.create(xCord, 700, randomE[Math.floor(Math.random() * 3)]).setOrigin(0, 1).refreshBody();
+            xCord += (Math.floor(Math.random() * 100)+50);
+            this.makeMoveEnemy(i, xCord, 600, Math.floor(Math.random() * 1000)+Math.floor(Math.random() * 1000)+3000, 'fork');
+        }
 
         // moving ingredients --> !!!! need to add a moving ingredients function
 
