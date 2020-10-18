@@ -385,7 +385,7 @@ class CommonScene extends Phaser.Scene{
             frameRate: 10,
             repeat: -1
         });
-        forks[i] = this.physics.add.sprite(xPos, yPos, enemyName);
+        forks[i] = this.physics.add.sprite(xPos, yPos, enemyName).setOrigin(0, 1).refreshBody();
         enemies.add(forks[i]);
         //var fork1Collider = this.physics.add.collider(fork1, platforms);
         //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
@@ -470,21 +470,9 @@ class Level1 extends CommonScene{
         var mp1 = platforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         movingPlatformDict[300] = mp1;
 
-        enemies.create(250, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        var fork1 = this.physics.add.sprite(500, 400, 'fork');
-        enemies.add(fork1);
-        //var fork1Collider = this.physics.add.collider(fork1, platforms);
-        //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
-        fork1.anims.play('walk');
-        this.tweens.timeline({
-            targets: fork1.body.velocity,
-            loop: -1,
-            tweens: [
-              { x:  60, duration: 3000, ease: 'Stepped' },
-              { x: -60, duration: 3000, ease: 'Stepped' },
-        ]});
-
-        //enemies.create(600, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        this.makeMoveEnemy(i, 100, 900, 2500, 'fork');
+        
+        this.makeMoveEnemy(i, 500, 800, 2500, 'fork');
 
         // little cave place
         platforms.create(1100, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -494,10 +482,11 @@ class Level1 extends CommonScene{
         platforms.create(1700, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
         platforms.create(900, 550, "platform").setOrigin(0, 0).refreshBody();
 
-        enemies.create(1500, 750, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(1700, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(1600, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(1750, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        this.makeMoveEnemy(i, 1100, 750, 7000, 'fork');
+        this.makeMoveEnemy(i, 1200, 900, 6500, 'fork');
+        this.makeMoveEnemy(i, 1200, 900, 10000, 'fork');
+        this.makeMoveEnemy(i, 1300, 900, 8000, 'fork');
+        this.makeMoveEnemy(i, 1600, 900, 7500, 'fork');
 
         // stairs
         platforms.create(2100, 800, "back").setOrigin(0, 0).refreshBody();
@@ -505,23 +494,25 @@ class Level1 extends CommonScene{
         platforms.create(2300, 600, "back").setOrigin(0, 0).refreshBody();
         platforms.create(2400, 500, "back").setOrigin(0, 0).refreshBody();
 
-        enemies.create(2130, 800, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(2330, 600, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        this.makeMoveEnemy(i, 2100, 800, 1000, 'fork');
+        this.makeMoveEnemy(i, 2300, 600, 500, 'fork');
 
         // floating platforms
         platforms.create(2900, 400, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(3500, 450, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(4200, 350, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
 
-        enemies.create(3000, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(3100, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(3250, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(3600, 450, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(3750, 450, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(3800, 450, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(4250, 350, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(4350, 350, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(4400, 350, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        this.makeMoveEnemy(i, 2900, 400, 8000, 'fork');
+        this.makeMoveEnemy(i, 2900, 400, 6000, 'fork');
+        this.makeMoveEnemy(i, 3000, 400, 4000, 'fork');
+
+        this.makeMoveEnemy(i, 3500, 450, 4000, 'fork');
+        this.makeMoveEnemy(i, 3500, 450, 5000, 'fork');
+        this.makeMoveEnemy(i, 3700, 450, 4500, 'fork');
+
+        this.makeMoveEnemy(i, 4200, 350, 5000, 'fork');
+        this.makeMoveEnemy(i, 4300, 350, 4000, 'fork');
+        this.makeMoveEnemy(i, 4350, 350, 2020, 'fork');
 
         // thin pillars
         platforms.create(5200, 600, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
@@ -536,20 +527,16 @@ class Level1 extends CommonScene{
         platforms.create(7400, 700, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(7400, 400, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
-        enemies.create(6700, 700, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7100, 550, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7500, 700, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7500, 400, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        this.makeMoveEnemy(i, 6500, 900, 14000, 'fork');
+        this.makeMoveEnemy(i, 75000, 900, 10000, 'fork');
+        this.makeMoveEnemy(i, 95000, 900, 5000, 'fork');
 
-        enemies.create(6600, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(6700, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(6800, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7000, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7050, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7100, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7400, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7480, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
-        enemies.create(7510, 900, "leek").setOrigin(0, 1).setScale(0.15).refreshBody();
+        this.makeMoveEnemy(i, 6600, 700, 4000, 'fork');
+        this.makeMoveEnemy(i, 7000, 550, 3900, 'fork');
+        this.makeMoveEnemy(i, 7400, 700, 4000, 'fork');
+        this.makeMoveEnemy(i, 7400, 400, 2000, 'fork');
+        this.makeMoveEnemy(i, 7400, 400, 4000, 'fork');
+        this.makeMoveEnemy(i, 7500, 400, 1000, 'fork');
 
         // platform right infront of boss
         platforms.create(8300, 900, "platform").setOrigin(0, 0).refreshBody();
