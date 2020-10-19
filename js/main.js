@@ -111,7 +111,6 @@ class CommonScene extends Phaser.Scene{
         this.load.image('heart', 'assets/heart.png')
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.audio('boss_music', 'assets/boss.wav')
-        this.load.audio('main_music', 'assets/main_music.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
@@ -385,7 +384,7 @@ class CommonScene extends Phaser.Scene{
             frameRate: 10,
             repeat: -1
         });
-        forks[i] = this.physics.add.sprite(xPos, yPos, enemyName).setOrigin(0, 1).refreshBody();
+        forks[i] = this.physics.add.sprite(xPos, yPos, enemyName).setOrigin(0, 1).refreshBody().setScale(0.5);
         enemies.add(forks[i]);
         //var fork1Collider = this.physics.add.collider(fork1, platforms);
         //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
@@ -431,7 +430,7 @@ class Level1 extends CommonScene{
         this.load.image('platform', 'assets/ground.png');
         this.load.image('big_platform', 'assets/ground2.png');
         this.load.spritesheet('introbg', 'assets/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
-        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 50, frameHeight : 80});
+        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 1000;
@@ -446,24 +445,20 @@ class Level1 extends CommonScene{
     create(){
         // background
         this.add.image(0, 0, 'level1bg').setOrigin(0, 0);
-        // boss bg
-        this.add.image(9000, 0, 'background').setOrigin(0, 0);
+
+        //Animated bg
         this.anims.create({
             key: 'boil',
             frames: this.anims.generateFrameNumbers('introbg', { start: 0, end: 6 }),
             frameRate: 2,
             repeat: -1
         });
-        this.add.sprite(0,0,'introbg').setOrigin(0, 0).anims.play('boil');
-        this.add.sprite(1470,0,'introbg').setOrigin(0, 0).anims.play('boil');
+        this.add.sprite(0,0,'introbg').setOrigin(0, 0).setScale(1.1).anims.play('boil').setScrollFactor(0, 0);
+        // boss bg
+        this.add.image(9000, 0, 'background').setOrigin(0, 0);
+        //this.add.sprite(1470,0,'introbg').setOrigin(0, 0).anims.play('boil');
         super.create();
 
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('fork', { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
 
         // first 2 platforms
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
@@ -471,7 +466,7 @@ class Level1 extends CommonScene{
         movingPlatformDict[300] = mp1;
 
         this.makeMoveEnemy(i, 100, 900, 2500, 'fork');
-        
+
         this.makeMoveEnemy(i, 500, 800, 2500, 'fork');
 
         // little cave place
@@ -552,12 +547,7 @@ class Level1 extends CommonScene{
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
         // boss music
-        var music = this.sound.add('main_music',{
-            loop: true,
-            delay: 0,
-            volume: 1
-          });
-        music.play();
+
         // boss attacks
         nukes = this.physics.add.group({});
 
@@ -634,7 +624,7 @@ class Level2 extends CommonScene{
         this.load.image('fish', 'assets/ingredients/fish.png');
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
-        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 50, frameHeight : 80});
+        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 300;
@@ -788,10 +778,18 @@ class GameMenu extends Phaser.Scene {
         this.load.image('background', 'assets/bg.png');
         this.load.image('lock', 'assets/lock.png');
         this.load.image('title', 'assets/title.png');
+
+        this.load.audio('main_music', 'assets/main_music.wav')
     }
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
         this.scene.remove('Tutorial');
+        var music = this.sound.add('main_music',{
+            loop: true,
+            delay: 0,
+            volume: 1
+          });
+        music.play();
         clickButton1 = this.add.text(450, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
@@ -841,6 +839,7 @@ class MainMenu extends Phaser.Scene {
     create(){
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(0, 0, 'title').setOrigin(0, 0);
+
         clickButtonBegin = this.add.text(400, 750, 'Begin the Game with Tutorial',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
