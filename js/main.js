@@ -69,7 +69,7 @@ var bulletTime = 500; //Increase to adjust bullet distance
 const boss1HP = 20;
 const boss2HP = 30;
 var bossHP = 3;
-var bossLow = 1;
+var bossLow = 10;
 var bossStopDuration = 800;
 var bossLeftBound = 9100;
 var bossRightBound = 10000;
@@ -438,8 +438,8 @@ class Level1 extends CommonScene{
         bossHP = boss1HP;
         bornL = 9500;
         bornR = 9600;
-        bossLeftBound = bornL - 200;
-        bossRightBound = bornR + 300;
+        bossLeftBound = bornL - 300;
+        bossRightBound = bornR + 350;
         lastIndex = 9000;
         pSpeed = platformSpeed;
         // for testing
@@ -646,7 +646,7 @@ class Level2 extends CommonScene{
         bornL = 9500;
         bornR = 9600;
         bossLeftBound = bornL - 300;
-        bossRightBound = bornR + 300;
+        bossRightBound = bornR + 350;
         lastIndex = 9000;
         pSpeed = platformSpeed;
         // for testing purposes
@@ -792,17 +792,17 @@ class GameMenu extends Phaser.Scene {
         this.load.image('background', 'assets/bg.png');
         this.load.image('lock', 'assets/lock.png');
         this.load.image('title', 'assets/title.png');
-        this.load.audio('main_music', 'assets/main_music.wav')
+        // this.load.audio('main_music', 'assets/main_music.wav')
     }
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
         this.scene.remove('Tutorial');
-        var music = this.sound.add('main_music',{
-            loop: true,
-            delay: 0,
-            volume: 1
-          });
-        music.play();
+        // var music = this.sound.add('main_music',{
+        //     loop: true,
+        //     delay: 0,
+        //     volume: 1
+        //   });
+        // music.play();
         clickButton1 = this.add.text(450, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
@@ -904,8 +904,8 @@ class Tutorial extends CommonScene{
         bossHP = 3;
         bornL = 400;
         bornR = 800;
-        bossLeftBound = bornL - 200;
-        bossRightBound = bornR + 200;
+        bossLeftBound = bornL - 300;
+        bossRightBound = bornR + 350;
         lastIndex = 50;
 
         // for testing purposes
