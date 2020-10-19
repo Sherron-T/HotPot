@@ -66,8 +66,8 @@ var gunVelocity = 1000;
 var bulletTime = 500; //Increase to adjust bullet distance
 
 // boss variables
-const boss1HP = 3;
-const boss2HP = 3;
+const boss1HP = 20;
+const boss2HP = 30;
 var bossHP = 3;
 var bossLow = 1;
 var bossStopDuration = 800;
@@ -97,6 +97,7 @@ var clickInstruction;
 var hurtText;
 var bossTutorialText;
 var enemyTutorialText;
+var tutorialScene;
 
 // instruction
 var clickStart;
@@ -433,7 +434,7 @@ class Level1 extends CommonScene{
         this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 1000;
+        hp = 3;
         bossHP = boss1HP;
         bornL = 9500;
         bornR = 9600;
@@ -441,6 +442,10 @@ class Level1 extends CommonScene{
         bossRightBound = bornR + 300;
         lastIndex = 9000;
         pSpeed = platformSpeed;
+        // for testing
+        // hp = 30;
+        // horizontalSpeed = testSpeed;
+        // playBornX = 8000;
     }
     create(){
         // background
@@ -546,6 +551,13 @@ class Level1 extends CommonScene{
         boss.body.offset.x = 30;
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
+        // fork with bosses
+        this.makeMoveEnemy(i, 9000, 800, 8000, 'fork');
+        this.makeMoveEnemy(i, 9200, 700, 6000, 'fork');
+        this.makeMoveEnemy(i, 9500, 800, 4000, 'fork');
+        this.makeMoveEnemy(i, 9800, 700, 8000, 'fork');
+        this.makeMoveEnemy(i, 9900, 800, 3000, 'fork');
+
         // boss music
 
         // boss attacks
@@ -613,7 +625,6 @@ class Level2 extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.spritesheet('boss', 'assets/tofu.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('leek_nuke', 'assets/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/level1bg.png');
@@ -625,19 +636,22 @@ class Level2 extends CommonScene{
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
         this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 68, frameHeight : 158});
+        // load boss
+        this.load.spritesheet('tofu', 'assets/tofu.png', {frameWidth : 100, frameHeight : 78});
+
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 300;
+        hp = 3;
         bossHP = boss2HP;
         bornL = 9500;
         bornR = 9600;
-        bossLeftBound = bornL - 200;
+        bossLeftBound = bornL - 300;
         bossRightBound = bornR + 300;
         lastIndex = 9000;
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 8000;
+        // playBornX = 8000;
     }
     create(){
         // background
@@ -678,7 +692,7 @@ class Level2 extends CommonScene{
         movingPlatforms = platforms.create(6350, 800, "platform").setScale(0.4).setOrigin(0, 0).refreshBody();
         movingPlatformDict[6350] = movingPlatforms;
 
-        // static ingredients
+        // ingredients
         enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
         enemies.create(900, 600, "octopus").setOrigin(0, 1).refreshBody();
         this.makeMoveEnemy(i, 600, 700, 3000, 'fork');
@@ -712,11 +726,11 @@ class Level2 extends CommonScene{
         // make entities
         this.anims.create({
             key: 'bossMove',
-            frames: this.anims.generateFrameNumbers('boss', { start: 0, end: 12 }),
+            frames: this.anims.generateFrameNumbers('tofu', { start: 0, end: 12 }),
             frameRate: 5,
             repeat: -1
         });
-        boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'boss');
+        boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
         boss.anims.play('bossMove');
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         boss.setScale(2);
@@ -778,7 +792,6 @@ class GameMenu extends Phaser.Scene {
         this.load.image('background', 'assets/bg.png');
         this.load.image('lock', 'assets/lock.png');
         this.load.image('title', 'assets/title.png');
-
         this.load.audio('main_music', 'assets/main_music.wav')
     }
     create(){
@@ -804,12 +817,12 @@ class GameMenu extends Phaser.Scene {
     // comment out this snippet if you want to visit level2
     // without completing level1
 
-        // if(!winLevel1){
-        //     clickButton2.disableInteractive();
-        // }else{
-        //     clickButton2.setInteractive();
-        //     lock2.destroy();
-        // }
+        if(!winLevel1){
+            clickButton2.disableInteractive();
+        }else{
+            clickButton2.setInteractive();
+            lock2.destroy();
+        }
 
     }
     onClicked1(){
@@ -818,7 +831,6 @@ class GameMenu extends Phaser.Scene {
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
         console.log("clicked level1");
-        // clickButton2.setInteractive();
         //this.scene.start('Level1');
     }
     onClicked2(){
@@ -837,7 +849,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title', 'assets/title.png');
     }
     create(){
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        // this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(0, 0, 'title').setOrigin(0, 0);
 
         clickButtonBegin = this.add.text(400, 750, 'Begin the Game with Tutorial',
@@ -855,7 +867,7 @@ class MainMenu extends Phaser.Scene {
     onClicked(){
         this.scene.remove('Tutorial');
         this.scene.remove('Instruction');
-        this.scene.add('Tutorial', Tutorial, true);
+        tutorialScene = this.scene.add('Tutorial', Tutorial, true);
         clickInstruction.disableInteractive();
         clickButtonBegin.disableInteractive();
         console.log("clicked begin");
@@ -1208,8 +1220,8 @@ var config = {
               debug: true
           }
       },
-    //scene: [MainMenu] // starting with tutorial
-    scene: [GameMenu] // starting with real game
+    scene: [MainMenu] // starting with tutorial
+    // scene: [GameMenu] // starting with real game
   };
 
 
