@@ -394,9 +394,8 @@ class CommonScene extends Phaser.Scene{
             targets: forks[i].body.velocity,
             loop: -1,
             tweens: [
-            { x:60, duration: duration, ease: 'Stepped' },
-            //{ x:    0, y:    0, duration: 1000, ease: 'Stepped' },
-            { x:-60, duration: duration, ease: 'Stepped' },
+            {x:60, duration:duration, ease:'Stepped'},
+            {x:-60, duration:duration, ease:'Stepped'},
         ]});
         i += 1;
     }
@@ -1216,8 +1215,9 @@ var config = {
     physics: {
           default: 'arcade',
           arcade: {
-              gravity: { y: 800 },
-              debug: true
+              gravity: {y:800},
+              // debug: true
+              debug: false
           }
       },
     scene: [MainMenu] // starting with tutorial
