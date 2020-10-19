@@ -89,6 +89,7 @@ var lock2;
 var endText;
 var summary;
 var lastIndex;
+var isMusicOn = false;
 
 // tutorial
 var tutorialTextColor = "#034680";
@@ -791,17 +792,11 @@ class GameMenu extends Phaser.Scene {
         this.load.image('background', 'assets/bg.png');
         this.load.image('lock', 'assets/lock.png');
         this.load.image('title', 'assets/title.png');
-        // this.load.audio('main_music', 'assets/main_music.wav')
     }
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
         this.scene.remove('Tutorial');
-        // var music = this.sound.add('main_music',{
-        //     loop: true,
-        //     delay: 0,
-        //     volume: 1
-        //   });
-        // music.play();
+
         clickButton1 = this.add.text(450, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
@@ -846,11 +841,14 @@ class MainMenu extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/bg.png');
         this.load.image('title', 'assets/title.png');
+        this.load.audio('main_music', 'assets/main_music.wav')
     }
     create(){
         // this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(0, 0, 'title').setOrigin(0, 0);
 
+        //isMusicOn
+        this.enable_music();
         clickButtonBegin = this.add.text(400, 750, 'Begin the Game with Tutorial',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
@@ -878,6 +876,18 @@ class MainMenu extends Phaser.Scene {
         clickInstruction.disableInteractive();
         clickButtonBegin.disableInteractive();
         console.log("clicked instruction");
+    }
+    enable_music(){
+      if(isMusicOn == false)
+      {
+        var music = this.sound.add('main_music',{
+             loop: true,
+             delay: 0,
+             volume: 1
+        });
+        music.play();
+      }
+      isMusicOn = true;
     }
 }
 
@@ -911,6 +921,9 @@ class Tutorial extends CommonScene{
         // horizontalSpeed = testSpeed;
     }
     create(){
+        //music
+
+
         // background
         this.add.image(0, 0, 'level2bg').setOrigin(0, 0);
 
