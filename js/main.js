@@ -366,6 +366,8 @@ class CommonScene extends Phaser.Scene{
     // shows player how they did after kill boss/ death
     summary(text, add){
         // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
+        console.log("music should restart");
+        this.enable_music();
         this.add.image(player.x-150, 40, 'scoreBoard').setOrigin(0, 0);
         endText = this.add.text(player.x-20, 75, "YOU "+text, { fontSize: '60px', fill: '#290048' });
         summary = this.add.text(player.x, 420, "Score: "+(score+add), { fontSize: '50px', fill: '#290048' });
@@ -408,6 +410,7 @@ class CommonScene extends Phaser.Scene{
       b.destroy();
     }
     enable_music(){
+
         if(isBossMusicOn == true)
         {
             isBossMusicOn = false;
@@ -430,7 +433,6 @@ class CommonScene extends Phaser.Scene{
         movingPlatformDict = {};
         forks = [];
         i = 0;
-        this.enable_music();
         if(boss) boss.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
@@ -456,7 +458,7 @@ class Level1 extends CommonScene{
         this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 3;
+        hp = 1000;
         bossHP = boss1HP;
         bornL = 9500;
         bornR = 9600;
@@ -467,7 +469,7 @@ class Level1 extends CommonScene{
         // for testing
         // hp = 30;
         // horizontalSpeed = testSpeed;
-        // playBornX = 8000;
+        //playBornX = 8000;
         this.load.audio('boss_music', 'assets/boss.wav') //Boss Music
     }
     create(){
@@ -643,15 +645,25 @@ class Level1 extends CommonScene{
         }
 
         //Enable Boss Music
-        if(player.x > 9000)
+        if(player.x > 9000 && isBossMusicOn == false)
         {
             isMusicOn = false;
+            this.tweens.add({
+                targets:  main_music,
+                volume:   0,
+                duration: 5000
+            });
             main_music.stop();
             isBossMusicOn = true;
             boss_music = this.sound.add('boss_music',{
                 loop: true,
                 delay: 0,
-                volume: 1
+                volume: 0
+           });
+           this.tweens.add({
+               targets:  boss_music,
+               volume:   1,
+               duration: 5000
            });
            boss_music.play();
         }
