@@ -89,7 +89,7 @@ var lock2;
 var endText;
 var summary;
 var lastIndex;
-var isMusicOn = false;
+
 
 // tutorial
 var tutorialTextColor = "#034680";
@@ -105,6 +105,11 @@ var clickStart;
 
 // temp
 
+//Music
+var isMusicOn = false;
+var isBossMusicOn = false;
+var main_music;
+var boss_music;
 
 
 class CommonScene extends Phaser.Scene{
@@ -112,7 +117,6 @@ class CommonScene extends Phaser.Scene{
         // common for all levels
         this.load.image('heart', 'assets/heart.png')
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
-        this.load.audio('boss_music', 'assets/boss.wav')
         this.load.audio('gun_sound', 'assets/gun_sound.wav')
         this.load.image('rice', 'assets/rice.png')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
@@ -403,12 +407,30 @@ class CommonScene extends Phaser.Scene{
     bullet_dissapear(b){
       b.destroy();
     }
+    enable_music(){
+        if(isBossMusicOn == true)
+        {
+            isBossMusicOn = false;
+            boss_music.stop();
+        }
+        if(isMusicOn == false)
+        {
+          isMusicOn = true;
+          main_music = this.sound.add('main_music',{
+               loop: true,
+               delay: 0,
+               volume: 1
+          });
+          main_music.play();
+        }
+    }
     restart(){
         score = 0;
         hp = 3;
         movingPlatformDict = {};
         forks = [];
         i = 0;
+        this.enable_music();
         if(boss) boss.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
@@ -446,6 +468,7 @@ class Level1 extends CommonScene{
         // hp = 30;
         // horizontalSpeed = testSpeed;
         // playBornX = 8000;
+        this.load.audio('boss_music', 'assets/boss.wav') //Boss Music
     }
     create(){
         // background
@@ -617,6 +640,20 @@ class Level1 extends CommonScene{
             if(movingP.x <= parseInt(center)-200){
                 pSpeed = platformSpeed;
             }
+        }
+
+        //Enable Boss Music
+        if(player.x > 9000)
+        {
+            isMusicOn = false;
+            main_music.stop();
+            isBossMusicOn = true;
+            boss_music = this.sound.add('boss_music',{
+                loop: true,
+                delay: 0,
+                volume: 1
+           });
+           boss_music.play();
         }
     }
 }
@@ -880,12 +917,12 @@ class MainMenu extends Phaser.Scene {
     enable_music(){
       if(isMusicOn == false)
       {
-        var music = this.sound.add('main_music',{
+        main_music = this.sound.add('main_music',{
              loop: true,
              delay: 0,
              volume: 1
         });
-        music.play();
+        main_music.play();
       }
       isMusicOn = true;
     }
