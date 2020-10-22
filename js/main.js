@@ -115,12 +115,12 @@ var boss_music;
 class CommonScene extends Phaser.Scene{
     preload(){
         // common for all levels
-        this.load.image('heart', 'assets/heart.png')
+        this.load.image('heart', 'assets/player/heart.png')
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
-        this.load.audio('gun_sound', 'assets/gun_sound.wav')
-        this.load.image('rice', 'assets/rice.png')
+        this.load.audio('gun_sound', 'assets/music/gun_sound.wav')
+        this.load.image('rice', 'assets/player/rice.png')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
-        this.load.image('back', 'assets/back.png');
+        this.load.image('back', 'assets/ground/back.png');
         this.restart();
     }
     create(){
@@ -447,15 +447,15 @@ class Level1 extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('leek', 'assets/leek.png');
-        this.load.image('leek_nuke', 'assets/leek_bullet.png')
+        this.load.image('leek', 'assets/boss_asset/leek.png');
+        this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
-        this.load.image('level1bg', 'assets/level1bg.png');
-        this.load.image('background', 'assets/bg.png');
-        this.load.image('platform', 'assets/ground.png');
-        this.load.image('big_platform', 'assets/ground2.png');
-        this.load.spritesheet('introbg', 'assets/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
-        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 68, frameHeight : 158});
+        this.load.image('level1bg', 'assets/background/background/level1bg.png');
+        this.load.image('background', 'assets/background/background/bg.png');
+        this.load.image('platform', 'assets/ground/ground.png');
+        this.load.image('big_platform', 'assets/ground/ground2.png');
+        this.load.spritesheet('introbg', 'assets/background/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
+        this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 1000;
@@ -470,7 +470,7 @@ class Level1 extends CommonScene{
         // hp = 30;
         // horizontalSpeed = testSpeed;
         //playBornX = 8000;
-        this.load.audio('boss_music', 'assets/boss.wav') //Boss Music
+        this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
     }
     create(){
         // background
@@ -674,19 +674,19 @@ class Level2 extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('leek_nuke', 'assets/leek_bullet.png')
+        this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
-        this.load.image('level2bg', 'assets/level1bg.png');
-        this.load.image('background', 'assets/bg.png');
-        this.load.image('platform', 'assets/ground.png');
-        this.load.image('big_platform', 'assets/ground2.png');
+        this.load.image('level2bg', 'assets/background/level1bg.png');
+        this.load.image('background', 'assets/background/bg.png');
+        this.load.image('platform', 'assets/ground/ground.png');
+        this.load.image('big_platform', 'assets/ground/ground2.png');
         // load ingredients
         this.load.image('fish', 'assets/ingredients/fish.png');
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
-        this.load.spritesheet('fork', 'assets/fork.png', {frameWidth : 68, frameHeight : 158});
+        this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         // load boss
-        this.load.spritesheet('tofu', 'assets/tofu.png', {frameWidth : 100, frameHeight : 78});
+        this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 100, frameHeight : 78});
 
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -838,7 +838,7 @@ class Level2 extends CommonScene{
 
 class GameMenu extends Phaser.Scene {
     preload(){
-        this.load.image('background', 'assets/bg.png');
+        this.load.image('background', 'assets/background/bg.png');
         this.load.image('lock', 'assets/lock.png');
         this.load.image('title', 'assets/title.png');
     }
@@ -888,9 +888,9 @@ class GameMenu extends Phaser.Scene {
 
 class MainMenu extends Phaser.Scene {
     preload(){
-        this.load.image('background', 'assets/bg.png');
+        this.load.image('background', 'assets/background/bg.png');
         this.load.image('title', 'assets/title.png');
-        this.load.audio('main_music', 'assets/main_music.wav')
+        this.load.audio('main_music', 'assets/music/main_music.wav')
     }
     create(){
         // this.add.image(0, 0, 'background').setOrigin(0, 0);
@@ -944,13 +944,13 @@ class Tutorial extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('boss', 'assets/leek.png');
-        this.load.image('leek_nuke', 'assets/leek_bullet.png')
+        this.load.image('boss', 'assets/boss_asset/leek.png');
+        this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
-        this.load.image('level2bg', 'assets/level1bg.png');
-        this.load.image('background', 'assets/bg.png');
-        this.load.image('platform', 'assets/ground.png');
-        this.load.image('big_platform', 'assets/ground2.png');
+        this.load.image('level2bg', 'assets/background/level1bg.png');
+        this.load.image('background', 'assets/background/bg.png');
+        this.load.image('platform', 'assets/ground/ground.png');
+        this.load.image('big_platform', 'assets/ground/ground2.png');
         // load ingredients
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('directions', 'assets/intro/directions.png')
@@ -1093,10 +1093,10 @@ class Tutorial extends CommonScene{
 // add some text, pictures, and background stories
 class Instruction extends Phaser.Scene {
     preload(){
-        this.load.image('InstructionBG', 'assets/level1bg.png');
+        this.load.image('InstructionBG', 'assets/background/level1bg.png');
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
-        this.load.image('platform', 'assets/ground.png');
-        this.load.image('back', 'assets/back.png');
+        this.load.image('platform', 'assets/ground/ground.png');
+        this.load.image('back', 'assets/ground/back.png');
         this.load.image('rice', 'assets/rice.png')
         this.load.image('controls', 'assets/intro/controls.png')
         this.load.image('intro', 'assets/intro/intro.png')
