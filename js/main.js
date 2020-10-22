@@ -123,7 +123,7 @@ class CommonScene extends Phaser.Scene{
     preload(){
         // common for all levels
         this.load.image('heart', 'assets/player/heart.png')
-        this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
+        this.load.spritesheet('pork', 'assets/player/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.audio('gun_sound', 'assets/music/gun_sound.wav')
         this.load.image('rice', 'assets/player/rice.png')
         this.load.audio('jump_sound', 'assets/jump.mp3')
@@ -492,7 +492,7 @@ class Level1 extends CommonScene{
         this.load.image('leek', 'assets/boss_asset/leek.png');
         this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
-        this.load.image('level1bg', 'assets/background/background/level1bg.png');
+        this.load.image('level1bg', 'assets/background/level1bg.png');
         this.load.image('background', 'assets/background/background/bg.png');
         this.load.image('platform', 'assets/ground/ground.png');
         this.load.image('big_platform', 'assets/ground/ground2.png');
@@ -1143,7 +1143,7 @@ class Tutorial extends CommonScene{
 class Instruction extends Phaser.Scene {
     preload(){
         this.load.image('InstructionBG', 'assets/background/level1bg.png');
-        this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
+        this.load.spritesheet('pork', 'assets/player/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('platform', 'assets/ground/ground.png');
         this.load.image('back', 'assets/ground/back.png');
         this.load.image('rice', 'assets/rice.png')
