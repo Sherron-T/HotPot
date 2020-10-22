@@ -110,6 +110,13 @@ var isMusicOn = false;
 var isBossMusicOn = false;
 var main_music;
 var boss_music;
+var jump_sound;
+var hurt_sound;
+
+//Alive/dead
+var win = false;
+var dead = false;
+
 
 
 class CommonScene extends Phaser.Scene{
@@ -119,6 +126,8 @@ class CommonScene extends Phaser.Scene{
         this.load.spritesheet('pork', 'assets/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.audio('gun_sound', 'assets/music/gun_sound.wav')
         this.load.image('rice', 'assets/player/rice.png')
+        this.load.audio('jump_sound', 'assets/jump.mp3')
+        this.load.audio('hurt_sound', 'assets/hurt.mp3')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
         this.load.image('back', 'assets/ground/back.png');
         this.restart();
@@ -127,6 +136,12 @@ class CommonScene extends Phaser.Scene{
         // music settings
         gun_sound = this.sound.add('gun_sound',{
           volume: 0.2
+        });
+        jump_sound = this.sound.add('jump_sound',{
+          volume: 1
+        });
+        hurt_sound = this.sound.add('hurt_sound',{
+          volume: 1
         });
 
         // variable for all platforms
@@ -294,6 +309,7 @@ class CommonScene extends Phaser.Scene{
             }
             if (cursors.up.isDown && player.body.onFloor()){
                 player.setVelocityY(-1*verticalJump);
+                jump_sound.play();
             }
         }
         // when player fall out of world
@@ -302,26 +318,38 @@ class CommonScene extends Phaser.Scene{
         }
         // when player dies
         if(hp == 0){
-            hearts.getChildren().map(child => child.destroy());
-            player.anims.play('turn');
-            this.physics.world.removeCollider(playerCollider);
-            player.setCollideWorldBounds(false);
-            this.summary("LOST", 0);
-            control = false;
-            player.setVelocityX(0);
-            return;
+            if(dead == false)
+            {
+              hearts.getChildren().map(child => child.destroy());
+              player.anims.play('turn');
+              this.physics.world.removeCollider(playerCollider);
+              player.setCollideWorldBounds(false);
+              this.summary("LOST", 0);
+              control = false;
+              player.setVelocityX(0);
+              dead = true;
+              return;
+            }
+            dead = true;
+            return
         }
 
         // when boss dies
         if(bossHP == 0){
-            this.physics.world.removeCollider(bossCollider);
-            this.physics.world.removeCollider(playerBossOverlap);
-            this.physics.world.removeCollider(playerNukesOverlap);
-            boss.setCollideWorldBounds(false);
-            this.summary("WON", bossScore);
-            control = false;
-            player.setVelocityX(0);
-            return;
+           if(win == false)
+           {
+             this.physics.world.removeCollider(bossCollider);
+             this.physics.world.removeCollider(playerBossOverlap);
+             this.physics.world.removeCollider(playerNukesOverlap);
+             boss.setCollideWorldBounds(false);
+             this.summary("WON", bossScore);
+             control = false;
+             player.setVelocityX(0);
+             win = true;
+             return;
+           }
+           win = true;
+           return
         }
     }
     bossHurt(boss, bullet){
@@ -342,6 +370,7 @@ class CommonScene extends Phaser.Scene{
     takeDmg(player){
         if(invul == false)
         {
+          hurt_sound.play();
           player.setTint(0xB5F2F2);
           invul = true;
           vulTimer = this.time.addEvent({ delay: invulDuration, callback: this.blinking, callbackScope: this});
@@ -383,6 +412,7 @@ class CommonScene extends Phaser.Scene{
         clickButton2.setInteractive();
         this.registry.destroy();
         this.events.off();
+        this.enable_music();
         console.log("back")
     }
     makeMoveEnemy(i, xPos, yPos, duration, enemyName){
@@ -414,6 +444,11 @@ class CommonScene extends Phaser.Scene{
         if(isBossMusicOn == true)
         {
             isBossMusicOn = false;
+            this.tweens.add({
+                targets:  boss_music,
+                volume:   0,
+                duration: 5000
+            });
             boss_music.stop();
         }
         if(isMusicOn == false)
@@ -422,7 +457,12 @@ class CommonScene extends Phaser.Scene{
           main_music = this.sound.add('main_music',{
                loop: true,
                delay: 0,
-               volume: 1
+               volume: 0
+          });
+          this.tweens.add({
+              targets:  main_music,
+              volume:   1,
+              duration: 5000
           });
           main_music.play();
         }
@@ -439,6 +479,8 @@ class CommonScene extends Phaser.Scene{
         if(player) player.destroy();
         if(endText) endText.setVisible(false);
         if(summary) summary.setVisible(false);
+        win = false;
+        dead = false;
         console.log("restart");
     }
 }
@@ -468,8 +510,9 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        // horizontalSpeed = testSpeed;
         //playBornX = 8000;
+        //horizontalSpeed = testSpeed;
+        playBornX = 8000;
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
     }
     create(){
@@ -645,7 +688,7 @@ class Level1 extends CommonScene{
         }
 
         //Enable Boss Music
-        if(player.x > 9000 && isBossMusicOn == false)
+        if(player.x > 9000 && isBossMusicOn == false && bossHP != 0)
         {
             isMusicOn = false;
             this.tweens.add({
@@ -932,7 +975,12 @@ class MainMenu extends Phaser.Scene {
         main_music = this.sound.add('main_music',{
              loop: true,
              delay: 0,
-             volume: 1
+             volume: 0
+        });
+        this.tweens.add({
+            targets:  main_music,
+            volume:   1,
+            duration: 2000
         });
         main_music.play();
       }
@@ -1050,6 +1098,7 @@ class Tutorial extends CommonScene{
     takeDmg(player){
         if(invul == false)
         {
+          hurt_sound.play();
           player.setTint(0xB5F2F2);
           invul = true;
           hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: tutorialTextColor });
