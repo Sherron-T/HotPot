@@ -324,7 +324,9 @@ class CommonScene extends Phaser.Scene{
         if(hp == 0){
             if(dead == false)
             {
-              hearts.getChildren().map(child => child.destroy());
+              hearts.getChildren().map(child => hearts.killAndHide(child));
+              // hearts.killAndHide(heart[hp]);
+              // heart[hp].body.enable = false;
               player.anims.play('turn');
               this.physics.world.removeCollider(playerCollider);
               player.setCollideWorldBounds(false);
@@ -397,16 +399,16 @@ class CommonScene extends Phaser.Scene{
         can_shoot = true;
     }
     takeDmg(player){
-        if(invul == false)
-        {
-          hurt_sound.play();
-          player.setTint(0xB5F2F2);
-          invul = true;
-          vulTimer = this.time.addEvent({ delay: invulDuration, callback: this.blinking, callbackScope: this});
-          hp = hp == 0 ? 0 : hp - 1;
-          var heart = hearts.getChildren();
-          hearts.killAndHide(heart[hp]);
-          heart[hp].body.enable = false;
+        console.log("dmg")
+        if(invul == false){
+            hurt_sound.play();
+            player.setTint(0xB5F2F2);
+            invul = true;
+            vulTimer = this.time.addEvent({ delay: invulDuration, callback: this.blinking, callbackScope: this});
+            hp = hp == 0 ? 0 : hp - 1;
+            var heart = hearts.getChildren();
+            hearts.killAndHide(heart[hp]);
+            heart[hp].body.enable = false;
         }
     }
     blinking(){
@@ -509,6 +511,7 @@ class CommonScene extends Phaser.Scene{
         forks = [];
         i = 0;
         playBornX = 50;
+        invul = false;
         if(boss) boss.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
@@ -767,7 +770,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 9000;
+        playBornX = 100;
     }
     create(){
         // background
@@ -839,7 +842,7 @@ class Level2 extends CommonScene{
         // moving ingredients --> !!!! need to add a moving ingredients function
 
 
-        // make entities
+        // make boss
         this.anims.create({
             key: 'bossMove',
             frames: this.anims.generateFrameNumbers('tofu', { start: 0, end: 12 }),
@@ -851,6 +854,7 @@ class Level2 extends CommonScene{
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         boss.setScale(2);
         speed = bossSpeed;
+        // boss movement
         this.tweens.timeline({
             targets: boss.body.velocity,
             loop: -1,
@@ -883,19 +887,6 @@ class Level2 extends CommonScene{
     update(time, delta){
         if(bossHP == 0) winLevel2 = true;
         super.update(time, delta);
-
-        // boss.x += speed * delta;
-        // if(boss.x >= bossRightBound && !bossStop){
-        //     speed = 0;
-        //     bossStop = true;
-        //     this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        // }
-        // if(boss.x <= bossLeftBound && !bossStop){
-        //     speed = 0;
-        //     bossStop = true;
-        //     this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        // }
-
     }
 }
 
@@ -1117,17 +1108,16 @@ class Tutorial extends CommonScene{
     }
     // tutorial is always invulnerable
     takeDmg(player){
-        if(invul == false)
-        {
-          hurt_sound.play();
-          player.setTint(0xB5F2F2);
-          invul = true;
-          hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: tutorialTextColor });
-          vulTimer = this.time.addEvent({ delay: invulDuration+2000, callback: this.blinking, callbackScope: this});
-          hp = 4;
-          var heart = hearts.getChildren();
-          hearts.killAndHide(heart[hp]);
-          heart[hp].body.enable = false;
+        if(invul == false){
+            hurt_sound.play();
+            player.setTint(0xB5F2F2);
+            invul = true;
+            hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: tutorialTextColor });
+            vulTimer = this.time.addEvent({ delay: invulDuration+2000, callback: this.blinking, callbackScope: this});
+            hp = 4;
+            var heart = hearts.getChildren();
+            hearts.killAndHide(heart[hp]);
+            heart[hp].body.enable = false;
         }
     }
     blinking(){
