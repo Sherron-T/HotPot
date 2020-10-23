@@ -127,10 +127,10 @@ class CommonScene extends Phaser.Scene{
         // common for all levels
         this.load.image('heart', 'assets/player/heart.png')
         this.load.spritesheet('pork', 'assets/player/pork.png', {frameWidth : 100, frameHeight : 78});
-        this.load.audio('gun_sound', 'assets/music/gun_sound.wav')
+        this.load.audio('gun_sound', 'assets/sfx/gun_sound.wav')
         this.load.image('rice', 'assets/player/rice.png')
-        this.load.audio('jump_sound', 'assets/jump.mp3')
-        this.load.audio('hurt_sound', 'assets/hurt.mp3')
+        this.load.audio('jump_sound', 'assets/sfx/jump.mp3')
+        this.load.audio('hurt_sound', 'assets/sfx/hurt.mp3')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
         this.load.image('back', 'assets/ground/back.png');
         this.restart();
