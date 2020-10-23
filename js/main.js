@@ -1,6 +1,10 @@
 // scene variables
 var platforms;
+var mvPlatforms;
 var movingPlatforms;
+var mvPlatformsCollider;
+var locked = false;
+var lockedTarget;
 
 // player variables
 var control;
@@ -118,7 +122,6 @@ var win = false;
 var dead = false;
 
 
-
 class CommonScene extends Phaser.Scene{
     preload(){
         // common for all levels
@@ -146,6 +149,7 @@ class CommonScene extends Phaser.Scene{
 
         // variable for all platforms
         platforms = this.physics.add.staticGroup();
+        mvPlatforms = this.physics.add.staticGroup();
 
         // moving platforms
         // movingPlatforms = this.physics.add.image();
@@ -351,6 +355,30 @@ class CommonScene extends Phaser.Scene{
            win = true;
            return
         }
+
+        // moving with mvPlatforms
+        for(var center in movingPlatformDict){
+            var movingP = movingPlatformDict[center];
+            movingP.x += pSpeed * delta;
+            movingP.refreshBody();
+            if(movingP.x >= parseInt(center)+200){
+                pSpeed = -platformSpeed;
+            }
+            if(movingP.x <= parseInt(center)-200){
+                pSpeed = platformSpeed;
+            }
+        }
+        mvPlatformsCollider = this.physics.add.collider(player, mvPlatforms, this.mvPlatformCollided, null, this)
+        if (locked) {
+            if (player.x < lockedTarget.body.left || player.x > lockedTarget.body.right) {
+                locked = false;
+                lockedTarget = null;
+            } else {
+                player.x += pSpeed * delta;
+                // player.y += pSpeedY;
+            }
+            console.log("locked");
+        }
     }
     bossHurt(boss, bullet){
         //bullet.disableBody(true, true);
@@ -467,15 +495,23 @@ class CommonScene extends Phaser.Scene{
           main_music.play();
         }
     }
+    mvPlatformCollided(player, mvPlatforms){
+        if (!locked) {
+            locked = true;
+            lockedTarget= mvPlatforms;
+        }
+    }
     restart(){
         score = 0;
         hp = 3;
         movingPlatformDict = {};
         forks = [];
         i = 0;
+        playBornX = 50;
         if(boss) boss.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
+        if(mvPlatforms) mvPlatforms.destroy();
         if(player) player.destroy();
         if(endText) endText.setVisible(false);
         if(summary) summary.setVisible(false);
@@ -535,8 +571,8 @@ class Level1 extends CommonScene{
 
         // first 2 platforms
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        var mp1 = platforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        movingPlatformDict[300] = mp1;
+        // var mp1 = platforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        // movingPlatformDict[300] = mp1;
 
         this.makeMoveEnemy(i, 100, 900, 2500, 'fork');
 
@@ -674,19 +710,6 @@ class Level1 extends CommonScene{
           this.time.addEvent({ delay: 2000, callback: this.enableSpecial, callbackScope: this});
         }
 
-        // moving platforms
-        for(var center in movingPlatformDict){
-            var movingP = movingPlatformDict[center];
-            movingP.x += pSpeed * delta;
-            movingP.refreshBody();
-            if(movingP.x >= parseInt(center)+200){
-                pSpeed = -platformSpeed;
-            }
-            if(movingP.x <= parseInt(center)-200){
-                pSpeed = platformSpeed;
-            }
-        }
-
         //Enable Boss Music
         if(player.x > 9000 && isBossMusicOn == false && bossHP != 0)
         {
@@ -743,7 +766,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        // playBornX = 8000;
+        playBornX = 2900;
     }
     create(){
         // background
@@ -767,21 +790,21 @@ class Level2 extends CommonScene{
         // part2
         platforms.create(2000, 600, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
-        movingPlatforms = platforms.create(3200, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        movingPlatforms = mvPlatforms.create(3200, 900, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         movingPlatformDict[3200] = movingPlatforms;
 
         // part3
         platforms.create(3800, 700, "platform").setScale(0.7).setOrigin(0, 0).refreshBody();
 
         // part4
-        movingPlatforms = platforms.create(4900, 700, "platform").setScale(0.1).setOrigin(0, 0).refreshBody();
+        movingPlatforms = mvPlatforms.create(4900, 700, "platform").setScale(0.1).setOrigin(0, 0).refreshBody();
         movingPlatformDict[4900] = movingPlatforms;
         platforms.create(5200, 500, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(5800, 300, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(6300, 300, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
         // part5
-        movingPlatforms = platforms.create(6350, 800, "platform").setScale(0.4).setOrigin(0, 0).refreshBody();
+        movingPlatforms = mvPlatforms.create(6350, 800, "platform").setScale(0.4).setOrigin(0, 0).refreshBody();
         movingPlatformDict[6350] = movingPlatforms;
 
         // ingredients
@@ -839,7 +862,6 @@ class Level2 extends CommonScene{
         playerCollider = this.physics.add.collider(player, platforms);
         bossCollider = this.physics.add.collider(boss, platforms);
         enemyCollider = this.physics.add.collider(enemies, platforms);
-        // this.physics.add.collider(player, movingPlatforms);
 
         // overlaps
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
@@ -864,17 +886,6 @@ class Level2 extends CommonScene{
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
 
-        for(var center in movingPlatformDict){
-            var movingP = movingPlatformDict[center];
-            movingP.x += pSpeed * delta;
-            movingP.refreshBody();
-            if(movingP.x >= parseInt(center)+200){
-                pSpeed = -platformSpeed;
-            }
-            if(movingP.x <= parseInt(center)-200){
-                pSpeed = platformSpeed;
-            }
-        }
     }
 }
 
@@ -903,12 +914,12 @@ class GameMenu extends Phaser.Scene {
     // comment out this snippet if you want to visit level2
     // without completing level1
 
-        if(!winLevel1){
-            clickButton2.disableInteractive();
-        }else{
-            clickButton2.setInteractive();
-            lock2.destroy();
-        }
+        // if(!winLevel1){
+        //     clickButton2.disableInteractive();
+        // }else{
+        //     clickButton2.setInteractive();
+        //     lock2.destroy();
+        // }
 
     }
     onClicked1(){
@@ -1327,12 +1338,12 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: {y:800},
-              // debug: true
-              debug: false
+              debug: true
+              // debug: false
           }
       },
-    scene: [MainMenu] // starting with tutorial
-    // scene: [GameMenu] // starting with real game
+    // scene: [MainMenu] // starting with tutorial
+    scene: [GameMenu] // starting with real game
   };
 
 
