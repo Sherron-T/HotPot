@@ -794,9 +794,12 @@ class Level2 extends CommonScene{
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
+        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 111});
         // load boss
         this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 100, frameHeight : 78});
-
+        // load music 
+        this.load.audio('main_music', 'assets/music/main_music.wav')
+        
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 3;
@@ -809,7 +812,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 100;
+        playBornX = 8000;
     }
     create(){
         // background
@@ -878,7 +881,9 @@ class Level2 extends CommonScene{
             this.makeMoveEnemy(i, xCord, 600, Math.floor(Math.random() * 1000)+Math.floor(Math.random() * 1000)+3000, 'fork');
         }
 
-        // moving ingredients --> !!!! need to add a moving ingredients function
+        this.makeMoveEnemy(i, 8000, 800, 4000, 'knife');
+        this.makeMoveEnemy(i, 9000, 800, 8000, 'fork');
+        this.makeMoveEnemy(i, 7000, 800, 3000, 'knife');
 
 
         // make boss
