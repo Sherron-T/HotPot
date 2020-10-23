@@ -471,32 +471,30 @@ class CommonScene extends Phaser.Scene{
       b.destroy();
     }
     enable_music(){
-
         if(isBossMusicOn == true)
         {
             isBossMusicOn = false;
             this.tweens.add({
                 targets:  boss_music,
                 volume:   0,
-                duration: 5000
+                duration: 3000
             });
-            boss_music.stop();
         }
-        // if(isMusicOn == false)
-        // {
-        //   isMusicOn = true;
-        //   main_music = this.sound.add('main_music',{
-        //        loop: true,
-        //        delay: 0,
-        //        volume: 0
-        //   });
-        //   this.tweens.add({
-        //       targets:  main_music,
-        //       volume:   1,
-        //       duration: 5000
-        //   });
-        //   main_music.play();
-        // }
+        if(isMusicOn == false)
+         {
+           isMusicOn = true;
+           main_music = this.sound.add('main_music',{
+                loop: true,
+                delay: 0,
+                volume: 0
+           });
+           this.tweens.add({
+               targets:  main_music,
+               volume:   1,
+               duration: 7000
+           });
+           main_music.play();
+         }
     }
     mvPlatformCollided(player, mvPlatforms){
         if (!locked) {
@@ -538,6 +536,8 @@ class Level1 extends CommonScene{
         this.load.image('big_platform', 'assets/ground/ground2.png');
         this.load.spritesheet('introbg', 'assets/background/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
+
+        this.load.audio('main_music', 'assets/music/main_music.wav')
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 1000;
@@ -571,6 +571,14 @@ class Level1 extends CommonScene{
         this.add.image(9000, 0, 'background').setOrigin(0, 0);
         //this.add.sprite(1470,0,'introbg').setOrigin(0, 0).anims.play('boil');
         super.create();
+
+
+        //testing
+        main_music = this.sound.add('main_music',{
+             loop: true,
+             delay: 0,
+             volume: 0
+        });
 
 
         // first 2 platforms
@@ -659,6 +667,13 @@ class Level1 extends CommonScene{
         boss.body.offset.x = 30;
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
+        this.tweens.timeline({
+            targets: boss.body.velocity,
+            loop: -1,
+            tweens: [
+            {x:259, duration:5000, ease:'Stepped'},
+            {x:-250, duration:5000, ease:'Stepped'},
+        ]});
         // fork with bosses
         this.makeMoveEnemy(i, 9000, 800, 8000, 'fork');
         this.makeMoveEnemy(i, 9200, 700, 6000, 'fork');
@@ -693,7 +708,7 @@ class Level1 extends CommonScene{
 
         if(bossHP == 0) winLevel1 = true;
 
-        boss.x += speed * delta;
+        /*boss.x += speed * delta;
         if(boss.x >= bossRightBound && !bossStop){
             speed = 0;
             bossStop = true;
@@ -703,7 +718,7 @@ class Level1 extends CommonScene{
             speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        }
+        }*/
         if(bossHP > 0 && bossHP < bossLow && bossSpecial == true){
           bossSpecial = false;
           var i;
@@ -1342,7 +1357,7 @@ var config = {
               // debug: false
           }
       },
-    // scene: [MainMenu] // starting with tutorial
+    //scene: [MainMenu], // starting with tutorial
     scene: [GameMenu] // starting with real game
   };
 
