@@ -782,8 +782,13 @@ class Level1 extends CommonScene{
     }
     setValue(bar,percentage) {
         //scale the bar
-        console.log(bar.scaleX)
-        bar.scaleX = percentage/boss1HP;
+        console.log(bar.scaleX);
+        this.tweens.add({
+            targets:  bar,
+            scaleX:   percentage/boss1HP,
+            duration: 500
+        });
+        //bar.scaleX = percentage/boss1HP;
     }
 }
 
