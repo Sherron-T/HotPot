@@ -80,6 +80,8 @@ var bossRightBound = 10000;
 var bossScore = 233;
 var bornL = 9500;
 var bornR = 9550;
+var bossBar;
+var setValue;
 
 // level varables
 var winLevel1 = false;
@@ -198,7 +200,7 @@ class CommonScene extends Phaser.Scene{
         var heart = hearts.getChildren();
         var x;
         for(x of heart){
-            x.setScrollFactor(0, 0)
+            x.setScrollFactor(0, 0);
         };
 
         // animations
@@ -388,6 +390,7 @@ class CommonScene extends Phaser.Scene{
         bullet.destroy();
         bossHP = bossHP == 0 ? 0 : bossHP - 1;
         bossText.setText('Boss HP: ' + bossHP);
+        this.setValue(bossBar, bossHP)
     }
     enemyHurt(enemy, bullet){
         //bullet.disableBody(true, true);
@@ -674,6 +677,21 @@ class Level1 extends CommonScene{
             {x:259, duration:5000, ease:'Stepped'},
             {x:-250, duration:5000, ease:'Stepped'},
         ]});
+
+        //Boss HP Bar
+        var x = this.add.image(9000, 100, 'platform').setOrigin(0,0).setScrollFactor(0,0);
+        var bgbar = this.add.graphics();
+        bgbar.fillStyle(0x000000);
+        //bgbar.fillRect(8995, 96, 610, 58);
+        bossBar = this.add.graphics().setScrollFactor(0);
+        bossBar.fillStyle(0xFF0000, 1);
+        bossBar.fillRect(500,50,600,50);
+        bossBar.fillRect(300,50,600,50);
+        //bossBar.x = 9000;
+        //bossBar.y = 100;
+
+        this.setValue(bossBar,boss1HP);
+
         // fork with bosses
         this.makeMoveEnemy(i, 9000, 800, 8000, 'fork');
         this.makeMoveEnemy(i, 9200, 700, 6000, 'fork');
@@ -688,6 +706,7 @@ class Level1 extends CommonScene{
 
         // player - objects interaction logics
         player.anims.play('idle_right');
+
 
         // colliders
         playerCollider = this.physics.add.collider(player, platforms);
@@ -752,6 +771,11 @@ class Level1 extends CommonScene{
            });
            boss_music.play();
         }
+    }
+    setValue(bar,percentage) {
+        //scale the bar
+        console.log(bar.scaleX)
+        bar.scaleX = percentage/boss1HP;
     }
 }
 
