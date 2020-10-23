@@ -482,9 +482,9 @@ class CommonScene extends Phaser.Scene{
             this.tweens.add({
                 targets:  boss_music,
                 volume:   0,
-                duration: 3000
+                duration: 2000
             });
-            boss_music.stop();
+            //boss_music.stop();
         }
         if(isMusicOn == false)
          {
@@ -783,8 +783,13 @@ class Level1 extends CommonScene{
     }
     setValue(bar,percentage) {
         //scale the bar
-        console.log(bar.scaleX)
-        bar.scaleX = percentage/boss1HP;
+        console.log(bar.scaleX);
+        this.tweens.add({
+            targets:  bar,
+            scaleX:   percentage/boss1HP,
+            duration: 500
+        });
+        //bar.scaleX = percentage/boss1HP;
     }
 }
 
