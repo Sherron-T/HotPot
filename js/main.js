@@ -81,6 +81,8 @@ var bossScore = 233;
 var bornL = 9500;
 var bornR = 9550;
 var bossBar;
+var bgBar;
+var bossHpText;
 var setValue;
 
 // level varables
@@ -482,6 +484,7 @@ class CommonScene extends Phaser.Scene{
                 volume:   0,
                 duration: 3000
             });
+            boss_music.stop();
         }
         if(isMusicOn == false)
          {
@@ -679,16 +682,18 @@ class Level1 extends CommonScene{
         ]});
 
         //Boss HP Bar
-        var x = this.add.image(9000, 100, 'platform').setOrigin(0,0).setScrollFactor(0,0);
-        var bgbar = this.add.graphics();
-        bgbar.fillStyle(0x000000);
-        //bgbar.fillRect(8995, 96, 610, 58);
-        bossBar = this.add.graphics().setScrollFactor(0);
+        bgBar = this.add.graphics().setScrollFactor(0).setVisible(false);
+        bgBar.fillStyle(0x000000, 1);
+        bgBar.fillRect(0,0,610,60);
+        bgBar.x = 495;
+        bgBar.y = 45;
+        bossBar = this.add.graphics().setScrollFactor(0).setVisible(false);
         bossBar.fillStyle(0xFF0000, 1);
-        bossBar.fillRect(500,50,600,50);
-        bossBar.fillRect(300,50,600,50);
-        //bossBar.x = 9000;
-        //bossBar.y = 100;
+        bossBar.fillRect(0,0,600,50);
+        bossBar.x = 500;
+        bossBar.y = 50;
+        bossHpText = this.add.text(750, 50, 'LEEK',
+            {fontSize: '50px', fill: '#FFFFFF',}).setScrollFactor(0).setVisible(false);
 
         this.setValue(bossBar,boss1HP);
 
@@ -751,6 +756,9 @@ class Level1 extends CommonScene{
         //Enable Boss Music
         if(player.x > 9000 && isBossMusicOn == false && bossHP != 0)
         {
+            bossBar.setVisible(true);
+            bgBar.setVisible(true);
+            bossHpText.setVisible(true);
             isMusicOn = false;
             this.tweens.add({
                 targets:  main_music,
