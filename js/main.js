@@ -28,7 +28,7 @@ var gun_sound;
 
 // small enemy variables
 var enemies;
-var forks = [];
+var mvEnem = [];
 var i = 0;
 
 // boss variables
@@ -380,7 +380,7 @@ class CommonScene extends Phaser.Scene{
             if (player.x < lockedTarget.body.left || player.x > lockedTarget.body.right) {
                 locked = false;
                 lockedTarget = null;
-            } else {
+            } else if(player.body.onFloor()){
                 player.x += pSpeed * delta;
                 // player.y += pSpeedY;
             }
@@ -404,7 +404,6 @@ class CommonScene extends Phaser.Scene{
         can_shoot = true;
     }
     takeDmg(player){
-        console.log("dmg")
         if(invul == false){
             hurt_sound.play();
             player.setTint(0xB5F2F2);
@@ -452,19 +451,20 @@ class CommonScene extends Phaser.Scene{
         console.log("back")
     }
     makeMoveEnemy(i, xPos, yPos, duration, enemyName){
+        console.log(enemyName);
         this.anims.create({
             key: 'walk',
             frames: this.anims.generateFrameNumbers(enemyName, { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });
-        forks[i] = this.physics.add.sprite(xPos, yPos, enemyName).setOrigin(0, 1).refreshBody().setScale(0.5);
-        enemies.add(forks[i]);
+        mvEnem[i] = this.physics.add.sprite(xPos, yPos, enemyName).setOrigin(0, 1).refreshBody().setScale(0.5);
+        enemies.add(mvEnem[i]);
         //var fork1Collider = this.physics.add.collider(fork1, platforms);
         //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
-        forks[i].anims.play('walk');
+        mvEnem[i].anims.play('walk');
         this.tweens.timeline({
-            targets: forks[i].body.velocity,
+            targets: mvEnem[i].body.velocity,
             loop: -1,
             tweens: [
             {x:60, duration:duration, ease:'Stepped'},
@@ -512,11 +512,12 @@ class CommonScene extends Phaser.Scene{
         score = 0;
         hp = 3;
         movingPlatformDict = {};
-        forks = [];
+        mvEnem = [];
         i = 0;
         playBornX = 50;
         invul = false;
         if(boss) boss.destroy();
+        if(enemies) enemies.destroy();
         if(hearts) hearts.destroy();
         if(platforms) platforms.destroy();
         if(mvPlatforms) mvPlatforms.destroy();
@@ -802,7 +803,7 @@ class Level2 extends CommonScene{
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
-        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 111});
+        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 103});
         // load boss
         this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 100, frameHeight : 78});
         // load music 
@@ -889,9 +890,9 @@ class Level2 extends CommonScene{
             this.makeMoveEnemy(i, xCord, 600, Math.floor(Math.random() * 1000)+Math.floor(Math.random() * 1000)+3000, 'fork');
         }
 
-        this.makeMoveEnemy(i, 8000, 800, 4000, 'knife');
-        this.makeMoveEnemy(i, 9000, 800, 8000, 'fork');
-        this.makeMoveEnemy(i, 7000, 800, 3000, 'knife');
+        this.makeMoveEnemy(i, 8000, 700, 4000, 'knife');
+        this.makeMoveEnemy(i, 9000, 700, 8000, 'fork');
+        this.makeMoveEnemy(i, 7000, 700, 3000, 'knife');
 
 
         // make boss
