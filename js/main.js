@@ -394,6 +394,9 @@ class CommonScene extends Phaser.Scene{
         bossText.setText('Boss HP: ' + bossHP);
         this.setValue(bossBar, bossHP)
     }
+    setValue(bar, percent){
+
+    }
     enemyHurt(enemy, bullet){
         //bullet.disableBody(true, true);
         bullet.destroy();
@@ -543,8 +546,6 @@ class Level1 extends CommonScene{
         this.load.image('big_platform', 'assets/ground/ground2.png');
         this.load.spritesheet('introbg', 'assets/background/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
-
-        this.load.audio('main_music', 'assets/music/main_music.wav')
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 1000;
@@ -578,15 +579,6 @@ class Level1 extends CommonScene{
         this.add.image(9000, 0, 'background').setOrigin(0, 0);
         //this.add.sprite(1470,0,'introbg').setOrigin(0, 0).anims.play('boil');
         super.create();
-
-
-        //testing
-        main_music = this.sound.add('main_music',{
-             loop: true,
-             delay: 0,
-             volume: 0
-        });
-
 
         // first 2 platforms
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
@@ -761,12 +753,12 @@ class Level1 extends CommonScene{
             bgBar.setVisible(true);
             bossHpText.setVisible(true);
             isMusicOn = false;
+            console.log("main_muisc off")
             this.tweens.add({
                 targets:  main_music,
                 volume:   0,
                 duration: 5000
             });
-            main_music.stop();
             isBossMusicOn = true;
             boss_music = this.sound.add('boss_music',{
                 loop: true,
@@ -796,7 +788,7 @@ class Level1 extends CommonScene{
 class Level2 extends CommonScene{
     preload(){
         super.preload();
-
+        this.load.spritesheet('introbg2', 'assets/background/bg-sheet-small-2.png', {frameWidth : 1470, frameHeight : 1000});
         this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/background/level1bg.png');
@@ -811,9 +803,9 @@ class Level2 extends CommonScene{
         this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 103});
         // load boss
         this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 100, frameHeight : 78});
-        // load music 
+        // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
-        
+
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 3;
@@ -831,7 +823,13 @@ class Level2 extends CommonScene{
     create(){
         // background
         this.add.image(0, 0, 'level2bg').setOrigin(0, 0);
-
+        this.anims.create({
+            key: 'boil2',
+            frames: this.anims.generateFrameNumbers('introbg2', { start: 0, end: 6 }),
+            frameRate: 2,
+            repeat: -1
+        });
+        this.add.sprite(0,0,'introbg2').setOrigin(0, 0).setScale(1.1).anims.play('boil2').setScrollFactor(0, 0);
         // boss bg
         this.add.image(9000, 0, 'background').setOrigin(0, 0);
 
@@ -1019,6 +1017,20 @@ class MainMenu extends Phaser.Scene {
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.instruction());
+
+        //DEBUGGING BUTTON DISABLE FOR Game
+        clickInstruction = this.add.text(1000, 200, 'DEBUG BUTTON: \nSKIP TUTORIAL',
+            {fontSize: '50px', fill: '#FF66CC'}).
+            setInteractive().on('pointerdown',
+            ()=>this.debugSKIP());
+    }
+    debugSKIP(){
+        this.scene.add('GameMenu', GameMenu, true);
+        mainButton.disableInteractive();
+        this.scene.remove('MainMenu');
+        this.registry.destroy();
+        this.events.off();
+        console.log("back")
     }
     update(){
 
@@ -1400,8 +1412,8 @@ var config = {
               // debug: false
           }
       },
-    //scene: [MainMenu], // starting with tutorial
-    scene: [GameMenu] // starting with real game
+    scene: [MainMenu], // starting with tutorial
+    //scene: [GameMenu] // starting with real game
   };
 
 
