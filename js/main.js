@@ -482,9 +482,9 @@ class CommonScene extends Phaser.Scene{
             this.tweens.add({
                 targets:  boss_music,
                 volume:   0,
-                duration: 3000
+                duration: 2000
             });
-            boss_music.stop();
+            //boss_music.stop();
         }
         if(isMusicOn == false)
          {
