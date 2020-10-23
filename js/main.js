@@ -335,6 +335,7 @@ class CommonScene extends Phaser.Scene{
               return;
             }
             dead = true;
+            console.log("end");
             return
         }
 
@@ -377,7 +378,7 @@ class CommonScene extends Phaser.Scene{
                 player.x += pSpeed * delta;
                 // player.y += pSpeedY;
             }
-            console.log("locked");
+            // console.log("locked");
         }
     }
     bossHurt(boss, bullet){
@@ -479,21 +480,21 @@ class CommonScene extends Phaser.Scene{
             });
             boss_music.stop();
         }
-        if(isMusicOn == false)
-        {
-          isMusicOn = true;
-          main_music = this.sound.add('main_music',{
-               loop: true,
-               delay: 0,
-               volume: 0
-          });
-          this.tweens.add({
-              targets:  main_music,
-              volume:   1,
-              duration: 5000
-          });
-          main_music.play();
-        }
+        // if(isMusicOn == false)
+        // {
+        //   isMusicOn = true;
+        //   main_music = this.sound.add('main_music',{
+        //        loop: true,
+        //        delay: 0,
+        //        volume: 0
+        //   });
+        //   this.tweens.add({
+        //       targets:  main_music,
+        //       volume:   1,
+        //       duration: 5000
+        //   });
+        //   main_music.play();
+        // }
     }
     mvPlatformCollided(player, mvPlatforms){
         if (!locked) {
@@ -571,8 +572,8 @@ class Level1 extends CommonScene{
 
         // first 2 platforms
         platforms.create(500, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        // var mp1 = platforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        // movingPlatformDict[300] = mp1;
+        var mp1 = mvPlatforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[300] = mp1;
 
         this.makeMoveEnemy(i, 100, 900, 2500, 'fork');
 
@@ -766,7 +767,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 2900;
+        playBornX = 9000;
     }
     create(){
         // background
@@ -842,7 +843,7 @@ class Level2 extends CommonScene{
         this.anims.create({
             key: 'bossMove',
             frames: this.anims.generateFrameNumbers('tofu', { start: 0, end: 12 }),
-            frameRate: 5,
+            frameRate: 8,
             repeat: -1
         });
         boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
@@ -850,6 +851,15 @@ class Level2 extends CommonScene{
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         boss.setScale(2);
         speed = bossSpeed;
+        this.tweens.timeline({
+            targets: boss.body.velocity,
+            loop: -1,
+            tweens: [
+            {x:100, duration:Phaser.Math.Between(6000, 8000), ease:'Stepped'},
+            {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
+            {x:-100, duration:Phaser.Math.Between(6000, 8000), ease:'Stepped'},
+            {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
+        ]});
 
         // music
 
@@ -874,17 +884,17 @@ class Level2 extends CommonScene{
         if(bossHP == 0) winLevel2 = true;
         super.update(time, delta);
 
-        boss.x += speed * delta;
-        if(boss.x >= bossRightBound && !bossStop){
-            speed = 0;
-            bossStop = true;
-            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        }
-        if(boss.x <= bossLeftBound && !bossStop){
-            speed = 0;
-            bossStop = true;
-            this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        }
+        // boss.x += speed * delta;
+        // if(boss.x >= bossRightBound && !bossStop){
+        //     speed = 0;
+        //     bossStop = true;
+        //     this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        // }
+        // if(boss.x <= bossLeftBound && !bossStop){
+        //     speed = 0;
+        //     bossStop = true;
+        //     this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
+        // }
 
     }
 }
