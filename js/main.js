@@ -550,7 +550,7 @@ class Level1 extends CommonScene{
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 1;
+        hp = 3;
         bossHP = boss1HP;
         bornL = 9500;
         bornR = 9600;
@@ -562,7 +562,7 @@ class Level1 extends CommonScene{
         // hp = 30;
         //playBornX = 8000;
         //horizontalSpeed = testSpeed;
-        playBornX = 8000;
+        playBornX = 50;
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
     }
     create(){
@@ -595,7 +595,7 @@ class Level1 extends CommonScene{
         platforms.create(1100, 900, "platform").setOrigin(0, 0).refreshBody();
         platforms.create(1100, 750, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(900, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
-        platforms.create(900, 900, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
+        platforms.create(900, 900, "back").setScale(1).setOrigin(0, 0).refreshBody();
         platforms.create(1700, 0, "back").setScale(0.8).setOrigin(0, 0).refreshBody();
         platforms.create(900, 550, "platform").setOrigin(0, 0).refreshBody();
 
