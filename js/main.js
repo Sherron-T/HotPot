@@ -697,8 +697,6 @@ class Level1 extends CommonScene{
         this.makeMoveEnemy(i, 9800, 700, 8000, 'fork');
         this.makeMoveEnemy(i, 9900, 800, 3000, 'fork');
 
-        // boss music
-
         // boss attacks
         nukes = this.physics.add.group({});
 
