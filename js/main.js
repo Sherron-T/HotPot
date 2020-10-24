@@ -85,6 +85,12 @@ var bgBar;
 var bossHpText;
 var setValue;
 
+//Boss 2
+var tintCharge;
+var boss_facing_left = false;
+var boss_facing_right = true;
+var can_shoot_2 = true;
+
 // level varables
 var winLevel1 = false;
 var winLevel2 = false;
@@ -112,7 +118,7 @@ var tutorialScene;
 var clickStart;
 
 // temp
-
+var bossSpecial = true;
 //Music
 var isMusicOn = false;
 var isBossMusicOn = false;
@@ -183,9 +189,6 @@ class CommonScene extends Phaser.Scene{
 
         this.cameras.main.setBounds(0, 0, 10500, 1000);
         this.cameras.main.startFollow(player);
-
-        // boss HP text
-        bossText = this.add.text(lastIndex+1200, 40, 'Boss HP: ' + bossHP, { fontSize: '32px', fill: '#4314B0' });
 
         // weapons
         bullets = this.physics.add.group({
@@ -391,11 +394,9 @@ class CommonScene extends Phaser.Scene{
         //bullet.disableBody(true, true);
         bullet.destroy();
         bossHP = bossHP == 0 ? 0 : bossHP - 1;
-        bossText.setText('Boss HP: ' + bossHP);
         this.setValue(bossBar, bossHP)
     }
     setValue(bar, percent){
-
     }
     enemyHurt(enemy, bullet){
         //bullet.disableBody(true, true);
@@ -527,6 +528,7 @@ class CommonScene extends Phaser.Scene{
         if(player) player.destroy();
         if(endText) endText.setVisible(false);
         if(summary) summary.setVisible(false);
+        this.enable_music();
         win = false;
         dead = false;
         console.log("restart");
@@ -548,7 +550,7 @@ class Level1 extends CommonScene{
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 1000;
+        hp = 1;
         bossHP = boss1HP;
         bornL = 9500;
         bornR = 9600;
@@ -745,7 +747,7 @@ class Level1 extends CommonScene{
         }
 
         //Enable Boss Music
-        if(player.x > 9000 && isBossMusicOn == false && bossHP != 0)
+        if(player.x > 9000 && isBossMusicOn == false && bossHP != 0 && hp > 0)
         {
             bossBar.setVisible(true);
             bgBar.setVisible(true);
@@ -771,15 +773,12 @@ class Level1 extends CommonScene{
            boss_music.play();
         }
     }
-    setValue(bar,percentage) {
-        //scale the bar
-        console.log(bar.scaleX);
-        this.tweens.add({
-            targets:  bar,
-            scaleX:   percentage/boss1HP,
-            duration: 500
-        });
-        //bar.scaleX = percentage/boss1HP;
+    setValue(bar, percent){
+      this.tweens.add({
+          targets:  bar,
+          scaleX:   percent/boss1HP,
+          duration: 500
+      });
     }
 }
 
@@ -787,7 +786,6 @@ class Level2 extends CommonScene{
     preload(){
         super.preload();
         this.load.spritesheet('introbg2', 'assets/background/bg-sheet-small-2.png', {frameWidth : 1470, frameHeight : 1000});
-        this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/background/level1bg.png');
         this.load.image('background', 'assets/background/bg.png');
@@ -800,18 +798,17 @@ class Level2 extends CommonScene{
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 103});
         // load boss
-        this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 100, frameHeight : 78});
+        this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 112, frameHeight : 147});
+        this.load.image('tofu_nuke', 'assets/boss_asset/tofu_bullet.png')
         // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
-
+        this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 3;
         bossHP = boss2HP;
-        bornL = 9500;
-        bornR = 9600;
-        bossLeftBound = bornL - 300;
-        bossRightBound = bornR + 350;
+        bornL = 10200;
+        bornR = 10300;
         lastIndex = 9000;
         pSpeed = platformSpeed;
         // for testing purposes
@@ -898,27 +895,49 @@ class Level2 extends CommonScene{
 
         // make boss
         this.anims.create({
-            key: 'bossMove',
-            frames: this.anims.generateFrameNumbers('tofu', { start: 0, end: 12 }),
+            key: 'bossLeft',
+            frames: this.anims.generateFrameNumbers('tofu', { start: 0, end: 5 }),
             frameRate: 8,
             repeat: -1
         });
-        boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
-        boss.anims.play('bossMove');
+        this.anims.create({
+            key: 'bossIdleRight',
+            frames: [ { key: 'tofu', frame: 7 } ],
+            frameRate: 8
+        });
+        this.anims.create({
+            key: 'bossIdleLeft',
+            frames: [ { key: 'tofu', frame: 5 } ],
+            frameRate: 8
+        });
+        this.anims.create({
+            key: 'bossRight',
+            frames: this.anims.generateFrameNumbers('tofu', { start: 7, end: 12 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        //boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
+        boss = this.physics.add.sprite(10400, 200, 'tofu');
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
-        boss.setScale(2);
+        //boss.setScale(2);
         speed = bossSpeed;
         // boss movement
-        this.tweens.timeline({
-            targets: boss.body.velocity,
-            loop: -1,
-            tweens: [
-            {x:100, duration:Phaser.Math.Between(6000, 8000), ease:'Stepped'},
-            {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
-            {x:-100, duration:Phaser.Math.Between(6000, 8000), ease:'Stepped'},
-            {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
-        ]});
 
+        //Boss HP bar
+        bgBar = this.add.graphics().setScrollFactor(0).setVisible(false);
+        bgBar.fillStyle(0x000000, 1);
+        bgBar.fillRect(0,0,610,60);
+        bgBar.x = 495;
+        bgBar.y = 45;
+        bossBar = this.add.graphics().setScrollFactor(0).setVisible(false);
+        bossBar.fillStyle(0xFF0000, 1);
+        bossBar.fillRect(0,0,600,50);
+        bossBar.x = 500;
+        bossBar.y = 50;
+        bossHpText = this.add.text(750, 50, 'TOFU',
+            {fontSize: '50px', fill: '#FFFFFF',}).setScrollFactor(0).setVisible(false);
+
+        this.setValue(bossBar,boss2HP);
         // music
 
         nukes = this.physics.add.group({});
@@ -941,6 +960,108 @@ class Level2 extends CommonScene{
     update(time, delta){
         if(bossHP == 0) winLevel2 = true;
         super.update(time, delta);
+
+        if(boss.body.velocity.x > 0)
+        {
+          boss_facing_left = false;
+          boss_facing_right = true;
+          boss.anims.play('bossRight', true);
+        }
+        if(boss.body.velocity.x == 0)
+        {
+          if(boss_facing_right == true)
+          {
+            boss.anims.play('bossIdleLeft');
+          }
+          if(boss_facing_left == true)
+          {
+            boss.anims.play('bossIdleRight');
+          }
+        }
+        if(boss.body.velocity.x < 0)
+        {
+          boss_facing_left = true;
+          boss_facing_right = false;
+          boss.anims.play('bossLeft', true);
+        }
+
+        if(player.x > 9000 && isBossMusicOn == false && bossHP != 0 && hp > 0)
+        {
+            bossBar.setVisible(true);
+            bgBar.setVisible(true);
+            bossHpText.setVisible(true);
+            isMusicOn = false;
+            console.log("main_muisc off")
+            this.tweens.add({
+                targets:  main_music,
+                volume:   0,
+                duration: 5000
+            });
+            isBossMusicOn = true;
+            boss_music = this.sound.add('boss_music',{
+                loop: true,
+                delay: 0,
+                volume: 0
+           });
+           this.tweens.add({
+               targets:  boss_music,
+               volume:   1,
+               duration: 5000
+           });
+           boss_music.play();
+        }
+
+        //Boss Charge
+        if(player.x > 9000 && bossHP != 0 && hp >0)
+        {
+            if(bossSpecial == true && bossHP < 20)
+            {
+              let clearColor = this.time.addEvent({ delay: 4000, callback: function(){this.time.addEvent({
+                    delay: 400,                // ms
+                    callback: this.tintCharge,
+                    callbackScope: this,
+                    repeat: 5
+                })}, callbackScope: this});
+                bossSpecial = false;
+                let chargeAttack = this.time.addEvent({ delay: 6500, callback: this.charge, callbackScope: this});
+            }
+            //Regular Projectile
+            else if(can_shoot_2 == true && boss.body.velocity.x == 0){
+              can_shoot_2 = false;
+              let shootAttack = this.time.addEvent({ delay: Phaser.Math.Between(2000, 3500), callback: this.tofuBullet, callbackScope: this});
+            }
+        }
+    }
+    setValue(bar, percent){
+      this.tweens.add({
+          targets:  bar,
+          scaleX:   percent/boss2HP,
+          duration: 500
+      });
+    }
+    tintCharge(){
+      boss.setTint(0x990000);
+      let clearColor = this.time.addEvent({ delay: 250, callback: function(){boss.clearTint()}, callbackScope: this});
+    }
+    charge(){
+      this.tweens.timeline({
+          targets: boss.body.velocity,
+          tweens: [
+          {x:-700, duration:2000, ease:'Stepped'},
+          {x:0, duration:500, ease:'Stepped'},
+          {x:700, duration:2000, ease:'Stepped'},
+          {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
+      ]});
+      let changeSpecial = this.time.addEvent({ delay: 10000, callback: function(){bossSpecial = true}, callbackScope: this});
+    }
+    tofuBullet(){
+      var bossplayerangle = Phaser.Math.Angle.Between(boss.x, boss.y, player.x, player.y)
+
+      let tofu_bullet = nukes.create(boss.x, boss.y, 'tofu_nuke');
+      tofu_bullet.body.allowGravity = false;
+    	tofu_bullet.setVelocityX(900*Math.cos(bossplayerangle));
+      tofu_bullet.setVelocityY(900*Math.sin(bossplayerangle));
+      can_shoot_2 = true;
     }
 }
 
@@ -990,6 +1111,7 @@ class GameMenu extends Phaser.Scene {
         scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
+        clickButton2.setInteractive().off();
         console.log("clicked level2");
         //this.scene.start('Level2');
     }
@@ -1213,7 +1335,8 @@ class Tutorial extends CommonScene{
         this.scene.remove('MainMenu');
         this.registry.destroy();
         this.events.off();
-        console.log("back")
+        console.log("back");
+        enable_music();
     }
 }
 
@@ -1406,8 +1529,8 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: {y:800},
-              debug: true
-              // debug: false
+              //debug: true
+              debug: false
           }
       },
     scene: [MainMenu], // starting with tutorial
