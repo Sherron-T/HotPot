@@ -89,6 +89,7 @@ var setValue;
 var tintCharge;
 var boss_facing_left = false;
 var boss_facing_right = true;
+var can_shoot_2 = true;
 
 // level varables
 var winLevel1 = false;
@@ -787,7 +788,6 @@ class Level2 extends CommonScene{
     preload(){
         super.preload();
         this.load.spritesheet('introbg2', 'assets/background/bg-sheet-small-2.png', {frameWidth : 1470, frameHeight : 1000});
-        this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/background/level1bg.png');
         this.load.image('background', 'assets/background/bg.png');
@@ -801,6 +801,7 @@ class Level2 extends CommonScene{
         this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 103});
         // load boss
         this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 112, frameHeight : 147});
+        this.load.image('tofu_nuke', 'assets/boss_asset/tofu_bullet.png')
         // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
@@ -1012,10 +1013,10 @@ class Level2 extends CommonScene{
            boss_music.play();
         }
 
-        //Boss attacks
+        //Boss Charge
         if(player.x > 9000 && bossHP != 0 && hp >0)
         {
-            if(bossSpecial == true)
+            if(bossSpecial == true && bossHP < 20)
             {
               let clearColor = this.time.addEvent({ delay: 4000, callback: function(){this.time.addEvent({
                     delay: 400,                // ms
@@ -1026,7 +1027,11 @@ class Level2 extends CommonScene{
                 bossSpecial = false;
                 let chargeAttack = this.time.addEvent({ delay: 6500, callback: this.charge, callbackScope: this});
             }
-
+            //Regular Projectile
+            else if(can_shoot_2 == true && boss.body.velocity.x == 0){
+              can_shoot_2 = false;
+              let shootAttack = this.time.addEvent({ delay: Phaser.Math.Between(2000, 3500), callback: this.tofuBullet, callbackScope: this});
+            }
         }
     }
     setValue(bar, percent){
@@ -1044,12 +1049,21 @@ class Level2 extends CommonScene{
       this.tweens.timeline({
           targets: boss.body.velocity,
           tweens: [
-          {x:-600, duration:2000, ease:'Stepped'},
+          {x:-700, duration:2000, ease:'Stepped'},
           {x:0, duration:500, ease:'Stepped'},
-          {x:600, duration:2000, ease:'Stepped'},
+          {x:700, duration:2000, ease:'Stepped'},
           {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
       ]});
       let changeSpecial = this.time.addEvent({ delay: 10000, callback: function(){bossSpecial = true}, callbackScope: this});
+    }
+    tofuBullet(){
+      var bossplayerangle = Phaser.Math.Angle.Between(boss.x, boss.y, player.x, player.y)
+
+      let tofu_bullet = nukes.create(boss.x, boss.y, 'tofu_nuke');
+      tofu_bullet.body.allowGravity = false;
+    	tofu_bullet.setVelocityX(900*Math.cos(bossplayerangle));
+      tofu_bullet.setVelocityY(900*Math.sin(bossplayerangle));
+      can_shoot_2 = true;
     }
 }
 
@@ -1517,8 +1531,8 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: {y:800},
-              debug: true
-              // debug: false
+              //debug: true
+              debug: false
           }
       },
     scene: [MainMenu], // starting with tutorial
