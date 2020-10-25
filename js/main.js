@@ -31,6 +31,10 @@ var enemies;
 var mvEnem = [];
 var i = 0;
 
+//ingredient VARIABLES
+var inEnem = [];
+var z = 0;
+
 // boss variables
 var boss;
 var bossText;
@@ -90,6 +94,8 @@ var tintCharge;
 var boss_facing_left = false;
 var boss_facing_right = true;
 var can_shoot_2 = true;
+var bossSpecial2 = true;
+var chargeCooldown = 5000; //ms
 
 // level varables
 var winLevel1 = false;
@@ -117,12 +123,12 @@ var tutorialScene;
 // instruction
 var clickStart;
 
-// temp
-var bossSpecial = true;
+
 //Music
 var isMusicOn = false;
 var isBossMusicOn = false;
 var main_music;
+var lvl2music;
 var boss_music;
 var jump_sound;
 var hurt_sound;
@@ -476,6 +482,12 @@ class CommonScene extends Phaser.Scene{
         ]});
         i += 1;
     }
+    makeIngredient(i, xPos, yPos, enemyName)
+    {
+      inEnem[z] = enemies.create(xPos,yPos,enemyName).setOrigin(0,1).refreshBody();
+      inEnem[z].setBounceY(1);
+      z+=1;
+    }
     bullet_dissapear(b){
       b.destroy();
     }
@@ -489,15 +501,16 @@ class CommonScene extends Phaser.Scene{
                 duration: 2000
             });
             //boss_music.stop();
+            let bossMusicClear = this.time.addEvent({ delay: 4000, callback: function(){boss_music.stop()}, callbackScope: this});
         }
         if(isMusicOn == false)
          {
            isMusicOn = true;
-           main_music = this.sound.add('main_music',{
+           /*main_music = this.sound.add('main_music',{
                 loop: true,
                 delay: 0,
                 volume: 0
-           });
+           });*/
            this.tweens.add({
                targets:  main_music,
                volume:   1,
@@ -560,9 +573,9 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        //playBornX = 8000;
+        playBornX = 8000;
         //horizontalSpeed = testSpeed;
-        playBornX = 50;
+        //playBornX = 50;
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
     }
     create(){
@@ -719,6 +732,20 @@ class Level1 extends CommonScene{
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
         // bossText.setScrollFactor(0, 0)
+
+        //music
+        main_music.stop();
+        main_music = this.sound.add('main_music',{
+            loop: true,
+            delay: 0,
+            volume: 0
+       });
+       main_music.play();
+       this.tweens.add({
+           targets:  main_music,
+           volume:   1,
+           duration: 7000
+       });
     }
     update(time, delta){
         super.update(time, delta);
@@ -796,12 +823,13 @@ class Level2 extends CommonScene{
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
-        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 111});
+        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
         // load boss
         this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 112, frameHeight : 147});
         this.load.image('tofu_nuke', 'assets/boss_asset/tofu_bullet.png')
         // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
+        this.load.audio('lvl2music', 'assets/music/lvl2music.wav')
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -887,7 +915,8 @@ class Level2 extends CommonScene{
             xCord += (Math.floor(Math.random() * 100)+50);
             this.makeMoveEnemy(i, xCord, 600, Math.floor(Math.random() * 1000)+Math.floor(Math.random() * 1000)+3000, 'fork');
         }
-
+        //enemies.create(8500, 700, "beef").setOrigin(0, 1).refreshBody();
+        this.makeIngredient(z, 8500, 800, 'beef');
         this.makeMoveEnemy(i, 8000, 700, 4000, 'knife');
         this.makeMoveEnemy(i, 9000, 700, 8000, 'fork');
         this.makeMoveEnemy(i, 7000, 700, 3000, 'knife');
@@ -966,6 +995,21 @@ class Level2 extends CommonScene{
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
         playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
+
+        //music
+        //main_music.removeAll();'
+        main_music.stop();
+        main_music = this.sound.add('lvl2music',{
+            loop: true,
+            delay: 0,
+            volume: 0
+       });
+       main_music.play();
+       this.tweens.add({
+           targets:  main_music,
+           volume:   0.6,
+           duration: 7000
+       });
     }
     update(time, delta){
         if(bossHP == 0) winLevel2 = true;
@@ -1024,16 +1068,15 @@ class Level2 extends CommonScene{
         //Boss Charge
         if(player.x > 9000 && bossHP != 0 && hp >0)
         {
-            if(bossSpecial == true && bossHP < 20)
+            if(bossSpecial2 == true && bossHP < 20)
             {
-              console.log("WOOO");
               let clearColor = this.time.addEvent({ delay: 2000, callback: function(){this.time.addEvent({
                     delay: 400,                // ms
                     callback: this.tintCharge,
                     callbackScope: this,
                     repeat: 5
                 })}, callbackScope: this});
-                bossSpecial = false;
+                bossSpecial2 = false;
                 let chargeAttack = this.time.addEvent({ delay: 4500, callback: this.charge, callbackScope: this});
             }
             //Regular Projectile
@@ -1063,7 +1106,7 @@ class Level2 extends CommonScene{
           {x:700, duration:2000, ease:'Stepped'},
           {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
       ]});
-      let changeSpecial = this.time.addEvent({ delay: 10000, callback: function(){bossSpecial = true}, callbackScope: this});
+      let changeSpecial = this.time.addEvent({ delay: chargeCooldown, callback: function(){bossSpecial2 = true}, callbackScope: this});
     }
     tofuBullet(){
       if(boss.body.velocity.x == 0)
@@ -1089,7 +1132,6 @@ class GameMenu extends Phaser.Scene {
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
         this.scene.remove('Tutorial');
-
         clickButton1 = this.add.text(450, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
@@ -1099,6 +1141,12 @@ class GameMenu extends Phaser.Scene {
             setInteractive().on('pointerdown',
             ()=>this.onClicked2());
          lock2 = this.physics.add.staticImage(420, 775, 'lock');
+
+         //Clear Boss music
+         if(isBossMusicOn == true)
+         {
+           let bossMusicClear = this.time.addEvent({ delay: 4000, callback: function(){boss_music.stop()}, callbackScope: this});
+         }
     }
     update(){
     // comment out this snippet if you want to visit level2
