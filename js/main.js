@@ -457,7 +457,7 @@ class CommonScene extends Phaser.Scene{
     makeMoveEnemy(i, xPos, yPos, duration, enemyName){
         console.log(enemyName);
         this.anims.create({
-            key: 'walk',
+            key: enemyName+'walk',
             frames: this.anims.generateFrameNumbers(enemyName, { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
@@ -466,7 +466,7 @@ class CommonScene extends Phaser.Scene{
         enemies.add(mvEnem[i]);
         //var fork1Collider = this.physics.add.collider(fork1, platforms);
         //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
-        mvEnem[i].anims.play('walk');
+        mvEnem[i].anims.play(enemyName+'walk');
         this.tweens.timeline({
             targets: mvEnem[i].body.velocity,
             loop: -1,
@@ -798,7 +798,7 @@ class Level2 extends CommonScene{
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
-        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 103});
+        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 68, frameHeight : 111});
         // load boss
         this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 112, frameHeight : 147});
         this.load.image('tofu_nuke', 'assets/boss_asset/tofu_bullet.png')
@@ -893,6 +893,16 @@ class Level2 extends CommonScene{
         this.makeMoveEnemy(i, 8000, 700, 4000, 'knife');
         this.makeMoveEnemy(i, 9000, 700, 8000, 'fork');
         this.makeMoveEnemy(i, 7000, 700, 3000, 'knife');
+        // enemies.create(8000, 700, "knife").setOrigin(0, 1).refreshBody();
+        // enemies.create(8500, 700, "fork").setOrigin(0, 1).refreshBody();
+        // this.anims.create({
+        //     key: 'knifewalk',
+        //     frames: this.anims.generateFrameNumbers('knife', { start: 0, end: 5 }),
+        //     frameRate: 10,
+        //     repeat: -1
+        // });
+        // movingPlatforms = this.physics.add.sprite(8700, 700, 'knife').setOrigin(0, 1).refreshBody().setScale(0.5);
+        // movingPlatforms.anims.play('knifewalk');
 
 
         // make boss
@@ -1140,20 +1150,20 @@ class MainMenu extends Phaser.Scene {
             setInteractive().on('pointerdown',
             ()=>this.instruction());
 
-        //DEBUGGING BUTTON DISABLE FOR Game
-        clickInstruction = this.add.text(1000, 200, 'DEBUG BUTTON: \nSKIP TUTORIAL',
-            {fontSize: '50px', fill: '#FF66CC'}).
-            setInteractive().on('pointerdown',
-            ()=>this.debugSKIP());
+        // //DEBUGGING BUTTON DISABLE FOR Game
+        // clickInstruction = this.add.text(1000, 200, 'DEBUG BUTTON: \nSKIP TUTORIAL',
+        //     {fontSize: '50px', fill: '#FF66CC'}).
+        //     setInteractive().on('pointerdown',
+        //     ()=>this.debugSKIP());
     }
-    debugSKIP(){
-        this.scene.add('GameMenu', GameMenu, true);
-        mainButton.disableInteractive();
-        this.scene.remove('MainMenu');
-        this.registry.destroy();
-        this.events.off();
-        console.log("back")
-    }
+    // debugSKIP(){
+    //     this.scene.add('GameMenu', GameMenu, true);
+    //     // mainButton.disableInteractive();
+    //     this.scene.remove('MainMenu');
+    //     this.registry.destroy();
+    //     this.events.off();
+    //     console.log("back")
+    // }
     update(){
 
     }
@@ -1338,7 +1348,7 @@ class Tutorial extends CommonScene{
         this.registry.destroy();
         this.events.off();
         console.log("back");
-        enable_music();
+        // enable_music();
     }
 }
 
@@ -1536,7 +1546,7 @@ var config = {
           }
       },
     scene: [MainMenu], // starting with tutorial
-    //scene: [GameMenu] // starting with real game
+    // scene: [GameMenu] // starting with real game
   };
 
 
