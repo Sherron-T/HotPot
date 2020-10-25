@@ -1016,14 +1016,15 @@ class Level2 extends CommonScene{
         {
             if(bossSpecial == true && bossHP < 20)
             {
-              let clearColor = this.time.addEvent({ delay: 4000, callback: function(){this.time.addEvent({
+              console.log("WOOO");
+              let clearColor = this.time.addEvent({ delay: 2000, callback: function(){this.time.addEvent({
                     delay: 400,                // ms
                     callback: this.tintCharge,
                     callbackScope: this,
                     repeat: 5
                 })}, callbackScope: this});
                 bossSpecial = false;
-                let chargeAttack = this.time.addEvent({ delay: 6500, callback: this.charge, callbackScope: this});
+                let chargeAttack = this.time.addEvent({ delay: 4500, callback: this.charge, callbackScope: this});
             }
             //Regular Projectile
             else if(can_shoot_2 == true && boss.body.velocity.x == 0){
@@ -1055,12 +1056,15 @@ class Level2 extends CommonScene{
       let changeSpecial = this.time.addEvent({ delay: 10000, callback: function(){bossSpecial = true}, callbackScope: this});
     }
     tofuBullet(){
-      var bossplayerangle = Phaser.Math.Angle.Between(boss.x, boss.y, player.x, player.y)
+      if(boss.body.velocity.x == 0)
+      {
+        var bossplayerangle = Phaser.Math.Angle.Between(boss.x, boss.y, player.x, player.y)
 
-      let tofu_bullet = nukes.create(boss.x, boss.y, 'tofu_nuke');
-      tofu_bullet.body.allowGravity = false;
-    	tofu_bullet.setVelocityX(900*Math.cos(bossplayerangle));
-      tofu_bullet.setVelocityY(900*Math.sin(bossplayerangle));
+        let tofu_bullet = nukes.create(boss.x, boss.y, 'tofu_nuke');
+        tofu_bullet.body.allowGravity = false;
+      	tofu_bullet.setVelocityX(900*Math.cos(bossplayerangle));
+        tofu_bullet.setVelocityY(900*Math.sin(bossplayerangle));
+      }
       can_shoot_2 = true;
     }
 }
