@@ -859,7 +859,6 @@ class Level2 extends CommonScene{
         // for testing purposes
         // horizontalSpeed = testSpeed;
         //playBornX = 8000;
-        //playBornX = 8000;
     }
     create(){
         // background
@@ -969,12 +968,12 @@ class Level2 extends CommonScene{
             frameRate: 8,
             repeat: -1
         });
-        /*this.anims.create({
+        this.anims.create({
             key: 'bossIdleAttack',
             frames: this.anims.generateFrameNumbers('tofu', { start: 13, end: 17 }),
             frameRate: 4,
             repeat: -1
-        });*/
+        });
         //boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
         boss = this.physics.add.sprite(10400, 200, 'tofu');
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
@@ -1032,16 +1031,16 @@ class Level2 extends CommonScene{
         }
         if(boss.body.velocity.x == 0)
         {
-          /*if(boss.x = 10400)
+          if(boss.x = 10400)
           {
             boss.anims.play('bossIdleAttack',true);
-            console.log("ASDAS")
-          }*/
-          if(boss_facing_right == true)
+            console.log(boss.x)
+          }
+          else if(boss_facing_right == true)
           {
             boss.anims.play('bossIdleLeft');
           }
-          if(boss_facing_left == true)
+          else if(boss_facing_left == true)
           {
             boss.anims.play('bossIdleRight');
           }
@@ -1115,7 +1114,7 @@ class Level2 extends CommonScene{
           targets: boss.body.velocity,
           tweens: [
           {x:-700, duration:2000, ease:'Stepped'},
-          {x:0, duration:500, ease:'Stepped'},
+          //{x:0, duration:500, ease:'Stepped'},
           {x:700, duration:2000, ease:'Stepped'},
           {x:0, duration:Phaser.Math.Between(1000, 3000), ease:'Stepped'},
       ]});
