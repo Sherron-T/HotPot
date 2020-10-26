@@ -548,6 +548,34 @@ class CommonScene extends Phaser.Scene{
         dead = false;
         console.log("restart");
     }
+    start_music(songName){
+      this.tweens.add({
+          targets:  main_music,
+          volume:   0,
+          duration: 2000
+      });
+      this.tweens.add({
+          targets:  boss_music,
+          volume:   0,
+          duration: 2000
+      });
+      let mainMusicLower = this.time.addEvent({ delay: 1500, callback: function(){
+        main_music.stop()
+      }, callbackScope: this});
+      let mainMusicEnable = this.time.addEvent({ delay: 1500, callback: function(){
+        main_music = this.sound.add(songName,{
+            loop: true,
+            delay: 0,
+            volume: 0
+       });
+       main_music.play();
+       this.tweens.add({
+           targets:  main_music,
+           volume:   0.6,
+           duration: 2000
+       });
+      }, callbackScope: this});
+    }
 }
 
 class Level1 extends CommonScene{
@@ -575,9 +603,9 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        playBornX = 8000;
+        //playBornX = 8000;
         //horizontalSpeed = testSpeed;
-        //playBornX = 50;
+        playBornX = 50;
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
     }
     create(){
@@ -736,22 +764,10 @@ class Level1 extends CommonScene{
         // bossText.setScrollFactor(0, 0)
 
         //music
-        main_music.stop();
-        main_music = this.sound.add('main_music',{
-            loop: true,
-            delay: 0,
-            volume: 0
-       });
-       main_music.play();
-       this.tweens.add({
-           targets:  main_music,
-           volume:   1,
-           duration: 7000
-       });
+        this.start_music('main_music');
     }
     update(time, delta){
         super.update(time, delta);
-
         if(bossHP == 0) winLevel1 = true;
 
         /*boss.x += speed * delta;
@@ -782,7 +798,6 @@ class Level1 extends CommonScene{
             bgBar.setVisible(true);
             bossHpText.setVisible(true);
             isMusicOn = false;
-            console.log("main_muisc off")
             this.tweens.add({
                 targets:  main_music,
                 volume:   0,
@@ -843,6 +858,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
+        //playBornX = 8000;
         playBornX = 8000;
     }
     create(){
@@ -953,6 +969,12 @@ class Level2 extends CommonScene{
             frameRate: 8,
             repeat: -1
         });
+        /*this.anims.create({
+            key: 'bossIdleAttack',
+            frames: this.anims.generateFrameNumbers('tofu', { start: 13, end: 17 }),
+            frameRate: 4,
+            repeat: -1
+        });*/
         //boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
         boss = this.physics.add.sprite(10400, 200, 'tofu');
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
@@ -995,19 +1017,8 @@ class Level2 extends CommonScene{
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
         //music
-        //main_music.removeAll();'
-        main_music.stop();
-        main_music = this.sound.add('lvl2music',{
-            loop: true,
-            delay: 0,
-            volume: 0
-       });
-       main_music.play();
-       this.tweens.add({
-           targets:  main_music,
-           volume:   0.6,
-           duration: 7000
-       });
+        //main_music.removeAll();
+        this.start_music('lvl2music');
     }
     update(time, delta){
         if(bossHP == 0) winLevel2 = true;
@@ -1021,6 +1032,11 @@ class Level2 extends CommonScene{
         }
         if(boss.body.velocity.x == 0)
         {
+          /*if(boss.x = 10400)
+          {
+            boss.anims.play('bossIdleAttack',true);
+            console.log("ASDAS")
+          }*/
           if(boss_facing_right == true)
           {
             boss.anims.play('bossIdleLeft');
@@ -1043,7 +1059,6 @@ class Level2 extends CommonScene{
             bgBar.setVisible(true);
             bossHpText.setVisible(true);
             isMusicOn = false;
-            console.log("main_muisc off")
             this.tweens.add({
                 targets:  main_music,
                 volume:   0,
@@ -1141,22 +1156,19 @@ class GameMenu extends Phaser.Scene {
          lock2 = this.physics.add.staticImage(420, 775, 'lock');
 
          //Clear Boss music
-         if(isBossMusicOn == true)
-         {
-           let bossMusicClear = this.time.addEvent({ delay: 4000, callback: function(){boss_music.stop()}, callbackScope: this});
-         }
+         this.tweens.add({
+             targets:  boss_music,
+             volume:   0,
+             duration: 2000
+         });
     }
     update(){
-    // comment out this snippet if you want to visit level2
-    // without completing level1
-
-        // if(!winLevel1){
-        //     clickButton2.disableInteractive();
-        // }else{
-        //     clickButton2.setInteractive();
-        //     lock2.destroy();
-        // }
-
+        /*if(!winLevel1){
+           clickButton2.disableInteractive();
+        }else{
+           clickButton2.setInteractive();
+           lock2.destroy();
+        }*/
     }
     onClicked1(){
         this.scene.remove('Level1');
@@ -1197,12 +1209,6 @@ class MainMenu extends Phaser.Scene {
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.instruction());
-
-        // //DEBUGGING BUTTON DISABLE FOR Game
-        // clickInstruction = this.add.text(1000, 200, 'DEBUG BUTTON: \nSKIP TUTORIAL',
-        //     {fontSize: '50px', fill: '#FF66CC'}).
-        //     setInteractive().on('pointerdown',
-        //     ()=>this.debugSKIP());
     }
     // debugSKIP(){
     //     this.scene.add('GameMenu', GameMenu, true);
@@ -1410,7 +1416,7 @@ class Instruction extends Phaser.Scene {
         this.load.spritesheet('pork', 'assets/player/pork.png', {frameWidth : 100, frameHeight : 78});
         this.load.image('platform', 'assets/ground/ground.png');
         this.load.image('back', 'assets/ground/back.png');
-        this.load.image('rice', 'assets/rice.png')
+        this.load.image('rice', 'assets/player/rice.png')
         this.load.image('controls', 'assets/intro/controls.png')
         this.load.image('intro', 'assets/intro/intro.png')
     }
