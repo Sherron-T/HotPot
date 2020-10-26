@@ -859,7 +859,7 @@ class Level2 extends CommonScene{
         // for testing purposes
         // horizontalSpeed = testSpeed;
         //playBornX = 8000;
-        playBornX = 8000;
+        //playBornX = 8000;
     }
     create(){
         // background
@@ -1163,12 +1163,12 @@ class GameMenu extends Phaser.Scene {
          });
     }
     update(){
-        /*if(!winLevel1){
+        if(!winLevel1){
            clickButton2.disableInteractive();
         }else{
            clickButton2.setInteractive();
            lock2.destroy();
-        }*/
+        }
     }
     onClicked1(){
         this.scene.remove('Level1');
