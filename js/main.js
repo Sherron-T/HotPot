@@ -718,6 +718,7 @@ class Level1 extends CommonScene{
             {x:259, duration:5000, ease:'Stepped'},
             {x:-250, duration:5000, ease:'Stepped'},
         ]});
+        bossSpecial2 = true;
 
         //Boss HP Bar
         bgBar = this.add.graphics().setScrollFactor(0).setVisible(false);
