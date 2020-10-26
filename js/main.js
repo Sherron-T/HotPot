@@ -76,6 +76,7 @@ var bulletTime = 500; //Increase to adjust bullet distance
 // boss variables
 const boss1HP = 20;
 const boss2HP = 30;
+const finalBossHP = 40;
 var bossHP = 3;
 var bossLow = 10;
 var bossStopDuration = 800;
@@ -100,10 +101,12 @@ var chargeCooldown = 5000; //ms
 // level varables
 var winLevel1 = false;
 var winLevel2 = false;
+var winEndStory = false;
 var scene1;
 var scene2;
 var clickButton1;
 var clickButton2;
+var clickButton3;
 var mainButton;
 var lock2;
 var endText;
@@ -194,7 +197,8 @@ class CommonScene extends Phaser.Scene{
         player.body.width = 60;
         player.body.offset.x = 20;
         console.log("player loaded")
-
+        
+        this.cameras.main.fadeIn(700, 0, 0, 0);
         this.cameras.main.setBounds(0, 0, 10500, 1000);
         this.cameras.main.startFollow(player);
 
@@ -1136,6 +1140,89 @@ class Level2 extends CommonScene{
 }
 
 
+class EndStory extends CommonScene {
+    preload(){
+        super.preload();
+
+        this.load.spritesheet('introbg2', 'assets/background/bg-sheet-small-2.png', {frameWidth : 1470, frameHeight : 1000});
+        // load bg and platform
+        this.load.image('level3bg', 'assets/background/level1bg.png');
+        this.load.image('background', 'assets/background/bg.png');
+        this.load.image('platform', 'assets/ground/ground.png');
+        this.load.image('big_platform', 'assets/ground/ground2.png');
+        // load ingredients
+        this.load.image('fish', 'assets/ingredients/fish.png');
+        this.load.image('octopus', 'assets/ingredients/octopus.png');
+        this.load.image('beef', 'assets/ingredients/beef.png');
+        // this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
+        // this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
+        // load boss
+
+        // load music
+        this.load.audio('main_music', 'assets/music/main_music.wav')
+        this.load.audio('lvl2music', 'assets/music/lvl2music.wav')
+        this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
+        // we can initiate the variables for the specific boss info here
+        // based on the level design
+        hp = 3;
+        bossHP = finalBossHP;
+        bornL = 10200;
+        bornR = 10300;
+        lastIndex = 9000;
+        pSpeed = platformSpeed;
+        // for testing purposes
+        // horizontalSpeed = testSpeed;
+        //playBornX = 8000;
+    }
+    create(){
+        // using level 2 features for now
+        // background
+        this.add.image(0, 0, 'level2bg').setOrigin(0, 0);
+        this.anims.create({
+            key: 'boil2',
+            frames: this.anims.generateFrameNumbers('introbg2', { start: 0, end: 6 }),
+            frameRate: 2,
+            repeat: -1
+        });
+        this.add.sprite(0,0,'introbg2').setOrigin(0, 0).setScale(1.1).anims.play('boil2').setScrollFactor(0, 0);
+        // boss bg
+        this.add.image(9000, 0, 'background').setOrigin(0, 0);
+
+        super.create();
+
+        // level specified platforms
+        platforms.create(50, 900, "platform").setOrigin(1, 0).refreshBody() 
+
+        // player - objects interaction logics
+        player.anims.play('idle_right');
+
+        // colliders
+        playerCollider = this.physics.add.collider(player, platforms);
+        bossCollider = this.physics.add.collider(boss, platforms);
+        enemyCollider = this.physics.add.collider(enemies, platforms);
+
+        // overlaps
+        bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
+        playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
+        bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
+        playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
+        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
+
+        //music
+        //main_music.removeAll();
+        this.start_music('lvl2music');
+
+    }
+    update(time, delta){
+        if(bossHP == 0) winEndStory = true;
+        super.update(time, delta);
+        // boss attacks will attach player to boss
+        // the boss can toss player to random places
+        // shake screens?
+    }
+}
+
+
 class GameMenu extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/background/bg.png');
@@ -1153,6 +1240,10 @@ class GameMenu extends Phaser.Scene {
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked2());
+        clickButton3 = this.add.text(1200, 200, 'THE END',
+            {fontSize: '40px', fill: '#888'}).
+            setInteractive().on('pointerdown',
+            ()=>this.onClicked3());
          lock2 = this.physics.add.staticImage(420, 775, 'lock');
 
          //Clear Boss music
@@ -1161,14 +1252,16 @@ class GameMenu extends Phaser.Scene {
              volume:   0,
              duration: 2000
          });
+
+         this.cameras.main.fadeIn(600, 0, 0, 0);
     }
     update(){
-        if(!winLevel1){
-           clickButton2.disableInteractive();
-        }else{
-           clickButton2.setInteractive();
-           lock2.destroy();
-        }
+        // if(!winLevel1){
+        //    clickButton2.disableInteractive();
+        // }else{
+        //    clickButton2.setInteractive();
+        //    lock2.destroy();
+        // }
     }
     onClicked1(){
         this.scene.remove('Level1');
@@ -1183,9 +1276,19 @@ class GameMenu extends Phaser.Scene {
         scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
+        clickButton3.disableInteractive();
         // clickButton2.setInteractive().off();
         console.log("clicked level2");
         //this.scene.start('Level2');
+    }
+    onClicked3(){
+        this.scene.remove('EndStory');
+        scene2 = this.scene.add('EndStory', EndStory, true);
+        clickButton1.disableInteractive();
+        clickButton2.disableInteractive();
+        clickButton3.disableInteractive();
+        // clickButton2.setInteractive().off();
+        console.log("clicked end story");
     }
 }
 
@@ -1343,6 +1446,7 @@ class Tutorial extends CommonScene{
         playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
+        this.cameras.main.fadeIn(600, 0, 0, 0);
         this.cameras.main.setBounds(0, 0, 1500, 1000);
         this.cameras.main.startFollow(player);
     }
@@ -1398,6 +1502,7 @@ class Tutorial extends CommonScene{
         mainButton.setText("Start the Real Adventure");
     }
     backToMenu(){
+        // this.cameras.main.fadeOut(1000, 0, 0, 0);
         this.scene.add('GameMenu', GameMenu, true);
         mainButton.disableInteractive();
         this.scene.remove('MainMenu');
@@ -1511,6 +1616,7 @@ class Instruction extends Phaser.Scene {
          });
 
          playerCollider = this.physics.add.collider(player, platforms);
+         this.cameras.main.fadeIn(800, 0, 0, 0);
     }
     update(time, delta){
         clickStart.x = player.x - 200;
