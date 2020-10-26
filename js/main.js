@@ -149,6 +149,8 @@ class CommonScene extends Phaser.Scene{
         this.load.audio('hurt_sound', 'assets/sfx/hurt.mp3')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
         this.load.image('back', 'assets/ground/back.png');
+        this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
+        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
         this.restart();
     }
     create(){
@@ -442,13 +444,15 @@ class CommonScene extends Phaser.Scene{
         // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
         console.log("music should restart");
         this.enable_music();
-        this.add.image(player.x-150, 40, 'scoreBoard').setOrigin(0, 0);
-        endText = this.add.text(player.x-20, 75, "YOU "+text, { fontSize: '60px', fill: '#290048' });
-        summary = this.add.text(player.x, 420, "Score: "+(score+add), { fontSize: '50px', fill: '#290048' });
-        mainButton = this.add.text(player.x-20, 770, 'Back to Menu',
+        // this.add.image(player.x-150, 40, 'scoreBoard').setOrigin(0, 0);
+        // endText = this.add.text(player.x-20, 75, "YOU "+text, {fontSize: '60px', fill: '#290048'});
+        this.add.image(750, 40, 'scoreBoard').setScrollFactor(0).setOrigin(0.5, 0);
+        endText = this.add.text(750, 75, "YOU "+text, {fontSize: '60px', fill: '#290048'}).setScrollFactor(0).setOrigin(0.5, 0);
+        summary = this.add.text(750, 420, "Score: "+(score+add), {fontSize: '50px', fill: '#290048'}).setScrollFactor(0).setOrigin(0.5, 0);
+        mainButton = this.add.text(750, 770, 'Back to Menu',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
-            ()=>this.backToMenu());
+            ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
     }
     backToMenu(){
         this.scene.start('GameMenu');
@@ -470,8 +474,6 @@ class CommonScene extends Phaser.Scene{
         });
         mvEnem[i] = this.physics.add.sprite(xPos, yPos, enemyName).setOrigin(0, 1).refreshBody().setScale(0.5);
         enemies.add(mvEnem[i]);
-        //var fork1Collider = this.physics.add.collider(fork1, platforms);
-        //enemies.create(600, 800, "fork").setOrigin(0, 1).refreshBody();
         mvEnem[i].anims.play(enemyName+'walk');
         this.tweens.timeline({
             targets: mvEnem[i].body.velocity,
@@ -560,7 +562,7 @@ class Level1 extends CommonScene{
         this.load.image('platform', 'assets/ground/ground.png');
         this.load.image('big_platform', 'assets/ground/ground2.png');
         this.load.spritesheet('introbg', 'assets/background/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
-        this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
+        // this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 3;
@@ -822,8 +824,8 @@ class Level2 extends CommonScene{
         this.load.image('fish', 'assets/ingredients/fish.png');
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
-        this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
-        this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
+        // this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
+        // this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
         // load boss
         this.load.spritesheet('tofu', 'assets/boss_asset/tofu.png', {frameWidth : 112, frameHeight : 147});
         this.load.image('tofu_nuke', 'assets/boss_asset/tofu_bullet.png')
@@ -915,21 +917,17 @@ class Level2 extends CommonScene{
             xCord += (Math.floor(Math.random() * 100)+50);
             this.makeMoveEnemy(i, xCord, 600, Math.floor(Math.random() * 1000)+Math.floor(Math.random() * 1000)+3000, 'fork');
         }
-        //enemies.create(8500, 700, "beef").setOrigin(0, 1).refreshBody();
-        this.makeIngredient(z, 8500, 800, 'beef');
-        this.makeMoveEnemy(i, 8000, 700, 4000, 'knife');
-        this.makeMoveEnemy(i, 9000, 700, 8000, 'fork');
+
+        // enemies.create(8500, 700, "beef").setOrigin(0, 1).refreshBody();
+        this.makeIngredient(z, 7300, 800, 'beef');
+        this.makeIngredient(z, 8000, 750, 'octopus');
+        enemies.create(8200, 900, "beef").setOrigin(0, 1).refreshBody();
+        this.makeIngredient(z, 8500, 700, 'fish');
+        this.makeIngredient(z, 9000, 800, 'octopus');
         this.makeMoveEnemy(i, 7000, 700, 3000, 'knife');
-        // enemies.create(8000, 700, "knife").setOrigin(0, 1).refreshBody();
-        // enemies.create(8500, 700, "fork").setOrigin(0, 1).refreshBody();
-        // this.anims.create({
-        //     key: 'knifewalk',
-        //     frames: this.anims.generateFrameNumbers('knife', { start: 0, end: 5 }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
-        // movingPlatforms = this.physics.add.sprite(8700, 700, 'knife').setOrigin(0, 1).refreshBody().setScale(0.5);
-        // movingPlatforms.anims.play('knifewalk');
+        this.makeMoveEnemy(i, 7200, 700, 5000, 'fork');
+        this.makeMoveEnemy(i, 7500, 700, 9000, 'knife');
+        this.makeMoveEnemy(i, 9000, 700, 8000, 'fork');
 
 
         // make boss
@@ -1173,7 +1171,7 @@ class GameMenu extends Phaser.Scene {
         scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
-        clickButton2.setInteractive().off();
+        // clickButton2.setInteractive().off();
         console.log("clicked level2");
         //this.scene.start('Level2');
     }
@@ -1265,6 +1263,7 @@ class Tutorial extends CommonScene{
         this.load.image('big_platform', 'assets/ground/ground2.png');
         // load ingredients
         this.load.image('octopus', 'assets/ingredients/octopus.png');
+        this.load.image('mushroom', 'assets/ingredients/mushroom.png');
         this.load.image('directions', 'assets/intro/directions.png')
         this.load.image('hp_dir', 'assets/intro/hp_dir.png')
 
@@ -1308,8 +1307,9 @@ class Tutorial extends CommonScene{
 
         // static ingredients
         enemies.create(600, 800, "octopus").setOrigin(0, 1).refreshBody();
-        enemyTutorialText = this.add.text(500, 710, 'This is a small ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
-
+        enemyTutorialText = this.add.text(480, 710, 'This is a small ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
+        this.makeIngredient(z, 920, 500, 'mushroom');
+        enemyTutorialText = this.add.text(790, 430, 'This is another ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
         // make entities
         boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
         boss.body.width = 115;
