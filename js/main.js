@@ -61,6 +61,7 @@ var movingPlatformDict = {};
 //MODIFIABLE VARIABLES
 // player variables
 var hp = 3;
+var setPlayerHP = 5;
 var invulDuration = 3000;
 // speed for player
 //var horizontalSpeed = 160; // Real speed
@@ -113,6 +114,11 @@ var endText;
 var summary;
 var lastIndex;
 
+// main menu
+var diffulculty1;
+var diffulculty2;
+var diffulculty3;
+var diffulcultyList;
 
 // tutorial
 var tutorialTextColor = "#034680";
@@ -197,7 +203,7 @@ class CommonScene extends Phaser.Scene{
         player.body.width = 60;
         player.body.offset.x = 20;
         console.log("player loaded")
-        
+
         this.cameras.main.fadeIn(700, 0, 0, 0);
         this.cameras.main.setBounds(0, 0, 10500, 1000);
         this.cameras.main.startFollow(player);
@@ -356,7 +362,7 @@ class CommonScene extends Phaser.Scene{
               return;
             }
             dead = true;
-            console.log("end");
+            // console.log("end");
             return
         }
 
@@ -533,7 +539,7 @@ class CommonScene extends Phaser.Scene{
     }
     restart(){
         score = 0;
-        hp = 3;
+        hp = setPlayerHP;
         movingPlatformDict = {};
         mvEnem = [];
         i = 0;
@@ -597,7 +603,7 @@ class Level1 extends CommonScene{
         // this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 3;
+        hp = setPlayerHP;
         bossHP = boss1HP;
         bornL = 9500;
         bornR = 9600;
@@ -647,7 +653,7 @@ class Level1 extends CommonScene{
         platforms.create(900, 550, "platform").setOrigin(0, 0).refreshBody();
 
         this.makeMoveEnemy(i, 1100, 750, 7000, 'fork');
-        this.makeMoveEnemy(i, 1200, 900, 6500, 'fork');
+        this.makeMoveEnemy(i, 1200, 900, 6500, 'knife');
         this.makeMoveEnemy(i, 1200, 900, 10000, 'fork');
         this.makeMoveEnemy(i, 1300, 900, 8000, 'fork');
         this.makeMoveEnemy(i, 1600, 900, 7500, 'fork');
@@ -670,9 +676,9 @@ class Level1 extends CommonScene{
         this.makeMoveEnemy(i, 2900, 400, 6000, 'fork');
         this.makeMoveEnemy(i, 3000, 400, 4000, 'fork');
 
-        this.makeMoveEnemy(i, 3500, 450, 4000, 'fork');
-        this.makeMoveEnemy(i, 3500, 450, 5000, 'fork');
-        this.makeMoveEnemy(i, 3700, 450, 4500, 'fork');
+        this.makeMoveEnemy(i, 3500, 450, 4000, 'knife');
+        this.makeMoveEnemy(i, 3500, 450, 5000, 'knife');
+        this.makeMoveEnemy(i, 3700, 450, 4500, 'knife');
 
         this.makeMoveEnemy(i, 4200, 350, 5000, 'fork');
         this.makeMoveEnemy(i, 4300, 350, 4000, 'fork');
@@ -692,15 +698,15 @@ class Level1 extends CommonScene{
         platforms.create(7400, 400, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
         this.makeMoveEnemy(i, 6500, 900, 14000, 'fork');
-        this.makeMoveEnemy(i, 75000, 900, 10000, 'fork');
+        this.makeMoveEnemy(i, 75000, 900, 10000, 'knife');
         this.makeMoveEnemy(i, 95000, 900, 5000, 'fork');
 
         this.makeMoveEnemy(i, 6600, 700, 4000, 'fork');
         this.makeMoveEnemy(i, 7000, 550, 3900, 'fork');
-        this.makeMoveEnemy(i, 7400, 700, 4000, 'fork');
+        this.makeMoveEnemy(i, 7400, 700, 4000, 'knife');
         this.makeMoveEnemy(i, 7400, 400, 2000, 'fork');
         this.makeMoveEnemy(i, 7400, 400, 4000, 'fork');
-        this.makeMoveEnemy(i, 7500, 400, 1000, 'fork');
+        this.makeMoveEnemy(i, 7500, 400, 1000, 'knife');
 
         // platform right infront of boss
         platforms.create(8300, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -855,7 +861,7 @@ class Level2 extends CommonScene{
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 3;
+        hp = setPlayerHP;
         bossHP = boss2HP;
         bornL = 10200;
         bornR = 10300;
@@ -863,7 +869,7 @@ class Level2 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        //playBornX = 8000;
+        // playBornX = 5300;
     }
     create(){
         // background
@@ -911,39 +917,46 @@ class Level2 extends CommonScene{
         movingPlatformDict[6350] = movingPlatforms;
 
         // ingredients
-        enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
+        // enemies.create(250, 900, "fish").setOrigin(0, 1).refreshBody();
+        this.makeIngredient(z, 300, 850, 'fish');
         enemies.create(900, 600, "octopus").setOrigin(0, 1).refreshBody();
         this.makeMoveEnemy(i, 600, 700, 3000, 'fork');
         this.makeMoveEnemy(i, 500, 700, 3000, 'fork');
 
         enemies.create(1400, 500, "beef").setOrigin(0, 1).refreshBody();
-        enemies.create(1490, 800, "octopus").setOrigin(0, 1).refreshBody();
+        this.makeMoveEnemy(i, 1480, 400, 1000, 'knife');
+        // enemies.create(1490, 800, "octopus").setOrigin(0, 1).refreshBody();
+        this.makeIngredient(z, 1490, 700, 'octopus');
 
         enemies.create(2000, 900, "octopus").setOrigin(0, 1).refreshBody();
-        enemies.create(2100, 600, "beef").setOrigin(0, 1).refreshBody();
+        // enemies.create(2100, 600, "beef").setOrigin(0, 1).refreshBody();
+        this.makeIngredient(z, 2100, 550, 'beef');
         enemies.create(2400, 900, "fish").setOrigin(0, 1).refreshBody();
         this.makeMoveEnemy(i, 2200, 800, 3000, 'fork'); // add more variety of moving enemies
 
         enemies.create(4000, 700, "beef").setOrigin(0, 1).refreshBody();
         enemies.create(4300, 700, "octopus").setOrigin(0, 1).refreshBody();
         this.makeMoveEnemy(i, 4250, 600, 3000, 'fork');
-        enemies.create(4400, 900, "beef").setOrigin(0, 1).refreshBody();
+        // enemies.create(4400, 900, "beef").setOrigin(0, 1).refreshBody();
+        this.makeIngredient(z, 4400, 820, 'beef');
 
         this.makeMoveEnemy(i, 5400, 450, 4000, 'fork');
-        var xCord = 5300;
+        var xCord = 5200;
         while(xCord < 6000){
-            var randomE = ["octopus", "beef", "fish"];
-            enemies.create(xCord, 700, randomE[Math.floor(Math.random() * 3)]).setOrigin(0, 1).refreshBody();
+            var randomI = ["octopus", "beef", "fish"];
+            var randomE = ['fork', 'knife'];
+            // if(Math.random() < 0.5) enemies.create(xCord, 700, randomI[Math.floor(Math.random() * 3)]).setOrigin(0, 1).refreshBody();
+            this.makeIngredient(z, xCord+Math.floor(Math.random() * 80), Math.floor(Math.random() * 80)+810, randomI[Math.floor(Math.random() * 3)]);
             xCord += (Math.floor(Math.random() * 100)+50);
-            this.makeMoveEnemy(i, xCord, 600, Math.floor(Math.random() * 1000)+Math.floor(Math.random() * 1000)+3000, 'fork');
+            this.makeMoveEnemy(i, xCord, 600, Math.floor(Math.random() * 1000)+Math.floor(Math.random() * 1000)+3000, randomE[Math.floor(Math.random() * 2)]);
         }
 
         // enemies.create(8500, 700, "beef").setOrigin(0, 1).refreshBody();
-        this.makeIngredient(z, 7300, 800, 'beef');
-        this.makeIngredient(z, 8000, 750, 'octopus');
+        this.makeIngredient(z, 7300, 850, 'beef');
+        this.makeIngredient(z, 7800, 800, 'octopus');
         enemies.create(8200, 900, "beef").setOrigin(0, 1).refreshBody();
-        this.makeIngredient(z, 8500, 700, 'fish');
-        this.makeIngredient(z, 9000, 800, 'octopus');
+        this.makeIngredient(z, 8500, 750, 'fish');
+        this.makeIngredient(z, 9000, 850, 'octopus');
         this.makeMoveEnemy(i, 7000, 700, 3000, 'knife');
         this.makeMoveEnemy(i, 7200, 700, 5000, 'fork');
         this.makeMoveEnemy(i, 7500, 700, 9000, 'knife');
@@ -1039,7 +1052,7 @@ class Level2 extends CommonScene{
           if(boss.x = 10400)
           {
             boss.anims.play('bossIdleAttack',true);
-            console.log(boss.x)
+            // console.log(boss.x)
           }
           else if(boss_facing_right == true)
           {
@@ -1191,7 +1204,7 @@ class EndStory extends CommonScene {
         super.create();
 
         // level specified platforms
-        platforms.create(50, 900, "platform").setOrigin(1, 0).refreshBody() 
+        platforms.create(50, 900, "platform").setOrigin(1, 0).refreshBody()
 
         // player - objects interaction logics
         player.anims.play('idle_right');
@@ -1240,11 +1253,26 @@ class GameMenu extends Phaser.Scene {
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked2());
-        clickButton3 = this.add.text(1200, 200, 'THE END',
+        clickButton3 = this.add.text(300, 200, 'THE END',
             {fontSize: '40px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked3());
          lock2 = this.physics.add.staticImage(420, 775, 'lock');
+
+         // maybe have pic/text for these
+         diffulculty1 = this.add.text(1250, 100, 'EASY',
+             {fontSize: '23px', fill: '#888'}).
+             setInteractive().on('pointerdown',
+             ()=>this.onClickedDifficulty(0));
+         diffulculty2 = this.add.text(1250, 200, 'MEDIUM',
+             {fontSize: '23px', fill: '#888'}).
+             setInteractive().on('pointerdown',
+             ()=>this.onClickedDifficulty(1));
+         diffulculty3 = this.add.text(1250, 300, 'HARD',
+             {fontSize: '23px', fill: '#888'}).
+             setInteractive().on('pointerdown',
+             ()=>this.onClickedDifficulty(2));
+         diffulcultyList = [diffulculty1, diffulculty2, diffulculty3];
 
          //Clear Boss music
          this.tweens.add({
@@ -1253,7 +1281,7 @@ class GameMenu extends Phaser.Scene {
              duration: 2000
          });
 
-         this.cameras.main.fadeIn(600, 0, 0, 0);
+         this.cameras.main.fadeIn(800, 0, 0, 0);
     }
     update(){
         // if(!winLevel1){
@@ -1289,6 +1317,16 @@ class GameMenu extends Phaser.Scene {
         clickButton3.disableInteractive();
         // clickButton2.setInteractive().off();
         console.log("clicked end story");
+    }
+    onClickedDifficulty(index){
+        var tempHPvar = [5, 3, 1];
+        setPlayerHP = tempHPvar[index];
+        for(var i = 0; i < 3; i++){
+            if(i != index){
+                diffulcultyList[i].destroy();
+            }
+        }
+        console.log("clicked diffulculty");
     }
 }
 
