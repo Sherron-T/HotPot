@@ -398,10 +398,10 @@ class CommonScene extends Phaser.Scene{
         }
         mvPlatformsCollider = this.physics.add.collider(player, mvPlatforms, this.mvPlatformCollided, null, this)
         if (locked) {
-            if (player.x < lockedTarget.body.left || player.x > lockedTarget.body.right) {
+            if (player.x < lockedTarget.body.left || player.x > lockedTarget.body.right || !player.body.onFloor()) {
                 locked = false;
                 lockedTarget = null;
-            } else if(player.body.onFloor()){
+            } else if(player.body.onFloor() && mvPlatformsCollider){
                 player.x += pSpeed * delta;
                 // player.y += pSpeedY;
             }
@@ -1205,6 +1205,9 @@ class EndStory extends CommonScene {
 
         // level specified platforms
         platforms.create(50, 900, "platform").setOrigin(1, 0).refreshBody()
+        var mp1 = mvPlatforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[300] = mp1;
+
 
         // player - objects interaction logics
         player.anims.play('idle_right');
