@@ -1205,8 +1205,10 @@ class EndStory extends CommonScene {
 
         // level specified platforms
         platforms.create(50, 900, "platform").setOrigin(1, 0).refreshBody()
-        var mp1 = mvPlatforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        var mp1 = mvPlatforms.create(300, 400, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         movingPlatformDict[300] = mp1;
+
+        platforms.create(900, 750, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
 
 
         // player - objects interaction logics
