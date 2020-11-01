@@ -1177,7 +1177,7 @@ class EndStory extends CommonScene {
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
         // we can initiate the variables for the specific boss info here
         // based on the level design
-        hp = 3;
+        hp = setPlayerHP;
         bossHP = finalBossHP;
         bornL = 10200;
         bornR = 10300;
@@ -1293,6 +1293,14 @@ class GameMenu extends Phaser.Scene {
         //    clickButton2.setInteractive();
         //    lock2.destroy();
         // }
+
+        if(!winLevel2){
+           clickButton3.disableInteractive();
+           clickButton3.visible = false;
+        }else{
+           clickButton3.setInteractive();
+           clickButton3.visible = true;
+        }
     }
     onClicked1(){
         this.scene.remove('Level1');
