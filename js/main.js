@@ -9,7 +9,7 @@ var lockedTarget;
 // player variables
 var control;
 var player;
-var playBornX = 7400;
+var playBornX = 8800;
 var playBornY = 50;
 var cursors;
 var keyZ;
@@ -1165,7 +1165,7 @@ class EndStory extends CommonScene {
     preload(){
         super.preload();
 
-        this.load.spritesheet('introbg2', 'assets/background/bg-sheet-small-2.png', {frameWidth : 1470, frameHeight : 1000});
+        this.load.spritesheet('introbg2', 'assets/background/bg-sheet-3.png', {frameWidth : 1470, frameHeight : 1000});
         // load bg and platform
         this.load.image('level3bg', 'assets/background/level1bg.png');
         this.load.image('background', 'assets/background/bg.png');
@@ -1176,7 +1176,7 @@ class EndStory extends CommonScene {
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
         // load boss
-        // this.load.spritesheet('final', 'assets/boss_asset/finalboss.png', {frameWidth : 112, frameHeight : 147});
+        this.load.spritesheet('final', 'assets/boss_asset/finalboss.png', {frameWidth : 598, frameHeight : 242});
 
         // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
@@ -1265,6 +1265,50 @@ class EndStory extends CommonScene {
 
         madeOcto2 = false;
 
+        //platforms in boss room
+        platforms.create(9200, 700, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        platforms.create(10300, 700, "platform").setScale(0.2).setOrigin(1, 0).refreshBody();
+
+        // make boss
+        this.anims.create({
+            key: 'bossLeft',
+            frames: this.anims.generateFrameNumbers('final', { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'bossIdle',
+            frames: [ { key: 'final', frame: 1 } ],
+            frameRate: 8
+        });
+        this.anims.create({
+            key: 'bossIdleAttack',
+            frames: this.anims.generateFrameNumbers('final', { start: 4, end: 9 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        //boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
+        boss = this.physics.add.sprite(10400, 200, 'final');
+        bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        speed = bossSpeed;
+        boss.body.height = 150;
+
+        //Boss HP bar
+        bgBar = this.add.graphics().setScrollFactor(0).setVisible(false);
+        bgBar.fillStyle(0x000000, 1);
+        bgBar.fillRect(0,0,610,60);
+        bgBar.x = 495;
+        bgBar.y = 45;
+        bossBar = this.add.graphics().setScrollFactor(0).setVisible(false);
+        bossBar.fillStyle(0xFF0000, 1);
+        bossBar.fillRect(0,0,600,50);
+        bossBar.x = 500;
+        bossBar.y = 50;
+        bossHpText = this.add.text(750, 50, '????',
+            {fontSize: '50px', fill: '#FFFFFF',}).setScrollFactor(0).setVisible(false);
+
+        this.setValue(bossBar,finalBossHP);
+
         // player - objects interaction logics
         player.anims.play('idle_right');
 
@@ -1315,6 +1359,31 @@ class EndStory extends CommonScene {
         }else if(player.x == 8300 && !madeOcto2){
             this.makeIngredient(z, 8500, 500, 'octopus');
             madeOcto2 = true;
+        }
+
+        if(player.x > 9000 && isBossMusicOn == false && bossHP != 0 && hp > 0)
+        {
+            bossBar.setVisible(true);
+            bgBar.setVisible(true);
+            bossHpText.setVisible(true);
+            isMusicOn = false;
+            this.tweens.add({
+                targets:  main_music,
+                volume:   0,
+                duration: 5000
+            });
+            isBossMusicOn = true;
+            boss_music = this.sound.add('boss_music',{
+                loop: true,
+                delay: 0,
+                volume: 0
+           });
+           this.tweens.add({
+               targets:  boss_music,
+               volume:   1,
+               duration: 5000
+           });
+           boss_music.play();
         }
     }
 }
@@ -1833,8 +1902,8 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: {y:800},
-              //debug: true
-              debug: false
+              debug: true
+              //debug: false
           }
       },
     scene: [MainMenu], // starting with tutorial
