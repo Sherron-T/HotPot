@@ -1192,7 +1192,7 @@ class EndStory extends CommonScene {
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        //playBornX = 8000;
+        playBornX = 8800;
     }
     create(){
         // using level 2 features for now
@@ -1587,7 +1587,6 @@ class Tutorial extends CommonScene{
 
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 8800;
     }
     create(){
         //music
