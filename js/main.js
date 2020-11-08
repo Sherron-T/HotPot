@@ -1271,22 +1271,29 @@ class EndStory extends CommonScene {
 
         // make boss
         this.anims.create({
-            key: 'bossLeft',
-            frames: this.anims.generateFrameNumbers('final', { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.anims.create({
             key: 'bossIdle',
             frames: [ { key: 'final', frame: 1 } ],
             frameRate: 8
         });
         this.anims.create({
-            key: 'bossIdleAttack',
-            frames: this.anims.generateFrameNumbers('final', { start: 4, end: 9 }),
+            key: 'stab',
+            frames: this.anims.generateFrameNumbers('final', { start: 2, end: 5 }),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'stabRelease',
+            frames: this.anims.generateFrameNumbers('final', { start: 6, end: 7 }),
             frameRate: 4,
             repeat: -1
         });
+        this.anims.create({
+            key: 'shoot',
+            frames: this.anims.generateFrameNumbers('final', { start: 8, end: 9 }),
+            frameRate: 8,
+            repeat: -1
+        });
+
         //boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
         boss = this.physics.add.sprite(10400, 200, 'final');
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
