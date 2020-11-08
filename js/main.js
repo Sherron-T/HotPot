@@ -53,6 +53,7 @@ var playerNukesOverlap;
 var bulletBossOverlap;
 var bulletEnemOverlap;
 var playerEnemOverlap;
+var platformNukesOverlap;
 var platformSpeed = Phaser.Math.GetSpeed(400, 3);
 var pSpeed;
 var movingPlatformDict = {};
@@ -61,7 +62,7 @@ var movingPlatformDict = {};
 //MODIFIABLE VARIABLES
 // player variables
 var hp = 3;
-var setPlayerHP = 50;
+var setPlayerHP = 3;
 var invulDuration = 3000;
 // speed for player
 //var horizontalSpeed = 160; // Real speed
@@ -106,16 +107,19 @@ var madeFish2 = false;
 var madeOcto2 = false;
 var madeMP1 = false;
 var madeEnemyFalls1 = false;
+var can_shoot_3 = true;
+var canStab = true;
+var madeBack = false;
 
 // level varables
-var winLevel1 = true;
-var winLevel2 = true;
+var winLevel1 = false;
+var winLevel2 = false;
 var winEndStory = false;
 var scene1;
 var scene2;
 var clickButton1;
 var clickButton2;
-var clickButton3;
+var clickButtonEnd;
 var mainButton;
 var lock2;
 var endText;
@@ -551,7 +555,7 @@ class CommonScene extends Phaser.Scene{
         movingPlatformDict = {};
         mvEnem = [];
         i = 0;
-        //playBornX = 50;
+        playBornX = 50;
         invul = false;
         if(boss) boss.destroy();
         if(enemies) enemies.destroy();
@@ -608,6 +612,7 @@ class Level1 extends CommonScene{
         this.load.image('platform', 'assets/ground/ground.png');
         this.load.image('big_platform', 'assets/ground/ground2.png');
         this.load.spritesheet('introbg', 'assets/background/bg-sheet-small.png', {frameWidth : 1470, frameHeight : 1000});
+        this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
         // this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -621,10 +626,8 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        //playBornX = 8000;
+        // playBornX = 8000;
         //horizontalSpeed = testSpeed;
-        playBornX = 50;
-        this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
     }
     create(){
         // background
@@ -875,6 +878,7 @@ class Level2 extends CommonScene{
         bornR = 10300;
         lastIndex = 9000;
         pSpeed = platformSpeed;
+        can_shoot_2 = true;
         // for testing purposes
         // horizontalSpeed = testSpeed;
         // playBornX = 5300;
@@ -1175,12 +1179,15 @@ class EndStory extends CommonScene {
         this.load.image('fish', 'assets/ingredients/fish.png');
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
+        this.load.image('mushroom', 'assets/ingredients/mushroom.png');
+        this.load.image('garlic', 'assets/ingredients/garlic.png');
+        this.load.image('tofu_nuke', 'assets/boss_asset/tofu_bullet.png');
         // load boss
         this.load.spritesheet('final', 'assets/boss_asset/finalboss.png', {frameWidth : 598, frameHeight : 242});
 
         // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
-        this.load.audio('lvl2music', 'assets/music/lvl2music.wav')
+        this.load.audio('lvl3music', 'assets/music/lvl3music.wav')
         this.load.audio('boss_music', 'assets/music/boss.wav') //Boss Music
         // we can initiate the variables for the specific boss info here
         // based on the level design
@@ -1193,6 +1200,7 @@ class EndStory extends CommonScene {
         // for testing purposes
         // horizontalSpeed = testSpeed;
         playBornX = 8800;
+        // hp = 50;
     }
     create(){
         // using level 2 features for now
@@ -1210,6 +1218,8 @@ class EndStory extends CommonScene {
 
         super.create();
 
+        nukes = this.physics.add.group({});
+        
         // level specific platforms
         this.makeMoveEnemy(i, 0, 850, 5000, 'knife');
 
@@ -1266,39 +1276,42 @@ class EndStory extends CommonScene {
         madeOcto2 = false;
 
         //platforms in boss room
-        platforms.create(9200, 700, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        platforms.create(10300, 700, "platform").setScale(0.2).setOrigin(1, 0).refreshBody();
+        platforms.create(9300, 700, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        movingPlatforms = mvPlatforms.create(9500, 550, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[9500] = movingPlatforms;
+        platforms.create(10200, 700, "platform").setScale(0.2).setOrigin(1, 0).refreshBody();
 
         // make boss
         this.anims.create({
             key: 'bossIdle',
-            frames: [ { key: 'final', frame: 1 } ],
+            frames: [ { key: 'final', frame: 0 } ],
             frameRate: 8
         });
         this.anims.create({
             key: 'stab',
-            frames: this.anims.generateFrameNumbers('final', { start: 2, end: 5 }),
-            frameRate: 8,
-            repeat: -1
+            frames: this.anims.generateFrameNumbers('final', { start: 1, end: 4 }),
+            frameRate: 8
         });
         this.anims.create({
             key: 'stabRelease',
-            frames: this.anims.generateFrameNumbers('final', { start: 6, end: 7 }),
-            frameRate: 4,
+            frames: this.anims.generateFrameNumbers('final', { start: 5, end: 6 }),
+            frameRate: 8,
             repeat: -1
         });
         this.anims.create({
             key: 'shoot',
-            frames: this.anims.generateFrameNumbers('final', { start: 8, end: 9 }),
-            frameRate: 8,
-            repeat: -1
+            frames: this.anims.generateFrameNumbers('final', { start: 7, end: 8 }),
+            frameRate: 8
         });
 
         //boss = this.physics.add.sprite(Phaser.Math.Between(bornL, bornR), 200, 'tofu');
-        boss = this.physics.add.sprite(10400, 200, 'final');
+        boss = this.physics.add.sprite(10000, 400, 'final').setOrigin(0,);
         bossSpeed = Phaser.Math.GetSpeed(600, 3);
         speed = bossSpeed;
+        boss.body.setAllowGravity(false);
         boss.body.height = 150;
+        boss.body.width = 150;
+        boss.body.offset.x = 50;
 
         //Boss HP bar
         bgBar = this.add.graphics().setScrollFactor(0).setVisible(false);
@@ -1311,10 +1324,15 @@ class EndStory extends CommonScene {
         bossBar.fillRect(0,0,600,50);
         bossBar.x = 500;
         bossBar.y = 50;
-        bossHpText = this.add.text(750, 50, '????',
+        bossHpText = this.add.text(750, 50, 'HUMAN',
             {fontSize: '50px', fill: '#FFFFFF',}).setScrollFactor(0).setVisible(false);
 
         this.setValue(bossBar,finalBossHP);
+
+        // reset boss variables
+        madeBack = false;
+        can_shoot_3 = true;
+        canStab = true;
 
         // player - objects interaction logics
         player.anims.play('idle_right');
@@ -1329,10 +1347,12 @@ class EndStory extends CommonScene {
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
         playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
+        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
+        platformNukesOverlap = this.physics.add.overlap(nukes, platforms, this.nukes_disappear, null, this);
 
         //music
         //main_music.removeAll();
-        this.start_music('lvl2music');
+        this.start_music('lvl3music');
 
     }
     update(time, delta){
@@ -1342,6 +1362,7 @@ class EndStory extends CommonScene {
         // the boss can toss player to random places
         // shake screens?
 
+        // for making ingredients appear
         if(player.x == 300 && !madeFish1){
             this.makeIngredient(z, 400, 600, 'fish');
             madeFish1 = true;
@@ -1368,6 +1389,12 @@ class EndStory extends CommonScene {
             madeOcto2 = true;
         }
 
+        // place back wall
+        if(player.x == 9100 && !madeBack){
+            platforms.create(9000, 0, "back").setOrigin(1, 0).refreshBody();
+            madeBack = true;
+        }
+        //boss music
         if(player.x > 9000 && isBossMusicOn == false && bossHP != 0 && hp > 0)
         {
             bossBar.setVisible(true);
@@ -1392,10 +1419,96 @@ class EndStory extends CommonScene {
            });
            boss_music.play();
         }
+        
+        //boss movement
+        /*this.tweens.add({
+            targets:  boss,
+            x:   player.x,
+            duration: 500
+        });*/
+        if(player.x > 9000 && bossHP != 0 && hp >0){
+            if(can_shoot_3 == true && canStab != false){
+                can_shoot_3 = false;
+                boss.anims.play('shoot', true);
+                let shootAttack = this.time.addEvent({ delay: 2000, callback: this.shootBullet, callbackScope: this});
+            }else if(canStab == true && bossHP < 30){
+                canStab = false
+                boss.anims.play('stab');
+                let stabAttack = this.time.addEvent({ delay: 4500, callback: this.stab, callbackScope: this});
+            }
+        }
+
+        nukes.getChildren().map(nuke => nuke.rotation += Math.floor(Math.random() * 5)*0.01);
+    }
+    setValue(bar, percent){
+        this.tweens.add({
+            targets:  bar,
+            scaleX:   percent/finalBossHP,
+            duration: 500
+        });
+    }
+    shootBullet(){
+        var bossplayerangle = Phaser.Math.Angle.Between(boss.x+100, boss.y+200, player.x, player.y)
+        var ingres = ['fish', 'octopus', 'beef', 'mushroom', 'garlic', 'tofu_nuke'];
+        /*let spawnBullet = this.time.addEvent({ delay: 500, callback: function(){
+          }, callbackScope: this});*/
+        let bossbullet = nukes.create(boss.x+100, boss.y+200, ingres[Math.floor(Math.random() * 6)]);
+        bossbullet.body.allowGravity = false;
+        bossbullet.setVelocityX(0);
+        bossbullet.setVelocityY(0);
+        let moveBullet = this.time.addEvent({ delay: 2000, callback: function(){
+            this.tweens.add({
+                targets:  bossbullet.body.velocity,
+                x: 500*Math.cos(bossplayerangle),
+                duration: 200
+            });
+            this.tweens.add({
+                targets:  bossbullet.body.velocity,
+                y: 500*Math.sin(bossplayerangle),
+                duration: 200
+            });
+          }, callbackScope: this});
+        can_shoot_3 = true;
+    }
+    nukes_disappear(n){
+        if(n.velocity != 0){
+            //n.destroy();
+        }
+      }
+    stab(){
+        boss.body.height = 190;
+        boss.body.width = 50;
+        boss.body.offset.x = 80;
+        boss.body.offset.y = 55;
+        this.tweens.add({
+            targets:  boss,
+            x:   player.x-120,
+            duration: 350
+        });
+        this.tweens.add({
+            targets:  boss,
+            y:   player.y-600,
+            duration: 350
+        });
+        let stab = this.time.addEvent({ delay: 700, callback: function(){
+            this.tweens.add({
+                targets:  boss,
+                y: 700,
+                //y:   player.y-200,
+                duration: 400
+            });
+        }, callbackScope: this});
+        let Camerashake = this.time.addEvent({ delay: 1100, callback: function(){
+            this.camera.shake(0.05, 500);
+        }, callbackScope: this});
+        let resize = this.time.addEvent({ delay: 2200, callback: function(){
+            boss.body.height = 150;
+            boss.body.width = 150;
+        }, callbackScope: this}); 
     }
 }
 
-
+    
 class GameMenu extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/background/bg.png');
@@ -1405,19 +1518,19 @@ class GameMenu extends Phaser.Scene {
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
         this.scene.remove('Tutorial');
-        clickButton1 = this.add.text(450, 600, 'Start the Level1!',
+        clickButton1 = this.add.text(500, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked1());
-        clickButton2 = this.add.text(450, 750, 'Start the Level2!',
+        clickButton2 = this.add.text(500, 750, 'Start the Level2!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked2());
-        clickButton3 = this.add.text(300, 200, 'THE END',
+        clickButtonEnd = this.add.text(650, 700, 'THE END',
             {fontSize: '40px', fill: '#888'}).
             setInteractive().on('pointerdown',
             ()=>this.onClicked3());
-         lock2 = this.physics.add.staticImage(420, 775, 'lock');
+         lock2 = this.physics.add.staticImage(470, 775, 'lock');
 
          // maybe have pic/text for these
          diffulculty1 = this.add.text(1250, 100, 'EASY',
@@ -1451,19 +1564,26 @@ class GameMenu extends Phaser.Scene {
         //    lock2.destroy();
         // }
 
-        if(!winLevel2){
-           clickButton3.disableInteractive();
-           clickButton3.visible = false;
-        }else{
-           clickButton3.setInteractive();
-           clickButton3.visible = true;
-        }
+        // temp
+        // winLevel2 = true;
+        clickButtonEnd.visible = true;
+        
+        // if(!winLevel2){
+        //     clickButtonEnd.disableInteractive();
+        //     clickButtonEnd.visible = false;
+        // }else{
+        //     clickButtonEnd.setInteractive();
+        //     clickButton1.visible = false;
+        //     clickButton2.visible = false;
+        //     clickButtonEnd.visible = true;
+        // }
     }
     onClicked1(){
         this.scene.remove('Level1');
         scene1 = this.scene.add('Level1', Level1, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
+        clickButtonEnd.disableInteractive();
         console.log("clicked level1");
         //this.scene.start('Level1');
     }
@@ -1472,7 +1592,7 @@ class GameMenu extends Phaser.Scene {
         scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
-        clickButton3.disableInteractive();
+        clickButtonEnd.disableInteractive();
         // clickButton2.setInteractive().off();
         console.log("clicked level2");
         //this.scene.start('Level2');
@@ -1482,7 +1602,7 @@ class GameMenu extends Phaser.Scene {
         scene2 = this.scene.add('EndStory', EndStory, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
-        clickButton3.disableInteractive();
+        clickButtonEnd.disableInteractive();
         // clickButton2.setInteractive().off();
         console.log("clicked end story");
     }
