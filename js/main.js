@@ -9,7 +9,7 @@ var lockedTarget;
 // player variables
 var control;
 var player;
-var playBornX = 8800;
+var playBornX = 50;
 var playBornY = 50;
 var cursors;
 var keyZ;
@@ -1587,6 +1587,7 @@ class Tutorial extends CommonScene{
 
         // for testing purposes
         // horizontalSpeed = testSpeed;
+        playBornX = 8800;
     }
     create(){
         //music
