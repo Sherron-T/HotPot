@@ -9,7 +9,7 @@ var lockedTarget;
 // player variables
 var control;
 var player;
-var playBornX = 50;
+var playBornX = 7400;
 var playBornY = 50;
 var cursors;
 var keyZ;
@@ -61,7 +61,7 @@ var movingPlatformDict = {};
 //MODIFIABLE VARIABLES
 // player variables
 var hp = 3;
-var setPlayerHP = 5;
+var setPlayerHP = 50;
 var invulDuration = 3000;
 // speed for player
 //var horizontalSpeed = 160; // Real speed
@@ -99,9 +99,17 @@ var can_shoot_2 = true;
 var bossSpecial2 = true;
 var chargeCooldown = 5000; //ms
 
+//Final level variable
+var madeFish1 = false;
+var madeOcto1 = false;
+var madeFish2 = false;
+var madeOcto2 = false;
+var madeMP1 = false;
+var madeEnemyFalls1 = false;
+
 // level varables
-var winLevel1 = false;
-var winLevel2 = false;
+var winLevel1 = true;
+var winLevel2 = true;
 var winEndStory = false;
 var scene1;
 var scene2;
@@ -543,7 +551,7 @@ class CommonScene extends Phaser.Scene{
         movingPlatformDict = {};
         mvEnem = [];
         i = 0;
-        playBornX = 50;
+        //playBornX = 50;
         invul = false;
         if(boss) boss.destroy();
         if(enemies) enemies.destroy();
@@ -1167,9 +1175,8 @@ class EndStory extends CommonScene {
         this.load.image('fish', 'assets/ingredients/fish.png');
         this.load.image('octopus', 'assets/ingredients/octopus.png');
         this.load.image('beef', 'assets/ingredients/beef.png');
-        // this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
-        // this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
         // load boss
+        // this.load.spritesheet('final', 'assets/boss_asset/finalboss.png', {frameWidth : 112, frameHeight : 147});
 
         // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
@@ -1203,13 +1210,60 @@ class EndStory extends CommonScene {
 
         super.create();
 
-        // level specified platforms
-        platforms.create(50, 900, "platform").setOrigin(1, 0).refreshBody()
-        var mp1 = mvPlatforms.create(300, 400, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        movingPlatformDict[300] = mp1;
+        // level specific platforms
+        this.makeMoveEnemy(i, 0, 850, 5000, 'knife');
 
-        platforms.create(900, 750, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        madeFish1 = false;
 
+        platforms.create(500, 750, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeMoveEnemy(i, 500, 750, 200, 'fork');
+        platforms.create(700, 550, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(900, 350, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(1100, 150, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeMoveEnemy(i, 1100, 150, 100, 'fork');
+        platforms.create(1300, -50, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+
+        platforms.create(1200, 750, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        madeOcto1 = false;
+        platforms.create(1400, 650, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(1600, 550, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(1800, 450, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(2200, 350, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(2400, 450, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 2400, 150, 'beef');
+        platforms.create(2600, 350, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(2800, 250, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+
+        platforms.create(3200, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        madeFish2 = false;
+        platforms.create(3400, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeMoveEnemy(i, 3400, 800, 200, 'fork');
+        platforms.create(3600, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+
+        madeMP1 = false;
+        madeEnemyFalls1 = false;
+
+        platforms.create(4800, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(5000, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 5000, 150, 'beef');
+        platforms.create(5300, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 5300, 350, 'fish');
+        platforms.create(5700, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 5700, 400, 'octopus');
+        platforms.create(6100, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 6100, 50, 'octopus');
+        platforms.create(6500, 850, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 6500, 450, 'fish');
+        platforms.create(6800, 700, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 6800, 0, 'beef');
+        platforms.create(7100, 600, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+        this.makeIngredient(z, 7100, 0, 'fish');
+
+        platforms.create(7400, 400, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
+
+        platforms.create(8000, 900, "platform").setOrigin(0, 0).refreshBody();
+
+        madeOcto2 = false;
 
         // player - objects interaction logics
         player.anims.play('idle_right');
@@ -1224,7 +1278,6 @@ class EndStory extends CommonScene {
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
         playerEnemOverlap = this.physics.add.overlap(player, enemies, this.takeDmg, null, this);
-        playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
         //music
         //main_music.removeAll();
@@ -1237,6 +1290,32 @@ class EndStory extends CommonScene {
         // boss attacks will attach player to boss
         // the boss can toss player to random places
         // shake screens?
+
+        if(player.x == 300 && !madeFish1){
+            this.makeIngredient(z, 400, 600, 'fish');
+            madeFish1 = true;
+        }else if(player.x == 1250 && !madeOcto1){
+            this.makeIngredient(z, 1300, 450, 'octopus');
+            madeOcto1 = true;
+        }else if(player.x == 3100 && !madeFish2){
+            this.makeIngredient(z, 3200, 0, 'octopus');
+            madeFish2 = true;
+        }else if(player.x == 3600 && !madeMP1){
+            movingPlatforms = mvPlatforms.create(4000, 700, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+            movingPlatformDict[4000] = movingPlatforms;
+            madeMP1 = true;
+        }else if(player.x == 3800 && !madeEnemyFalls1){
+            this.makeIngredient(z, 3800, 200, 'octopus');
+            this.makeIngredient(z, 3900, 0, 'fish');
+            this.makeIngredient(z, 4000, -200, 'beef');
+            this.makeIngredient(z, 4100, -400, 'fish');
+            this.makeIngredient(z, 4200, -800, 'octopus');
+            this.makeIngredient(z, 4300, -1200, 'beef');
+            madeEnemyFalls1 = true;
+        }else if(player.x == 8300 && !madeOcto2){
+            this.makeIngredient(z, 8500, 500, 'octopus');
+            madeOcto2 = true;
+        }
     }
 }
 
