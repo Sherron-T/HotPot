@@ -1361,7 +1361,9 @@ class EndStory extends CommonScene {
         // boss attacks will attach player to boss
         // the boss can toss player to random places
         // shake screens?
-
+        if (bossHP <= 0){
+            boss.body.setAllowGravity(true);
+        }
         // for making ingredients appear
         if(player.x == 300 && !madeFish1){
             this.makeIngredient(z, 400, 600, 'fish');
@@ -1498,13 +1500,21 @@ class EndStory extends CommonScene {
                 duration: 400
             });
         }, callbackScope: this});
-        let Camerashake = this.time.addEvent({ delay: 1100, callback: function(){
-            this.camera.shake(0.05, 500);
+        let reset = this.time.addEvent({ delay: 1400, callback: function(){
+            this.tweens.add({
+                targets:  boss,
+                y: 300,
+                duration: 400
+            });
         }, callbackScope: this});
+        // let Camerashake = this.time.addEvent({ delay: 1100, callback: function(){
+        //     this.camera.shake(0.05, 500);
+        // }, callbackScope: this});
         let resize = this.time.addEvent({ delay: 2200, callback: function(){
             boss.body.height = 150;
             boss.body.width = 150;
         }, callbackScope: this}); 
+        canStab = true;
     }
 }
 
