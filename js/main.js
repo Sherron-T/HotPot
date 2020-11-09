@@ -110,6 +110,7 @@ var madeEnemyFalls1 = false;
 var can_shoot_3 = true;
 var canStab = true;
 var madeBack = false;
+var stabAttack;
 
 // level varables
 var winLevel1 = false;
@@ -192,6 +193,7 @@ class CommonScene extends Phaser.Scene{
 
         // moving platforms
         // movingPlatforms = this.physics.add.image();
+        locked = false;
 
         // starting platform
         platforms.create(-700, 900, "platform").setOrigin(0, 0).refreshBody();
@@ -1199,7 +1201,8 @@ class EndStory extends CommonScene {
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        //playBornX = 8800;
+        // playBornX = 8800;
+        // bossHP = 2;
         // hp = 50;
     }
     create(){
@@ -1367,6 +1370,7 @@ class EndStory extends CommonScene {
         // the boss can toss player to random places
         // shake screens?
         if (bossHP <= 0){
+            stabAttack.destroy();
             boss.body.setAllowGravity(true);
         }
         // for making ingredients appear
@@ -1438,10 +1442,10 @@ class EndStory extends CommonScene {
                 can_shoot_3 = false;
                 boss.anims.play('shoot_ready', true);
                 let shootAttack = this.time.addEvent({ delay: 2000, callback: this.shootBullet, callbackScope: this});
-            }else if(canStab == true && bossHP < 30){
-                canStab = false
+            }else if(canStab == true && 0 < bossHP  && bossHP < 30){
+                canStab = false;
                 boss.anims.play('stab');
-                let stabAttack = this.time.addEvent({ delay: 4500, callback: this.stab, callbackScope: this});
+                stabAttack = this.time.addEvent({ delay: 4500, callback: this.stab, callbackScope: this});
             }
         }
         //nukes.getChildren().map(nuke => nuke.rotation += Math.floor(Math.random() * 5)*0.01);
@@ -1516,7 +1520,7 @@ class EndStory extends CommonScene {
         let reset = this.time.addEvent({ delay: 1600, callback: function(){
             this.tweens.add({
                 targets:  boss,
-                y: 300,
+                y: 400,
                 duration: 400
             });
         }, callbackScope: this});
