@@ -628,7 +628,7 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        // playBornX = 8000;
+        //playBornX = 8000;
         //horizontalSpeed = testSpeed;
     }
     create(){
@@ -1262,11 +1262,11 @@ class EndStory extends CommonScene {
         platforms.create(5300, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         this.makeIngredient(z, 5300, 350, 'fish');
         platforms.create(5700, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
-        this.makeIngredient(z, 5700, 400, 'octopus');
+        //this.makeIngredient(z, 5700, 400, 'octopus');
         platforms.create(6100, 800, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         this.makeIngredient(z, 6100, 50, 'octopus');
         platforms.create(6500, 850, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
-        this.makeIngredient(z, 6500, 450, 'fish');
+        //this.makeIngredient(z, 6500, 450, 'fish');
         platforms.create(6800, 700, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         this.makeIngredient(z, 6800, 0, 'beef');
         platforms.create(7100, 600, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
@@ -1375,10 +1375,10 @@ class EndStory extends CommonScene {
         }
         // for making ingredients appear
         if(player.x == 300 && !madeFish1){
-            this.makeIngredient(z, 400, 600, 'fish');
+            this.makeIngredient(z, 400, 200, 'fish');
             madeFish1 = true;
         }else if(player.x == 1250 && !madeOcto1){
-            this.makeIngredient(z, 1300, 450, 'octopus');
+            this.makeIngredient(z, 1300, 200, 'octopus');
             madeOcto1 = true;
         }else if(player.x == 3100 && !madeFish2){
             this.makeIngredient(z, 3200, 0, 'octopus');
@@ -1390,7 +1390,7 @@ class EndStory extends CommonScene {
         }else if(player.x == 3800 && !madeEnemyFalls1){
             this.makeIngredient(z, 3800, 200, 'octopus');
             this.makeIngredient(z, 3900, 0, 'fish');
-            this.makeIngredient(z, 4000, -200, 'beef');
+            //this.makeIngredient(z, 4000, -200, 'beef');
             this.makeIngredient(z, 4100, -400, 'fish');
             this.makeIngredient(z, 4200, -800, 'octopus');
             this.makeIngredient(z, 4300, -1200, 'beef');
@@ -1468,6 +1468,7 @@ class EndStory extends CommonScene {
         bossbullet.setVelocityY(0);
         let moveBullet = this.time.addEvent({ delay: 2000, callback: function(){
             boss.anims.play('shoot', true);
+            var bossplayerangle = Phaser.Math.Angle.Between(boss.x+100, boss.y+200, player.x, player.y)
             this.tweens.add({
                 targets:  bossbullet.body.velocity,
                 x: 500*Math.cos(bossplayerangle),
