@@ -1199,7 +1199,7 @@ class EndStory extends CommonScene {
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 8800;
+        //playBornX = 8800;
         // hp = 50;
     }
     create(){
@@ -1219,7 +1219,7 @@ class EndStory extends CommonScene {
         super.create();
 
         nukes = this.physics.add.group({});
-        
+
         // level specific platforms
         this.makeMoveEnemy(i, 0, 850, 5000, 'knife');
 
@@ -1299,8 +1299,13 @@ class EndStory extends CommonScene {
             repeat: -1
         });
         this.anims.create({
-            key: 'shoot',
+            key: 'shoot_ready',
             frames: this.anims.generateFrameNumbers('final', { start: 7, end: 8 }),
+            frameRate: 8
+        });
+        this.anims.create({
+            key: 'shoot',
+            frames: this.anims.generateFrameNumbers('final', { start: 9, end: 10 }),
             frameRate: 8
         });
 
@@ -1421,7 +1426,7 @@ class EndStory extends CommonScene {
            });
            boss_music.play();
         }
-        
+
         //boss movement
         /*this.tweens.add({
             targets:  boss,
@@ -1431,7 +1436,7 @@ class EndStory extends CommonScene {
         if(player.x > 9000 && bossHP != 0 && hp >0){
             if(can_shoot_3 == true && canStab != false){
                 can_shoot_3 = false;
-                boss.anims.play('shoot', true);
+                boss.anims.play('shoot_ready', true);
                 let shootAttack = this.time.addEvent({ delay: 2000, callback: this.shootBullet, callbackScope: this});
             }else if(canStab == true && bossHP < 30){
                 canStab = false
@@ -1439,8 +1444,7 @@ class EndStory extends CommonScene {
                 let stabAttack = this.time.addEvent({ delay: 4500, callback: this.stab, callbackScope: this});
             }
         }
-
-        nukes.getChildren().map(nuke => nuke.rotation += Math.floor(Math.random() * 5)*0.01);
+        //nukes.getChildren().map(nuke => nuke.rotation += Math.floor(Math.random() * 5)*0.01);
     }
     setValue(bar, percent){
         this.tweens.add({
@@ -1459,6 +1463,7 @@ class EndStory extends CommonScene {
         bossbullet.setVelocityX(0);
         bossbullet.setVelocityY(0);
         let moveBullet = this.time.addEvent({ delay: 2000, callback: function(){
+            boss.anims.play('shoot', true);
             this.tweens.add({
                 targets:  bossbullet.body.velocity,
                 x: 500*Math.cos(bossplayerangle),
@@ -1468,6 +1473,11 @@ class EndStory extends CommonScene {
                 targets:  bossbullet.body.velocity,
                 y: 500*Math.sin(bossplayerangle),
                 duration: 200
+            });
+            this.tweens.add({
+                targets:  bossbullet,
+                rotation: Math.random() * (70 - 30) + 30,
+                duration: 10000
             });
           }, callbackScope: this});
         can_shoot_3 = true;
@@ -1500,25 +1510,27 @@ class EndStory extends CommonScene {
                 duration: 400
             });
         }, callbackScope: this});
-        let reset = this.time.addEvent({ delay: 1400, callback: function(){
+        let camerasShake = this.time.addEvent({delay:1100, callback: function(){
+          this.cameras.main.shake(200, 0.02);
+        }, callbackScope: this});
+        let reset = this.time.addEvent({ delay: 1600, callback: function(){
             this.tweens.add({
                 targets:  boss,
                 y: 300,
                 duration: 400
             });
         }, callbackScope: this});
-        // let Camerashake = this.time.addEvent({ delay: 1100, callback: function(){
-        //     this.camera.shake(0.05, 500);
-        // }, callbackScope: this});
         let resize = this.time.addEvent({ delay: 2200, callback: function(){
             boss.body.height = 150;
             boss.body.width = 150;
-        }, callbackScope: this}); 
+            boss.body.offset.x = 50;
+            boss.body.offset.y = 0;
+        }, callbackScope: this});
         canStab = true;
     }
 }
 
-    
+
 class GameMenu extends Phaser.Scene {
     preload(){
         this.load.image('background', 'assets/background/bg.png');
@@ -1577,7 +1589,7 @@ class GameMenu extends Phaser.Scene {
         // temp
         // winLevel2 = true;
         clickButtonEnd.visible = true;
-        
+
         // if(!winLevel2){
         //     clickButtonEnd.disableInteractive();
         //     clickButtonEnd.visible = false;
@@ -2039,8 +2051,8 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: {y:800},
-              debug: true
-              //debug: false
+              //debug: true
+              debug: false
           }
       },
     scene: [MainMenu], // starting with tutorial
