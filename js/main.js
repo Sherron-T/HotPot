@@ -1214,6 +1214,7 @@ class EndStory extends CommonScene {
             key: 'boil3',
             frames: this.anims.generateFrameNumbers('introbg3', { start: 0, end: 6 }),
             frameRate: 2,
+            //duration: 10000,
             repeat: -1
         });
         this.add.sprite(0,0,'introbg3').setOrigin(0, 0).setScale(1.1).anims.play('boil3').setScrollFactor(0, 0);
@@ -1542,6 +1543,8 @@ class GameMenu extends Phaser.Scene {
         this.load.image('background', 'assets/background/bg.png');
         this.load.image('lock', 'assets/lock.png');
         this.load.image('title', 'assets/title.png');
+        this.load.audio('click_sfx', 'assets/sfx/button.mp3');
+        this.load.audio('blip', 'assets/sfx/blip.mp3');
     }
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
@@ -1608,6 +1611,7 @@ class GameMenu extends Phaser.Scene {
     }
     onClicked1(){
         this.scene.remove('Level1');
+        this.sound.play('click_sfx');
         scene1 = this.scene.add('Level1', Level1, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
@@ -1617,6 +1621,7 @@ class GameMenu extends Phaser.Scene {
     }
     onClicked2(){
         this.scene.remove('Level2');
+        this.sound.play('click_sfx');
         scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
@@ -1627,6 +1632,7 @@ class GameMenu extends Phaser.Scene {
     }
     onClicked3(){
         this.scene.remove('EndStory');
+        this.sound.play('click_sfx');
         scene2 = this.scene.add('EndStory', EndStory, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
@@ -1636,6 +1642,7 @@ class GameMenu extends Phaser.Scene {
     }
     onClickedDifficulty(index){
         var tempHPvar = [5, 3, 1];
+        this.sound.play('blip');
         setPlayerHP = tempHPvar[index];
         for(var i = 0; i < 3; i++){
             if(i != index){
@@ -2057,8 +2064,8 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: {y:800},
-              debug: true
-              //debug: false
+              //debug: true
+              debug: false
           }
       },
     scene: [MainMenu], // starting with tutorial
