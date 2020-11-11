@@ -653,7 +653,7 @@ class Level1 extends CommonScene{
         var mp1 = mvPlatforms.create(300, 900, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         movingPlatformDict[300] = mp1;
 
-        this.makeMoveEnemy(i, 100, 900, 2500, 'fork');
+        //this.makeMoveEnemy(i, 100, 900, 2500, 'fork');
 
         this.makeMoveEnemy(i, 500, 800, 2500, 'fork');
 
@@ -667,9 +667,9 @@ class Level1 extends CommonScene{
 
         this.makeMoveEnemy(i, 1100, 750, 7000, 'fork');
         this.makeMoveEnemy(i, 1200, 900, 6500, 'knife');
-        this.makeMoveEnemy(i, 1200, 900, 10000, 'fork');
+        //this.makeMoveEnemy(i, 1200, 900, 10000, 'fork');
         this.makeMoveEnemy(i, 1300, 900, 8000, 'fork');
-        this.makeMoveEnemy(i, 1600, 900, 7500, 'fork');
+        //this.makeMoveEnemy(i, 1600, 900, 7500, 'fork');
 
         // stairs
         platforms.create(2100, 800, "back").setOrigin(0, 0).refreshBody();
@@ -681,7 +681,7 @@ class Level1 extends CommonScene{
         this.makeMoveEnemy(i, 2300, 600, 500, 'fork');
 
         // floating platforms
-        platforms.create(2900, 400, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
+        platforms.create(2800, 400, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(3500, 450, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
         platforms.create(4200, 350, "platform").setScale(0.5).setOrigin(0, 0).refreshBody();
 
@@ -709,6 +709,7 @@ class Level1 extends CommonScene{
         platforms.create(7000, 550, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(7400, 700, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(7400, 400, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
+        platforms.create(7600, 400, "platform").setScale(0.3).setOrigin(0, 0).refreshBody();
 
         this.makeMoveEnemy(i, 6500, 900, 14000, 'fork');
         this.makeMoveEnemy(i, 75000, 900, 10000, 'knife');
@@ -1171,7 +1172,7 @@ class EndStory extends CommonScene {
     preload(){
         super.preload();
 
-        this.load.spritesheet('introbg2', 'assets/background/bg-sheet-3.png', {frameWidth : 1470, frameHeight : 1000});
+        this.load.spritesheet('introbg3', 'assets/background/bg-sheet-3.png', {frameWidth : 1470, frameHeight : 1000});
         // load bg and platform
         this.load.image('level3bg', 'assets/background/level1bg.png');
         this.load.image('background', 'assets/background/bg.png');
@@ -1185,7 +1186,7 @@ class EndStory extends CommonScene {
         this.load.image('garlic', 'assets/ingredients/garlic.png');
         this.load.image('tofu_nuke', 'assets/boss_asset/tofu_bullet.png');
         // load boss
-        this.load.spritesheet('final', 'assets/boss_asset/finalboss.png', {frameWidth : 598, frameHeight : 242});
+        this.load.spritesheet('final', 'assets/boss_asset/finalboss.png', {frameWidth : 232, frameHeight : 242});
 
         // load music
         this.load.audio('main_music', 'assets/music/main_music.wav')
@@ -1201,21 +1202,21 @@ class EndStory extends CommonScene {
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        // playBornX = 8800;
+        //playBornX = 8800;
         // bossHP = 2;
         // hp = 50;
     }
     create(){
         // using level 2 features for now
         // background
-        this.add.image(0, 0, 'level2bg').setOrigin(0, 0);
+        this.add.image(0, 0, 'level3bg').setOrigin(0, 0);
         this.anims.create({
-            key: 'boil2',
-            frames: this.anims.generateFrameNumbers('introbg2', { start: 0, end: 6 }),
+            key: 'boil3',
+            frames: this.anims.generateFrameNumbers('introbg3', { start: 0, end: 6 }),
             frameRate: 2,
             repeat: -1
         });
-        this.add.sprite(0,0,'introbg2').setOrigin(0, 0).setScale(1.1).anims.play('boil2').setScrollFactor(0, 0);
+        this.add.sprite(0,0,'introbg3').setOrigin(0, 0).setScale(1.1).anims.play('boil3').setScrollFactor(0, 0);
         // boss bg
         this.add.image(9000, 0, 'background').setOrigin(0, 0);
 
@@ -1224,12 +1225,12 @@ class EndStory extends CommonScene {
         nukes = this.physics.add.group({});
 
         // level specific platforms
-        this.makeMoveEnemy(i, 0, 850, 5000, 'knife');
+        //this.makeMoveEnemy(i, 0, 850, 5000, 'knife');
 
         madeFish1 = false;
 
         platforms.create(500, 750, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
-        this.makeMoveEnemy(i, 500, 750, 200, 'fork');
+        this.makeMoveEnemy(i, 500, 750, 200, 'knife');
         platforms.create(700, 550, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(900, 350, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
         platforms.create(1100, 150, "back").setScale(0.3).setOrigin(0, 0).refreshBody();
@@ -2056,8 +2057,8 @@ var config = {
           default: 'arcade',
           arcade: {
               gravity: {y:800},
-              //debug: true
-              debug: false
+              debug: true
+              //debug: false
           }
       },
     scene: [MainMenu], // starting with tutorial
