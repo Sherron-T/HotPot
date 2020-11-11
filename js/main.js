@@ -2060,6 +2060,10 @@ var config = {
     width: 1500,
     height: 1000,
     backgroundColor: "#5D0505",
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     physics: {
           default: 'arcade',
           arcade: {
