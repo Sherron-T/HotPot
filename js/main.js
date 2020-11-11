@@ -1688,7 +1688,7 @@ class GameMenu extends Phaser.Scene {
     onClickedDifficulty(index){
         var tempHPvar = [5, 3, 1];
         var difList = ['easybut','medbut','hardbut']
-        this.sound.play('blip');
+        this.sound.play('blip', {volume: 0.3});
         setPlayerHP = tempHPvar[index];
         diffulcultyList[index].setTexture(difList[index]+'p');
         for(var i = 0; i < 3; i++){
