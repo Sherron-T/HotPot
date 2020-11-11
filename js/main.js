@@ -1545,37 +1545,79 @@ class GameMenu extends Phaser.Scene {
         this.load.image('title', 'assets/title.png');
         this.load.audio('click_sfx', 'assets/sfx/button.mp3');
         this.load.audio('blip', 'assets/sfx/blip.mp3');
+        this.load.image('level1but', 'assets/menu/level1.png');
+        this.load.image('level2but', 'assets/menu/level2.png');
+        this.load.image('level3but', 'assets/menu/finallevel.png');
+        this.load.image('easybut', 'assets/menu/easy.png');
+        this.load.image('medbut', 'assets/menu/medium.png');
+        this.load.image('hardbut', 'assets/menu/hard.png');
+        this.load.image('easybutp', 'assets/menu/easyp.png');
+        this.load.image('medbutp', 'assets/menu/mediump.png');
+        this.load.image('hardbutp', 'assets/menu/hardp.png');
+        this.load.image('difficultybg', 'assets/menu/difficulty.png');
     }
     create(){
         this.add.image(0, 0, 'title').setOrigin(0, 0);
         this.scene.remove('Tutorial');
-        clickButton1 = this.add.text(500, 600, 'Start the Level1!',
+        /*clickButton1 = this.add.text(500, 600, 'Start the Level1!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
-            ()=>this.onClicked1());
-        clickButton2 = this.add.text(500, 750, 'Start the Level2!',
+            ()=>this.onClicked1());*/
+        var difBG = this.add.image(1250, 145, 'difficultybg').setOrigin(0.5,0.5)
+        clickButton1 = this.add.image(750, 600, 'level1but').setOrigin(0.5,0.5).
+          setInteractive().on('pointerdown',
+          ()=>this.onClicked1());;
+        /*clickButton2 = this.add.text(500, 750, 'Start the Level2!',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
-            ()=>this.onClicked2());
-        clickButtonEnd = this.add.text(650, 700, 'THE END',
+            ()=>this.onClicked2());*/
+        clickButton2 = this.add.image(750, 700, 'level2but').setOrigin(0.5,0.5).
+          setInteractive().on('pointerdown',
+          ()=>this.onClicked2());;
+        /*clickButtonEnd = this.add.text(650, 700, 'THE END',
             {fontSize: '40px', fill: '#888'}).
             setInteractive().on('pointerdown',
-            ()=>this.onClicked3());
-         lock2 = this.physics.add.staticImage(470, 775, 'lock');
+            ()=>this.onClicked3());*/
+        clickButtonEnd = this.add.image(750, 800, 'level3but').setOrigin(0.5,0.5).
+          setInteractive().on('pointerdown',
+          ()=>this.onClicked3());;
+         lock2 = this.physics.add.staticImage(470, 700, 'lock');
+         lock2 = this.physics.add.staticImage(470, 800, 'lock');
 
          // maybe have pic/text for these
-         diffulculty1 = this.add.text(1250, 100, 'EASY',
+         /*diffulculty1 = this.add.text(1250, 100, 'EASY',
              {fontSize: '23px', fill: '#888'}).
              setInteractive().on('pointerdown',
-             ()=>this.onClickedDifficulty(0));
-         diffulculty2 = this.add.text(1250, 200, 'MEDIUM',
+             ()=>this.onClickedDifficulty(0));*/
+         diffulculty1 = this.add.image(1250, 100, 'easybut').setOrigin(0.5,0.5).
+           setInteractive().on('pointerdown',
+           ()=>this.onClickedDifficulty(0));
+         if(setPlayerHP == 5)
+         {
+           diffulculty1.setTexture('easybutp');
+         }
+         /*diffulculty2 = this.add.text(1250, 200, 'MEDIUM',
              {fontSize: '23px', fill: '#888'}).
              setInteractive().on('pointerdown',
-             ()=>this.onClickedDifficulty(1));
-         diffulculty3 = this.add.text(1250, 300, 'HARD',
+             ()=>this.onClickedDifficulty(1));*/
+         diffulculty2 = this.add.image(1250, 160, 'medbut').setOrigin(0.5,0.5).
+           setInteractive().on('pointerdown',
+           ()=>this.onClickedDifficulty(1));
+         if(setPlayerHP == 3)
+         {
+           diffulculty2.setTexture('medbutp');
+         }
+         /*diffulculty3 = this.add.text(1250, 300, 'HARD',
              {fontSize: '23px', fill: '#888'}).
              setInteractive().on('pointerdown',
-             ()=>this.onClickedDifficulty(2));
+             ()=>this.onClickedDifficulty(2));*/
+         diffulculty3 = this.add.image(1250, 220, 'hardbut').setOrigin(0.5,0.5).
+           setInteractive().on('pointerdown',
+           ()=>this.onClickedDifficulty(2));
+         if(setPlayerHP == 1)
+         {
+           diffulculty3.setTexture('hardbutp');
+         }
          diffulcultyList = [diffulculty1, diffulculty2, diffulculty3];
 
          //Clear Boss music
@@ -1612,6 +1654,7 @@ class GameMenu extends Phaser.Scene {
     onClicked1(){
         this.scene.remove('Level1');
         this.sound.play('click_sfx');
+        clickButton1.setTint(0x990000);
         scene1 = this.scene.add('Level1', Level1, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
@@ -1622,6 +1665,7 @@ class GameMenu extends Phaser.Scene {
     onClicked2(){
         this.scene.remove('Level2');
         this.sound.play('click_sfx');
+        clickButton2.setTint(0x990000);
         scene2 = this.scene.add('Level2', Level2, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
@@ -1633,6 +1677,7 @@ class GameMenu extends Phaser.Scene {
     onClicked3(){
         this.scene.remove('EndStory');
         this.sound.play('click_sfx');
+        clickButtonEnd.setTint(0x990000);
         scene2 = this.scene.add('EndStory', EndStory, true);
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
@@ -1642,11 +1687,13 @@ class GameMenu extends Phaser.Scene {
     }
     onClickedDifficulty(index){
         var tempHPvar = [5, 3, 1];
+        var difList = ['easybut','medbut','hardbut']
         this.sound.play('blip');
         setPlayerHP = tempHPvar[index];
+        diffulcultyList[index].setTexture(difList[index]+'p');
         for(var i = 0; i < 3; i++){
             if(i != index){
-                diffulcultyList[i].destroy();
+                diffulcultyList[i].setTexture(difList[i]);
             }
         }
         console.log("clicked diffulculty");
