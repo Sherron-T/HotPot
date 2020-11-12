@@ -57,6 +57,7 @@ var platformNukesOverlap;
 var platformSpeed = Phaser.Math.GetSpeed(400, 3);
 var pSpeed;
 var movingPlatformDict = {};
+var enemyHPcount = 0;
 // Math.round(Math.random())
 
 //MODIFIABLE VARIABLES
@@ -433,8 +434,13 @@ class CommonScene extends Phaser.Scene{
     enemyHurt(enemy, bullet){
         //bullet.disableBody(true, true);
         bullet.destroy();
-        if(Math.round(Math.random()) == 0) enemy.destroy();
-        score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+        if(Math.round(Math.random()) == 0 || enemyHPcount >= 3){
+            enemy.destroy();
+            score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+            enemyHPcount = 0;
+        }else{
+            enemyHPcount += 1
+        }
     }
     set_shoot(){
         can_shoot = true;
