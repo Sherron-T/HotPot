@@ -1202,7 +1202,7 @@ class EndStory extends CommonScene {
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        //playBornX = 8800;
+        //playBornX = 8000;
         // bossHP = 2;
         // hp = 50;
     }
