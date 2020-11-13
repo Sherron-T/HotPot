@@ -1729,6 +1729,8 @@ class MainMenu extends Phaser.Scene {
         this.load.image('background', 'assets/background/bg.png');
         this.load.image('title', 'assets/title.png');
         this.load.audio('main_music', 'assets/music/main_music.wav')
+        this.load.image('start', 'assets/menu/start.png')
+        this.load.audio('click_sfx', 'assets/sfx/button.mp3');
     }
     create(){
         // this.add.image(0, 0, 'background').setOrigin(0, 0);
@@ -1736,10 +1738,13 @@ class MainMenu extends Phaser.Scene {
 
         //isMusicOn
         this.enable_music();
-        clickButtonBegin = this.add.text(400, 600, 'Begin the Game with Tutorial',
+        /*clickButtonBegin = this.add.text(400, 600, 'Begin the Game with Tutorial',
             {fontSize: '50px', fill: '#888'}).
             setInteractive().on('pointerdown',
-            ()=>this.onClicked());
+            ()=>this.onClicked());*/
+        clickButtonBegin = this.add.image(750, 650, 'start').setOrigin(0.5,0.5).
+          setInteractive().on('pointerdown',
+          ()=>this.onClicked());
         // clickInstruction = this.add.text(400, 600, 'Learn How to Play',
         //     {fontSize: '50px', fill: '#888'}).
         //     setInteractive().on('pointerdown',
@@ -1758,6 +1763,8 @@ class MainMenu extends Phaser.Scene {
     }
     onClicked(){
         this.scene.remove('Tutorial');
+        this.sound.play('click_sfx');
+        clickButtonBegin.setTint(0x990000);
         // this.scene.remove('Instruction');
         tutorialScene = this.scene.add('Tutorial', Tutorial, true);
         // clickInstruction.disableInteractive();
