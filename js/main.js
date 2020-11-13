@@ -21,6 +21,8 @@ var vulTimer;
 var invul = false;
 var score = 0;
 var bullet_gone;
+var scoreText;
+var scoreTextScore;
 
 // gun variables
 var bullets;
@@ -123,6 +125,7 @@ var clickButton1;
 var clickButton2;
 var clickButtonEnd;
 var mainButton;
+var retryButton
 var lock2;
 var endText;
 var summary;
@@ -142,6 +145,10 @@ var hurtText;
 var bossTutorialText;
 var enemyTutorialText;
 var tutorialScene;
+
+var dialogue;
+var dialogue1x = 300;
+var stop1 = true;
 
 // instruction
 var clickStart;
@@ -421,6 +428,9 @@ class CommonScene extends Phaser.Scene{
             }
             // console.log("locked");
         }
+
+        // score 
+        this.updateScore()
     }
     bossHurt(boss, bullet){
         //bullet.disableBody(true, true);
@@ -435,7 +445,8 @@ class CommonScene extends Phaser.Scene{
         bullet.destroy();
         if(Math.round(Math.random()) == 0 || enemyHPcount >= 3){
             enemy.destroy();
-            score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+            // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+            score += 10;
             enemyHPcount = 0;
         }else{
             enemyHPcount += 1
@@ -482,6 +493,10 @@ class CommonScene extends Phaser.Scene{
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
             ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
+        retryButton = this.add.text(750, 790, 'Retry',
+            {fontSize: '40px', fill: '#F5ED00'}).
+            setInteractive().on('pointerdown',
+            ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);
     }
     backToMenu(){
         this.scene.start('GameMenu');
@@ -492,6 +507,15 @@ class CommonScene extends Phaser.Scene{
         this.events.off();
         this.enable_music();
         console.log("back")
+    }
+    retry(){
+        this.scene.remove('Level1');
+        this.sound.play('click_sfx');
+        clickButton1.setTint(0x990000);
+        scene1 = this.scene.add('Level1', Level1, true);
+        clickButton1.disableInteractive();
+        clickButton2.disableInteractive();
+        console.log("retry");
     }
     makeMoveEnemy(i, xPos, yPos, duration, enemyName){
         console.log(enemyName);
@@ -564,6 +588,7 @@ class CommonScene extends Phaser.Scene{
         i = 0;
         playBornX = 50;
         invul = false;
+        if(scoreText) scoreText.destroy();
         if(boss) boss.destroy();
         if(enemies) enemies.destroy();
         if(hearts) hearts.destroy();
@@ -618,6 +643,13 @@ class CommonScene extends Phaser.Scene{
         for(x of heart){
             x.setScrollFactor(0, 0);
         };
+        scoreText = this.add.text(1300, 30, "Score: ", {fontSize: '23px', fill: '#290048'});
+        scoreText.setScrollFactor(0, 0);
+    }
+    updateScore(){
+        if(scoreTextScore) scoreTextScore.destroy();
+        scoreTextScore = this.add.text(1390, 30, score, {fontSize: '23px', fill: '#290048'});
+        scoreTextScore.setScrollFactor(0, 0);
     }
 }
 
@@ -1830,7 +1862,7 @@ class Tutorial extends CommonScene{
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 3500;
+        playBornX = 50;
     }
     create(){
         //music
@@ -1846,7 +1878,7 @@ class Tutorial extends CommonScene{
 
         this.createHeart();
 
-        this.add.image(90, 175, 'intro').setOrigin(0, 0).setScale(0.80);
+        
         this.add.text(1000, 200, 'Use Arrow keys to move and space to shoot',
             {fontSize: '30px', fill: '#232',});
         this.add.image(1000, 250, 'controls').setOrigin(0, 0).setScale(0.6);
@@ -1925,8 +1957,41 @@ class Tutorial extends CommonScene{
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
         }
+        //Dialogue 1
+        if(player.x >= dialogue1x && player.x <= dialogue1x+10 && stop1 == true)
+        {
+          this.textDialogue('intro');
+          this.textDialogue('intro');
+        }
     }
     // tutorial is always invulnerable
+    textDialogue(text_name)
+    {
+        if(control == true)
+        {
+            control = false;
+            player.setVelocityX(0);
+            player.anims.play('idle_right');
+            dialogue = this.add.image(90, 175, 'text_name').setOrigin(0, 0).setAlpha(0);
+            this.tweens.add({
+                targets: dialogue,
+                alpha: {from:  0, to: 0.9},
+                ease: 'linear',
+                duration: 300,
+            });
+        }
+        if(cursors.space.isDown == true)
+        {
+            stop1 = false;
+            this.tweens.add({
+                targets: dialogue,
+                alpha: {from:  0.9, to: 0},
+                ease: 'linear',
+                duration: 300,
+            });
+            control = true;
+        }
+    }
     takeDmg(player){
         if(invul == false){
             hurt_sound.play();
@@ -1950,9 +2015,10 @@ class Tutorial extends CommonScene{
         bullet.destroy();
         if(Math.round(Math.random()) == 0){
             enemy.destroy();
+            score += 10;
             enemyTutorialText.setText("You defeated the small enemy!")
         }
-        score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+        // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
     }
     summary(text, add){
         super.summary(text, add);
