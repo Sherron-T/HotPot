@@ -493,7 +493,7 @@ class CommonScene extends Phaser.Scene{
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
             ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
-        retryButton = this.add.text(750, 790, 'Retry',
+        retryButton = this.add.text(750, 800, 'Retry',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
             ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);
@@ -509,12 +509,7 @@ class CommonScene extends Phaser.Scene{
         console.log("back")
     }
     retry(){
-        this.scene.remove('Level1');
-        this.sound.play('click_sfx');
-        clickButton1.setTint(0x990000);
-        scene1 = this.scene.add('Level1', Level1, true);
-        clickButton1.disableInteractive();
-        clickButton2.disableInteractive();
+        this.scene.restart();
         console.log("retry");
     }
     makeMoveEnemy(i, xPos, yPos, duration, enemyName){
