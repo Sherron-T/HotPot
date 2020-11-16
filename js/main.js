@@ -146,9 +146,15 @@ var bossTutorialText;
 var enemyTutorialText;
 var tutorialScene;
 
+//dialogue vars
 var dialogue;
+var enter;
+
 var dialogue1x = 300;
 var stop1 = true;
+
+var stop2 = true;
+var dialogue2x = 305;
 
 // instruction
 var clickStart;
@@ -178,6 +184,7 @@ class CommonScene extends Phaser.Scene{
         this.load.audio('jump_sound', 'assets/sfx/jump.mp3')
         this.load.audio('hurt_sound', 'assets/sfx/hurt.mp3')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
+        this.load.image('backmenu', 'assets/menu/backmenu.png')
         this.load.image('back', 'assets/ground/back.png');
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
@@ -429,7 +436,7 @@ class CommonScene extends Phaser.Scene{
             // console.log("locked");
         }
 
-        // score 
+        // score
         this.updateScore()
     }
     bossHurt(boss, bullet){
@@ -489,14 +496,20 @@ class CommonScene extends Phaser.Scene{
         this.add.image(750, 40, 'scoreBoard').setScrollFactor(0).setOrigin(0.5, 0);
         endText = this.add.text(750, 75, "YOU "+text, {fontSize: '60px', fill: '#290048'}).setScrollFactor(0).setOrigin(0.5, 0);
         summary = this.add.text(750, 420, "Score: "+(score+add), {fontSize: '50px', fill: '#290048'}).setScrollFactor(0).setOrigin(0.5, 0);
-        mainButton = this.add.text(750, 770, 'Back to Menu',
+        mainButton = this.add.image(200,100,'backmenu').
+          setInteractive().on('pointerdown',
+          ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
+        /*mainButton = this.add.text(750, 770, 'Back to Menu',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
-            ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
-        retryButton = this.add.text(750, 800, 'Retry',
-            {fontSize: '40px', fill: '#F5ED00'}).
-            setInteractive().on('pointerdown',
-            ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);
+            ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);*/
+        if(text == "LOST")
+        {
+          retryButton = this.add.text(750, 800, 'Retry',
+              {fontSize: '40px', fill: '#F5ED00'}).
+              setInteractive().on('pointerdown',
+              ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);
+        }
     }
     backToMenu(){
         this.scene.start('GameMenu');
@@ -674,7 +687,7 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        //playBornX = 8000;
+        playBornX = 8000;
         //horizontalSpeed = testSpeed;
     }
     create(){
@@ -1845,6 +1858,8 @@ class Tutorial extends CommonScene{
         this.load.image('directions', 'assets/intro/directions.png')
         this.load.image('hp_dir', 'assets/intro/hp_dir.png')
 
+        this.load.image('dialogue1', 'assets/dialogue/dialogue1.png');
+        this.load.image('dialogue2', 'assets/dialogue/dialogue2.png');
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 5;
@@ -1873,12 +1888,12 @@ class Tutorial extends CommonScene{
 
         this.createHeart();
 
-        
-        this.add.text(1000, 200, 'Use Arrow keys to move and space to shoot',
+
+        /*this.add.text(1000, 200, 'Use Arrow keys to move and space to shoot',
             {fontSize: '30px', fill: '#232',});
         this.add.image(1000, 250, 'controls').setOrigin(0, 0).setScale(0.6);
         this.add.image(2230, 150, 'directions').setOrigin(0, 0).setScale(0.80);
-        this.add.image(1750, 0, 'hp_dir').setOrigin(0, 0).setScale(0.7);
+        this.add.image(1750, 0, 'hp_dir').setOrigin(0, 0).setScale(0.7);*/
 
 
         // base platforms
@@ -1934,6 +1949,7 @@ class Tutorial extends CommonScene{
         this.cameras.main.fadeIn(600, 0, 0, 0);
         this.cameras.main.setBounds(0, 0, 5000, 1000);
         this.cameras.main.startFollow(player);
+        enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     }
     update(time, delta){
         super.update(time, delta);
@@ -1955,19 +1971,22 @@ class Tutorial extends CommonScene{
         //Dialogue 1
         if(player.x >= dialogue1x && player.x <= dialogue1x+10 && stop1 == true)
         {
-          this.textDialogue('intro');
-          this.textDialogue('intro');
+          stop1 = this.textDialogue('dialogue1',stop1);
+        }
+        if(player.x >= dialogue2x && player.x <= dialogue2x+10 && stop1 == false && stop2 == true)
+        {
+             stop2 = this.textDialogue('dialogue2', stop2);
         }
     }
     // tutorial is always invulnerable
-    textDialogue(text_name)
+    textDialogue(text_name, stopper)
     {
         if(control == true)
         {
             control = false;
             player.setVelocityX(0);
             player.anims.play('idle_right');
-            dialogue = this.add.image(90, 175, 'text_name').setOrigin(0, 0).setAlpha(0);
+            dialogue = this.add.image(750, 200, text_name).setOrigin(0.5, 0.5).setAlpha(0);
             this.tweens.add({
                 targets: dialogue,
                 alpha: {from:  0, to: 0.9},
@@ -1975,9 +1994,10 @@ class Tutorial extends CommonScene{
                 duration: 300,
             });
         }
-        if(cursors.space.isDown == true)
+        //if(cursors.space.isDown == true)
+        if(Phaser.Input.Keyboard.JustDown(enter))
         {
-            stop1 = false;
+            stopper = false;
             this.tweens.add({
                 targets: dialogue,
                 alpha: {from:  0.9, to: 0},
@@ -1986,6 +2006,7 @@ class Tutorial extends CommonScene{
             });
             control = true;
         }
+        return stopper;
     }
     takeDmg(player){
         if(invul == false){
@@ -2017,6 +2038,11 @@ class Tutorial extends CommonScene{
     }
     summary(text, add){
         super.summary(text, add);
+        mainButton.destroy();
+        mainButton = this.add.text(750, 770, 'Back to Menu',
+            {fontSize: '40px', fill: '#F5ED00'}).
+            setInteractive().on('pointerdown',
+            ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
         mainButton.setFont('21px');
         mainButton.setText("Start the Real Adventure");
     }
