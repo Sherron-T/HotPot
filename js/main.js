@@ -572,6 +572,9 @@ class CommonScene extends Phaser.Scene{
     bullet_dissapear(b){
       b.destroy();
     }
+    bulletDestroy(platforms,b){
+      b.destroy();
+    }
     enable_music(){
         if(isBossMusicOn == true)
         {
@@ -858,6 +861,7 @@ class Level1 extends CommonScene{
         bossCollider = this.physics.add.collider(boss, platforms);
 
         // overlaps
+        bulletBossOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
