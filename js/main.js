@@ -50,6 +50,7 @@ var playerCollider;
 var enemyCollider;
 var bossCollider;
 var timedEvent;
+var bulletPlatformOverlap;
 var playerBossOverlap;
 var playerNukesOverlap;
 var bulletBossOverlap;
@@ -861,7 +862,7 @@ class Level1 extends CommonScene{
         bossCollider = this.physics.add.collider(boss, platforms);
 
         // overlaps
-        bulletBossOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
@@ -1126,6 +1127,7 @@ class Level2 extends CommonScene{
         enemyCollider = this.physics.add.collider(enemies, platforms);
 
         // overlaps
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
@@ -1439,6 +1441,7 @@ class EndStory extends CommonScene {
         enemyCollider = this.physics.add.collider(enemies, platforms);
 
         // overlaps
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
@@ -1974,6 +1977,7 @@ class Tutorial extends CommonScene{
         enemyCollider = this.physics.add.collider(enemies, platforms);
 
         // overlaps
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
