@@ -87,7 +87,7 @@ var bossLow = 10;
 var bossStopDuration = 800;
 var bossLeftBound = 9100;
 var bossRightBound = 10000;
-var bossScore = 233;
+var bossScore = 300;
 var bornL = 9500;
 var bornR = 9550;
 var bossBar;
@@ -198,7 +198,7 @@ class CommonScene extends Phaser.Scene{
         this.load.image('backmenu', 'assets/menu/backmenu.png')
         this.load.image('retry', 'assets/menu/retry.png')
         this.load.image('back', 'assets/ground/back.png');
-
+        this.load.audio('click_sfx', 'assets/sfx/button.mp3');
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
         this.restart();
@@ -528,6 +528,7 @@ class CommonScene extends Phaser.Scene{
         }
     }
     backToMenu(){
+        this.sound.play('click_sfx');
         this.scene.start('GameMenu');
         mainButton.disableInteractive();
         clickButton1.setInteractive();
@@ -538,6 +539,7 @@ class CommonScene extends Phaser.Scene{
         console.log("back")
     }
     retry(){
+        this.sound.play('click_sfx');
         this.scene.restart();
         console.log("retry");
     }
@@ -703,7 +705,7 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        playBornX = 8000;
+        //playBornX = 8000;
         //horizontalSpeed = testSpeed;
     }
     create(){
@@ -1858,7 +1860,7 @@ class Tutorial extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('boss', 'assets/boss_asset/leek.png');
+        this.load.image('boss', 'assets/boss_asset/leekdummy.png');
         this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/background/level1bg.png');
@@ -1884,6 +1886,9 @@ class Tutorial extends CommonScene{
         this.load.image('dialogue6', 'assets/dialogue/dialogue6.png');
         this.load.image('dialogue7', 'assets/dialogue/dialogue7.png');
         this.load.image('dialogue8', 'assets/dialogue/dialogue8.png');
+
+
+        this.load.audio('dialoguesfx', 'assets/sfx/dialogue.mp3');
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 5;
@@ -2051,6 +2056,7 @@ class Tutorial extends CommonScene{
     {
         if(control == true)
         {
+            this.sound.play('dialoguesfx');
             control = false;
             player.setVelocityX(0);
             player.anims.play('idle_right');
@@ -2102,13 +2108,15 @@ class Tutorial extends CommonScene{
         hp = 5;
     }
     enemyHurt(enemy, bullet){
-        bullet.destroy();
-        if(Math.round(Math.random()) == 0){
-            enemy.destroy();
-            score += 10;
-            //enemyTutorialText.setText("You defeated the small enemy!")
-        }
-        // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+      bullet.destroy();
+      if(Math.round(Math.random()) == 0 || enemyHPcount >= 3){
+          enemy.destroy();
+          // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+          score += 10;
+          enemyHPcount = 0;
+      }else{
+          enemyHPcount += 1
+      }
     }
     summary(text, add){
         super.summary(text, add);
@@ -2125,6 +2133,7 @@ class Tutorial extends CommonScene{
     }
     backToMenu(){
         // this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.sound.play('click_sfx');
         this.scene.add('GameMenu', GameMenu, true);
         mainButton.disableInteractive();
         this.scene.remove('MainMenu');
