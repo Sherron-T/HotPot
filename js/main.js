@@ -532,14 +532,10 @@ class CommonScene extends Phaser.Scene{
             ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);*/
         if(text == "LOST")
         {
-<<<<<<< HEAD
-          retryButton = this.add.text(750, 770, 'Retry',
-=======
           retryButton = this.add.image(750,775,'retry').setScale(0.7).
             setInteractive().on('pointerdown',
             ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0.5);
           /*retryButton = this.add.text(750, 800, 'Retry',
->>>>>>> a7cf5ba6564912c1fc7f02d17867d26a4095ebc3
               {fontSize: '40px', fill: '#F5ED00'}).
               setInteractive().on('pointerdown',
               ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);*/
