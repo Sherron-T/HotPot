@@ -5,6 +5,7 @@ var movingPlatforms;
 var mvPlatformsCollider;
 var locked = false;
 var lockedTarget;
+var collectHeart; 
 
 // player variables
 var control;
@@ -94,6 +95,10 @@ var bossBar;
 var bgBar;
 var bossHpText;
 var setValue;
+// var bossbullet;
+
+// heart stuff
+var heartPlayerCollider
 
 //Boss 2
 var tintCharge;
@@ -242,6 +247,13 @@ class CommonScene extends Phaser.Scene{
             allowGravity: false
         });
 
+        // collecting heart
+        collectHeart = this.physics.add.group();
+        collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
+        collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
+        collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
+        this.physics.add.collider(platforms, collectHeart);
+        heartPlayerCollider = this.physics.add.overlap(player, collectHeart, this.heal, null, this);
 
         // animations
         this.anims.create({
@@ -310,6 +322,25 @@ class CommonScene extends Phaser.Scene{
     update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
+
+        // when boss dies
+        if(bossHP == 0){
+            if(win == false)
+            {
+              this.physics.world.removeCollider(bossCollider);
+              this.physics.world.removeCollider(playerBossOverlap);
+              this.physics.world.removeCollider(playerNukesOverlap);
+              this.physics.world.removeCollider(playerEnemOverlap);
+              boss.setCollideWorldBounds(false);
+              this.summary("WON", bossScore);
+              control = false;
+              player.setVelocityX(0);
+              win = true;
+              return;
+            }
+            win = true;
+            return
+         }
 
         // controls for the player
         if(control == true){
@@ -392,24 +423,6 @@ class CommonScene extends Phaser.Scene{
             dead = true;
             // console.log("end");
             return
-        }
-
-        // when boss dies
-        if(bossHP == 0){
-           if(win == false)
-           {
-             this.physics.world.removeCollider(bossCollider);
-             this.physics.world.removeCollider(playerBossOverlap);
-             this.physics.world.removeCollider(playerNukesOverlap);
-             boss.setCollideWorldBounds(false);
-             this.summary("WON", bossScore);
-             control = false;
-             player.setVelocityX(0);
-             win = true;
-             return;
-           }
-           win = true;
-           return
         }
 
         // moving with mvPlatforms
@@ -505,7 +518,7 @@ class CommonScene extends Phaser.Scene{
             ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);*/
         if(text == "LOST")
         {
-          retryButton = this.add.text(750, 800, 'Retry',
+          retryButton = this.add.text(750, 770, 'Retry',
               {fontSize: '40px', fill: '#F5ED00'}).
               setInteractive().on('pointerdown',
               ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);
@@ -1264,9 +1277,9 @@ class EndStory extends CommonScene {
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        //playBornX = 8000;
+        playBornX = 8000;
         // bossHP = 2;
-        // hp = 50;
+        hp = 50;
     }
     create(){
         // using level 2 features for now
@@ -1437,6 +1450,7 @@ class EndStory extends CommonScene {
         // shake screens?
         if (bossHP <= 0){
             stabAttack.destroy();
+            // bossbullet.destroy();
             boss.body.setAllowGravity(true);
         }
         // for making ingredients appear
@@ -1971,11 +1985,13 @@ class Tutorial extends CommonScene{
         //Dialogue 1
         if(player.x >= dialogue1x && player.x <= dialogue1x+10 && stop1 == true)
         {
-          stop1 = this.textDialogue('dialogue1',stop1);
+            stop1 = this.textDialogue('dialogue1',stop1);
+          // var dialogue1 = this.add.text(70, 120, 'In the tutorials, press ENTER to goto the next tutorial!',
+          //   {fontSize: '40px', fill: tutorialTextColor})
         }
         if(player.x >= dialogue2x && player.x <= dialogue2x+10 && stop1 == false && stop2 == true)
         {
-             stop2 = this.textDialogue('dialogue2', stop2);
+            stop2 = this.textDialogue('dialogue2', stop2);
         }
     }
     // tutorial is always invulnerable
