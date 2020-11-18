@@ -250,7 +250,6 @@ class CommonScene extends Phaser.Scene{
         player.setCollideWorldBounds(false);
         player.body.width = 60;
         player.body.offset.x = 20;
-        console.log("player loaded")
 
         this.cameras.main.fadeIn(700, 0, 0, 0);
         this.cameras.main.setBounds(0, 0, 10500, 1000);
@@ -262,10 +261,10 @@ class CommonScene extends Phaser.Scene{
         });
 
         // collecting heart
-        collectHeart = this.physics.add.group();
-        collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
-        collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
-        collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
+        collectHeart = this.physics.add.image(8500, 0, 'heart');
+        // collectHeart.create(8500, 0, 'heart');
+        // collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
+        // collectHeart.create(Phaser.Math.Between(bornL-200, bornR+200), 0, 'heart');
         this.physics.add.collider(platforms, collectHeart);
         heartPlayerCollider = this.physics.add.overlap(player, collectHeart, this.heal, null, this);
 
@@ -336,6 +335,9 @@ class CommonScene extends Phaser.Scene{
     update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
+        
+        // score
+        this.updateScore()
 
         // when boss dies
         if(bossHP == 0){
@@ -346,6 +348,9 @@ class CommonScene extends Phaser.Scene{
               this.physics.world.removeCollider(playerNukesOverlap);
               this.physics.world.removeCollider(playerEnemOverlap);
               boss.setCollideWorldBounds(false);
+              score += 300; 
+              if(scoreTextScore) scoreTextScore.destroy();
+              scoreTextScore = this.add.text(1390, 30, score, {fontSize: '23px', fill: '#290048'});
               this.summary("WON", bossScore);
               control = false;
               player.setVelocityX(0);
@@ -435,7 +440,6 @@ class CommonScene extends Phaser.Scene{
               return;
             }
             dead = true;
-            // console.log("end");
             return
         }
 
@@ -460,11 +464,8 @@ class CommonScene extends Phaser.Scene{
                 player.x += pSpeed * delta;
                 // player.y += pSpeedY;
             }
-            // console.log("locked");
         }
 
-        // score
-        this.updateScore()
     }
     bossHurt(boss, bullet){
         //bullet.disableBody(true, true);
@@ -494,6 +495,7 @@ class CommonScene extends Phaser.Scene{
             hurt_sound.play();
             player.setTint(0xB5F2F2);
             invul = true;
+            // console.log("damage");
             vulTimer = this.time.addEvent({ delay: invulDuration, callback: this.blinking, callbackScope: this});
             hp = hp == 0 ? 0 : hp - 1;
             var heart = hearts.getChildren();
@@ -516,13 +518,12 @@ class CommonScene extends Phaser.Scene{
     // shows player how they did after kill boss/ death
     summary(text, add){
         // endText = this.add.text(600, 500, "YOU WIN", { fontSize: '60px', fill: '#C45827' });
-        console.log("music should restart");
         this.enable_music();
         // this.add.image(player.x-150, 40, 'scoreBoard').setOrigin(0, 0);
         // endText = this.add.text(player.x-20, 75, "YOU "+text, {fontSize: '60px', fill: '#290048'});
         this.add.image(750, 40, 'scoreBoard').setScrollFactor(0).setOrigin(0.5, 0);
         endText = this.add.text(750, 75, "YOU "+text, {fontSize: '60px', fill: '#290048'}).setScrollFactor(0).setOrigin(0.5, 0);
-        summary = this.add.text(750, 420, "Score: "+(score+add), {fontSize: '50px', fill: '#290048'}).setScrollFactor(0).setOrigin(0.5, 0);
+        summary = this.add.text(750, 420, "Score: "+score, {fontSize: '50px', fill: '#290048'}).setScrollFactor(0).setOrigin(0.5, 0);
         mainButton = this.add.image(200,100,'backmenu').
           setInteractive().on('pointerdown',
           ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
@@ -550,15 +551,12 @@ class CommonScene extends Phaser.Scene{
         this.registry.destroy();
         this.events.off();
         this.enable_music();
-        console.log("back")
     }
     retry(){
         this.sound.play('click_sfx');
         this.scene.restart();
-        console.log("retry");
     }
     makeMoveEnemy(i, xPos, yPos, duration, enemyName){
-        console.log(enemyName);
         this.anims.create({
             key: enemyName+'walk',
             frames: this.anims.generateFrameNumbers(enemyName, { start: 0, end: 5 }),
@@ -643,7 +641,6 @@ class CommonScene extends Phaser.Scene{
         this.enable_music();
         win = false;
         dead = false;
-        console.log("restart");
     }
     start_music(songName){
       this.tweens.add({
@@ -681,6 +678,7 @@ class CommonScene extends Phaser.Scene{
             setXY: {x: 50, y: 50, stepX: 50}
         });
         // make heart follow camera
+        // console.log("CREATE HEART");
         var heart = hearts.getChildren();
         var x;
         for(x of heart){
@@ -693,6 +691,16 @@ class CommonScene extends Phaser.Scene{
         if(scoreTextScore) scoreTextScore.destroy();
         scoreTextScore = this.add.text(1390, 30, score, {fontSize: '23px', fill: '#290048'});
         scoreTextScore.setScrollFactor(0, 0);
+    }
+    heal(){
+        hp = setPlayerHP;
+        var heart = hearts.getChildren();
+        for(var i = 0; i < hp; i ++){
+            hearts.killAndHide(heart[i]);
+            heart[i].body.enable = false;
+        }
+        this.createHeart();
+        collectHeart.destroy();
     }
 }
 
@@ -722,7 +730,7 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        //playBornX = 8000;
+        playBornX = 8300;
         //horizontalSpeed = testSpeed;
     }
     create(){
@@ -836,7 +844,7 @@ class Level1 extends CommonScene{
             {x:259, duration:5000, ease:'Stepped'},
             {x:-250, duration:5000, ease:'Stepped'},
         ]});
-        bossSpecial2 = true;
+        bossSpecial = true;
 
         //Boss HP Bar
         bgBar = this.add.graphics().setScrollFactor(0).setVisible(false);
@@ -1123,6 +1131,7 @@ class Level2 extends CommonScene{
         bossBar.y = 50;
         bossHpText = this.add.text(750, 50, 'TOFU',
             {fontSize: '50px', fill: '#FFFFFF',}).setScrollFactor(0).setVisible(false);
+        bossSpecial2 = true;
 
         this.setValue(bossBar,boss2HP);
         // music
@@ -1166,7 +1175,6 @@ class Level2 extends CommonScene{
           if(boss.x = 10400)
           {
             boss.anims.play('bossIdleAttack',true);
-            // console.log(boss.x)
           }
           else if(boss_facing_right == true)
           {
@@ -1301,9 +1309,8 @@ class EndStory extends CommonScene {
         pSpeed = platformSpeed;
         // for testing purposes
         // horizontalSpeed = testSpeed;
-        playBornX = 8000;
+        // playBornX = 8000;
         // bossHP = 2;
-        hp = 50;
     }
     create(){
         // using level 2 features for now
@@ -1685,7 +1692,7 @@ class GameMenu extends Phaser.Scene {
           setInteractive().on('pointerdown',
           ()=>this.onClicked3());;
          lock2 = this.physics.add.staticImage(470, 700, 'lock');
-         lock2 = this.physics.add.staticImage(470, 800, 'lock');
+        //  lock2 = this.physics.add.staticImage(470, 800, 'lock');
 
          // maybe have pic/text for these
          /*diffulculty1 = this.add.text(1250, 100, 'EASY',
@@ -1733,26 +1740,26 @@ class GameMenu extends Phaser.Scene {
          this.cameras.main.fadeIn(800, 0, 0, 0);
     }
     update(){
-        // if(!winLevel1){
-        //    clickButton2.disableInteractive();
-        // }else{
-        //    clickButton2.setInteractive();
-        //    lock2.destroy();
-        // }
+        if(!winLevel1){
+           clickButton2.disableInteractive();
+        }else{
+           clickButton2.setInteractive();
+           lock2.destroy();
+        }
 
         // temp
         // winLevel2 = true;
         clickButtonEnd.visible = true;
 
-        // if(!winLevel2){
-        //     clickButtonEnd.disableInteractive();
-        //     clickButtonEnd.visible = false;
-        // }else{
-        //     clickButtonEnd.setInteractive();
-        //     clickButton1.visible = false;
-        //     clickButton2.visible = false;
-        //     clickButtonEnd.visible = true;
-        // }
+        if(!winLevel2){
+            clickButtonEnd.disableInteractive();
+            clickButtonEnd.visible = false;
+        }else{
+            clickButtonEnd.setInteractive();
+            clickButton1.visible = false;
+            clickButton2.visible = false;
+            clickButtonEnd.visible = true;
+        }
     }
     onClicked1(){
         this.scene.remove('Level1');
@@ -1762,7 +1769,6 @@ class GameMenu extends Phaser.Scene {
         clickButton1.disableInteractive();
         clickButton2.disableInteractive();
         clickButtonEnd.disableInteractive();
-        console.log("clicked level1");
         //this.scene.start('Level1');
     }
     onClicked2(){
@@ -1774,7 +1780,6 @@ class GameMenu extends Phaser.Scene {
         clickButton2.disableInteractive();
         clickButtonEnd.disableInteractive();
         // clickButton2.setInteractive().off();
-        console.log("clicked level2");
         //this.scene.start('Level2');
     }
     onClicked3(){
@@ -1786,7 +1791,6 @@ class GameMenu extends Phaser.Scene {
         clickButton2.disableInteractive();
         clickButtonEnd.disableInteractive();
         // clickButton2.setInteractive().off();
-        console.log("clicked end story");
     }
     onClickedDifficulty(index){
         var tempHPvar = [5, 3, 1];
@@ -1799,7 +1803,6 @@ class GameMenu extends Phaser.Scene {
                 diffulcultyList[i].setTexture(difList[i]);
             }
         }
-        console.log("clicked diffulculty");
     }
 }
 
@@ -1835,7 +1838,6 @@ class MainMenu extends Phaser.Scene {
     //     this.scene.remove('MainMenu');
     //     this.registry.destroy();
     //     this.events.off();
-    //     console.log("back")
     // }
     update(){
 
@@ -1848,7 +1850,6 @@ class MainMenu extends Phaser.Scene {
         tutorialScene = this.scene.add('Tutorial', Tutorial, true);
         // clickInstruction.disableInteractive();
         clickButtonBegin.disableInteractive();
-        console.log("clicked begin");
     }
     // instruction(){
     //     this.scene.remove('Instruction');
@@ -1856,7 +1857,6 @@ class MainMenu extends Phaser.Scene {
     //     this.scene.add('Instruction', Instruction, true);
     //     clickInstruction.disableInteractive();
     //     clickButtonBegin.disableInteractive();
-    //     console.log("clicked instruction");
     // }
     enable_music(){
       if(isMusicOn == false)
@@ -2163,7 +2163,6 @@ class Tutorial extends CommonScene{
         this.scene.remove('MainMenu');
         this.registry.destroy();
         this.events.off();
-        console.log("back");
         // enable_music();
     }
 }
@@ -2338,7 +2337,6 @@ class Tutorial extends CommonScene{
 //         clickButtonBegin.setInteractive();
 //         clickStart.disableInteractive();
 //         this.scene.setVisible(false);
-//         console.log("back to MainMenu");
 //     }
 //     bullet_dissapear(b){
 //       b.destroy();
