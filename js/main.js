@@ -51,6 +51,7 @@ var playerCollider;
 var enemyCollider;
 var bossCollider;
 var timedEvent;
+var bulletPlatformOverlap;
 var playerBossOverlap;
 var playerNukesOverlap;
 var bulletBossOverlap;
@@ -88,7 +89,7 @@ var bossLow = 10;
 var bossStopDuration = 800;
 var bossLeftBound = 9100;
 var bossRightBound = 10000;
-var bossScore = 233;
+var bossScore = 300;
 var bornL = 9500;
 var bornR = 9550;
 var bossBar;
@@ -154,12 +155,23 @@ var tutorialScene;
 //dialogue vars
 var dialogue;
 var enter;
-
-var dialogue1x = 300;
 var stop1 = true;
-
+var dialogue1x = 50;
 var stop2 = true;
-var dialogue2x = 305;
+var dialogue2x = 50;
+var stop3 = true;
+var dialogue3x = 700;
+var stop4 = true;
+var dialogue4x = 1000;
+var stop5 = true;
+var dialogue5x = 1005;
+var stop6 = true;
+var dialogue6x = 1500;
+var stop7 = true;
+var dialogue7x = 2500;
+var stop8 = true;
+var dialogue8x = 2505;
+
 
 // instruction
 var clickStart;
@@ -190,7 +202,9 @@ class CommonScene extends Phaser.Scene{
         this.load.audio('hurt_sound', 'assets/sfx/hurt.mp3')
         this.load.image('scoreBoard', 'assets/scoreboard.png')
         this.load.image('backmenu', 'assets/menu/backmenu.png')
+        this.load.image('retry', 'assets/menu/retry.png')
         this.load.image('back', 'assets/ground/back.png');
+        this.load.audio('click_sfx', 'assets/sfx/button.mp3');
         this.load.spritesheet('fork', 'assets/moving_ingredient/fork.png', {frameWidth : 68, frameHeight : 158});
         this.load.spritesheet('knife', 'assets/moving_ingredient/knife.png', {frameWidth : 64, frameHeight : 155});
         this.restart();
@@ -518,13 +532,21 @@ class CommonScene extends Phaser.Scene{
             ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);*/
         if(text == "LOST")
         {
+<<<<<<< HEAD
           retryButton = this.add.text(750, 770, 'Retry',
+=======
+          retryButton = this.add.image(750,775,'retry').setScale(0.7).
+            setInteractive().on('pointerdown',
+            ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0.5);
+          /*retryButton = this.add.text(750, 800, 'Retry',
+>>>>>>> a7cf5ba6564912c1fc7f02d17867d26a4095ebc3
               {fontSize: '40px', fill: '#F5ED00'}).
               setInteractive().on('pointerdown',
-              ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);
+              ()=>this.retry()).setScrollFactor(0).setOrigin(0.5, 0);*/
         }
     }
     backToMenu(){
+        this.sound.play('click_sfx');
         this.scene.start('GameMenu');
         mainButton.disableInteractive();
         clickButton1.setInteractive();
@@ -535,6 +557,7 @@ class CommonScene extends Phaser.Scene{
         console.log("back")
     }
     retry(){
+        this.sound.play('click_sfx');
         this.scene.restart();
         console.log("retry");
     }
@@ -565,6 +588,9 @@ class CommonScene extends Phaser.Scene{
       z+=1;
     }
     bullet_dissapear(b){
+      b.destroy();
+    }
+    bulletDestroy(platforms,b){
       b.destroy();
     }
     enable_music(){
@@ -700,7 +726,7 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        playBornX = 8000;
+        //playBornX = 8000;
         //horizontalSpeed = testSpeed;
     }
     create(){
@@ -853,6 +879,7 @@ class Level1 extends CommonScene{
         bossCollider = this.physics.add.collider(boss, platforms);
 
         // overlaps
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
@@ -1117,6 +1144,7 @@ class Level2 extends CommonScene{
         enemyCollider = this.physics.add.collider(enemies, platforms);
 
         // overlaps
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
@@ -1430,6 +1458,7 @@ class EndStory extends CommonScene {
         enemyCollider = this.physics.add.collider(enemies, platforms);
 
         // overlaps
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
@@ -1856,7 +1885,7 @@ class Tutorial extends CommonScene{
     preload(){
         super.preload();
 
-        this.load.image('boss', 'assets/boss_asset/leek.png');
+        this.load.image('boss', 'assets/boss_asset/leekdummy.png');
         this.load.image('leek_nuke', 'assets/boss_asset/leek_bullet.png')
         // load bg and platform
         this.load.image('level2bg', 'assets/background/level1bg.png');
@@ -1872,12 +1901,23 @@ class Tutorial extends CommonScene{
         this.load.image('directions', 'assets/intro/directions.png')
         this.load.image('hp_dir', 'assets/intro/hp_dir.png')
 
+        this.load.image('startscore', 'assets/menu/startscore.png');
+
         this.load.image('dialogue1', 'assets/dialogue/dialogue1.png');
         this.load.image('dialogue2', 'assets/dialogue/dialogue2.png');
+        this.load.image('dialogue3', 'assets/dialogue/dialogue3.png');
+        this.load.image('dialogue4', 'assets/dialogue/dialogue4.png');
+        this.load.image('dialogue5', 'assets/dialogue/dialogue5.png');
+        this.load.image('dialogue6', 'assets/dialogue/dialogue6.png');
+        this.load.image('dialogue7', 'assets/dialogue/dialogue7.png');
+        this.load.image('dialogue8', 'assets/dialogue/dialogue8.png');
+
+
+        this.load.audio('dialoguesfx', 'assets/sfx/dialogue.mp3');
         // we can initiate the variables for the specific boss info here
         // based on the level design
         hp = 5;
-        bossHP = 8;
+        bossHP = 5;
         bornL = 3800;
         bornR = 4200;
         bossLeftBound = bornL - 350;
@@ -1887,6 +1927,7 @@ class Tutorial extends CommonScene{
         // for testing purposes
         // horizontalSpeed = testSpeed;
         playBornX = 50;
+        playBornY = 800
     }
     create(){
         //music
@@ -1896,7 +1937,7 @@ class Tutorial extends CommonScene{
         this.add.image(0, 0, 'level2bg').setOrigin(0, 0);
 
         // boss bg
-        this.add.image(9000, 0, 'background').setOrigin(0, 0);
+        this.add.image(2500, 0, 'background').setOrigin(0, 0);
 
         super.create();
 
@@ -1916,30 +1957,30 @@ class Tutorial extends CommonScene{
         platforms.create(5000, -500, "back").setScale(4).setOrigin(0, 0).refreshBody();
 
         // tutorial platforms
-        platforms.create(3200, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        platforms.create(3350, 650, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
-        var mptur = mvPlatforms.create(3700, 500, "platform").setScale(0.1).setOrigin(0, 0).refreshBody();
-        movingPlatformDict[3700] = mptur;
-        platforms.create(3700, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
-        platforms.create(4000, 650, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
-        platforms.create(4200, 400, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
-        platforms.create(4600, 500, "back").setScale(0.2).setOrigin(0, 0).refreshBody();
-        platforms.create(4750, 300, "back").setScale(0.2).setOrigin(0, 0).refreshBody();
-        platforms.create(4900, 400, "back").setScale(0.2).setOrigin(0, 0).refreshBody();
+        //platforms.create(3200, 800, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        //platforms.create(3350, 650, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
+        var mptur = mvPlatforms.create(100, 700, "platform").setScale(0.1).setOrigin(0, 0).refreshBody();
+        movingPlatformDict[300] = mptur;
+        platforms.create(400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
+        platforms.create(300, 300, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
+        //platforms.create(4200, 400, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
+        platforms.create(3500, 0, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(3500, 600, "back").setOrigin(0, 0).refreshBody();
+        platforms.create(3500, 800, "back").setOrigin(0, 0).refreshBody();
 
         // static ingredients
-        enemies.create(3780, 800, "octopus").setOrigin(0, 1).refreshBody();
-        enemyTutorialText = this.add.text(3630, 710, 'This is a small ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
-        this.makeIngredient(z, 4070, 500, 'mushroom');
-        enemyTutorialText = this.add.text(3990, 430, 'This is another ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
+        enemies.create(dialogue4x+600, 800, "octopus").setOrigin(0, 1).refreshBody();
+        //enemyTutorialText = this.add.text(3630, 710, 'This is a small ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
+        this.makeIngredient(z, dialogue6x+600, 500, 'mushroom');
+        //enemyTutorialText = this.add.text(3990, 430, 'This is another ingredients enemy', { fontSize: '18px', fill: tutorialTextColor });
 
         // make entities
-        boss = this.physics.add.image(Phaser.Math.Between(bornL, bornR), 200, 'boss').setOrigin(0, 1);
+        boss = this.physics.add.image(3100, 200, 'boss').setOrigin(0, 1);
         boss.body.width = 115;
-        bossSpeed = Phaser.Math.GetSpeed(600, 3);
+        //bossSpeed = Phaser.Math.GetSpeed(600, 3);
         boss.setScale(0.3);
-        speed = bossSpeed;
-        bossTutorialText = this.add.text(boss.x, boss.y, 'This is a boss', { fontSize: '18px', fill: tutorialTextColor });
+        //speed = bossSpeed;
+        //bossTutorialText = this.add.text(boss.x, boss.y, 'This is a boss', { fontSize: '18px', fill: tutorialTextColor });
 
         // music
 
@@ -1954,6 +1995,7 @@ class Tutorial extends CommonScene{
         enemyCollider = this.physics.add.collider(enemies, platforms);
 
         // overlaps
+        bulletPlatformOverlap = this.physics.add.overlap(platforms, bullets, this.bulletDestroy, null, this);
         bulletBossOverlap = this.physics.add.overlap(boss, bullets, this.bossHurt, null, this);
         playerBossOverlap = this.physics.add.overlap(player, boss, this.takeDmg, null, this);
         bulletEnemOverlap = this.physics.add.overlap(enemies, bullets, this.enemyHurt, null, this);
@@ -1961,14 +2003,33 @@ class Tutorial extends CommonScene{
         playerNukesOverlap = this.physics.add.overlap(player, nukes, this.takeDmg, null, this);
 
         this.cameras.main.fadeIn(600, 0, 0, 0);
-        this.cameras.main.setBounds(0, 0, 5000, 1000);
+        this.cameras.main.setBounds(0, 0, 3500, 1000);
         this.cameras.main.startFollow(player);
         enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+        bgBar = this.add.graphics().setScrollFactor(0).setVisible(false);
+        bgBar.fillStyle(0x000000, 1);
+        bgBar.fillRect(0,0,610,60);
+        bgBar.x = 495;
+        bgBar.y = 45;
+        bossBar = this.add.graphics().setScrollFactor(0).setVisible(false);
+        bossBar.fillStyle(0xFF0000, 1);
+        bossBar.fillRect(0,0,600,50);
+        bossBar.x = 500;
+        bossBar.y = 50;
+        bossHpText = this.add.text(725, 50, 'DUMMY',
+            {fontSize: '50px', fill: '#FFFFFF',}).setScrollFactor(0).setVisible(false);
+        this.setValue(bossBar,5);
     }
     update(time, delta){
         super.update(time, delta);
-
-        bossTutorialText.x = boss.x;
+        if(player.x > 2500 && bossHP != 0 && hp > 0)
+        {
+          bossBar.setVisible(true);
+          bgBar.setVisible(true);
+          bossHpText.setVisible(true);
+        }
+        /*bossTutorialText.x = boss.x;
         bossTutorialText.y = boss.y-200;
 
         boss.x += speed * delta;
@@ -1981,8 +2042,8 @@ class Tutorial extends CommonScene{
             speed = 0;
             bossStop = true;
             this.time.addEvent({ delay: bossStopDuration, callback: this.moveStop, callbackScope: this});
-        }
-        //Dialogue 1
+        }*/
+        //Dialogue
         if(player.x >= dialogue1x && player.x <= dialogue1x+10 && stop1 == true)
         {
             stop1 = this.textDialogue('dialogue1',stop1);
@@ -1993,16 +2054,41 @@ class Tutorial extends CommonScene{
         {
             stop2 = this.textDialogue('dialogue2', stop2);
         }
+        if(player.x >= dialogue3x && player.x <= dialogue3x+10 && stop3 == true)
+        {
+             stop3 = this.textDialogue('dialogue3', stop3);
+        }
+        if(player.x >= dialogue4x && player.x <= dialogue4x+10 && stop4 == true)
+        {
+             stop4 = this.textDialogue('dialogue4', stop4);
+        }
+        if(player.x >= dialogue5x && player.x <= dialogue5x+10 && stop4 == false && stop5 == true)
+        {
+             stop5 = this.textDialogue('dialogue5', stop5);
+        }
+        if(player.x >= dialogue6x && player.x <= dialogue6x+10 && stop6 == true)
+        {
+             stop6 = this.textDialogue('dialogue6', stop6);
+        }
+        if(player.x >= dialogue7x && player.x <= dialogue7x+10 && stop7 == true)
+        {
+             stop7 = this.textDialogue('dialogue7', stop7);
+        }
+        if(player.x >= dialogue8x && player.x <= dialogue8x+10 && stop7 == false && stop8 == true)
+        {
+             stop8 = this.textDialogue('dialogue8', stop8);
+        }
     }
     // tutorial is always invulnerable
     textDialogue(text_name, stopper)
     {
         if(control == true)
         {
+            this.sound.play('dialoguesfx');
             control = false;
             player.setVelocityX(0);
             player.anims.play('idle_right');
-            dialogue = this.add.image(750, 200, text_name).setOrigin(0.5, 0.5).setAlpha(0);
+            dialogue = this.add.image(750, 200, text_name).setOrigin(0.5, 0.5).setAlpha(0).setScrollFactor(0);
             this.tweens.add({
                 targets: dialogue,
                 alpha: {from:  0, to: 0.9},
@@ -2024,12 +2110,19 @@ class Tutorial extends CommonScene{
         }
         return stopper;
     }
+    setValue(bar, percent){
+      this.tweens.add({
+          targets:  bar,
+          scaleX:   percent/5,
+          duration: 500
+      });
+    }
     takeDmg(player){
         if(invul == false){
             hurt_sound.play();
             player.setTint(0xB5F2F2);
             invul = true;
-            hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: tutorialTextColor });
+            //hurtText = this.add.text(player.x, player.y-50, 'hurted', { fontSize: '18px', fill: tutorialTextColor });
             vulTimer = this.time.addEvent({ delay: invulDuration+2000, callback: this.blinking, callbackScope: this});
             hp = 4;
             var heart = hearts.getChildren();
@@ -2039,31 +2132,36 @@ class Tutorial extends CommonScene{
     }
     blinking(){
         player.clearTint();
-        hurtText.destroy();
         invul = false;
         hp = 5;
     }
     enemyHurt(enemy, bullet){
-        bullet.destroy();
-        if(Math.round(Math.random()) == 0){
-            enemy.destroy();
-            score += 10;
-            enemyTutorialText.setText("You defeated the small enemy!")
-        }
-        // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+      bullet.destroy();
+      if(Math.round(Math.random()) == 0 || enemyHPcount >= 3){
+          enemy.destroy();
+          // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
+          score += 10;
+          enemyHPcount = 0;
+      }else{
+          enemyHPcount += 1
+      }
     }
     summary(text, add){
         super.summary(text, add);
         mainButton.destroy();
-        mainButton = this.add.text(750, 770, 'Back to Menu',
+        mainButton = this.add.image(750,775,'startscore').setScale(0.7).
+          setInteractive().on('pointerdown',
+          ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0.5);
+        /*mainButton = this.add.text(750, 770, 'Back to Menu',
             {fontSize: '40px', fill: '#F5ED00'}).
             setInteractive().on('pointerdown',
             ()=>this.backToMenu()).setScrollFactor(0).setOrigin(0.5, 0);
         mainButton.setFont('21px');
-        mainButton.setText("Start the Real Adventure");
+        mainButton.setText("Start the Real Adventure");*/
     }
     backToMenu(){
         // this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.sound.play('click_sfx');
         this.scene.add('GameMenu', GameMenu, true);
         mainButton.disableInteractive();
         this.scene.remove('MainMenu');
