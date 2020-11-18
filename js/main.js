@@ -5,7 +5,7 @@ var movingPlatforms;
 var mvPlatformsCollider;
 var locked = false;
 var lockedTarget;
-var collectHeart; 
+var collectHeart;
 
 // player variables
 var control;
@@ -335,7 +335,7 @@ class CommonScene extends Phaser.Scene{
     update(time, delta){
         cursors = this.input.keyboard.createCursorKeys();
         keyZ = this.input.keyboard.addKey("z");
-        
+
         // score
         this.updateScore()
 
@@ -348,7 +348,7 @@ class CommonScene extends Phaser.Scene{
               this.physics.world.removeCollider(playerNukesOverlap);
               this.physics.world.removeCollider(playerEnemOverlap);
               boss.setCollideWorldBounds(false);
-              score += 300; 
+              score += 300;
               if(scoreTextScore) scoreTextScore.destroy();
               scoreTextScore = this.add.text(1390, 30, score, {fontSize: '23px', fill: '#290048'});
               this.summary("WON", bossScore);
@@ -730,7 +730,7 @@ class Level1 extends CommonScene{
         pSpeed = platformSpeed;
         // for testing
         // hp = 30;
-        playBornX = 8300;
+        //playBornX = 8300;
         //horizontalSpeed = testSpeed;
     }
     create(){
