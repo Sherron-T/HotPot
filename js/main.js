@@ -160,7 +160,7 @@ var dialogue1x = 50;
 var stop2 = true;
 var dialogue2x = 50;
 var stop3 = true;
-var dialogue3x = 700;
+var dialogue3x = 800;
 var stop4 = true;
 var dialogue4x = 1000;
 var stop5 = true;
@@ -1959,6 +1959,7 @@ class Tutorial extends CommonScene{
         movingPlatformDict[300] = mptur;
         platforms.create(400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(300, 300, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
+        platforms.create(730, 300, "back").setOrigin(0, 0).refreshBody();
         //platforms.create(4200, 400, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
         platforms.create(3500, 0, "back").setOrigin(0, 0).refreshBody();
         platforms.create(3500, 600, "back").setOrigin(0, 0).refreshBody();
