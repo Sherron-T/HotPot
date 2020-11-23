@@ -1948,6 +1948,7 @@ class Tutorial extends CommonScene{
 
 
         // base platforms
+        platforms.create(730, 300, "back").setOrigin(0, 0).refreshBody();
         var basePlatform = [300, 1300, 2300, 3300, 4300];
         basePlatform.map(xCord => platforms.create(xCord, 900, "platform").setOrigin(0, 0).refreshBody());
         platforms.create(5000, -500, "back").setScale(4).setOrigin(0, 0).refreshBody();
@@ -1959,7 +1960,6 @@ class Tutorial extends CommonScene{
         movingPlatformDict[300] = mptur;
         platforms.create(400, 500, "platform").setScale(0.2).setOrigin(0, 0).refreshBody();
         platforms.create(300, 300, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
-        platforms.create(730, 300, "back").setOrigin(0, 0).refreshBody();
         //platforms.create(4200, 400, "platform").setScale(0.17).setOrigin(0, 0).refreshBody();
         platforms.create(3500, 0, "back").setOrigin(0, 0).refreshBody();
         platforms.create(3500, 600, "back").setOrigin(0, 0).refreshBody();
