@@ -478,7 +478,7 @@ class CommonScene extends Phaser.Scene{
     enemyHurt(enemy, bullet){
         //bullet.disableBody(true, true);
         bullet.destroy();
-        if(Math.round(Math.random()) == 0 || enemyHPcount >= 3){
+        if(Math.round(Math.random()) == 0 || enemyHPcount >= 2){
             enemy.destroy();
             // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
             score += 10;
@@ -2134,7 +2134,7 @@ class Tutorial extends CommonScene{
     }
     enemyHurt(enemy, bullet){
       bullet.destroy();
-      if(Math.round(Math.random()) == 0 || enemyHPcount >= 3){
+      if(Math.round(Math.random()) == 0 || enemyHPcount >= 2){
           enemy.destroy();
           // score += Math.floor(Math.random() * 20); // making hotpot needs luck, so the score is also by luck
           score += 10;
